@@ -28,6 +28,7 @@ public:
     EntityManager();
     ~EntityManager();
 
+    void initUtil();
     void initShaders();
     void initSystems();
 

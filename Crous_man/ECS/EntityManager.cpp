@@ -13,6 +13,7 @@
 #include "Bitmap.hpp"
 
 #include "../Shaders/BasicGShader.hpp"
+#include "../Shaders/BlinnPhongLShader.hpp"
 
 #include "EntityManager.hpp"
 
@@ -25,6 +26,7 @@
 #include "ComponentSystem.hpp"
 #include "Entity.hpp"
 #include "../Transform.hpp"
+#include <common/basicShapeRender.hpp>
 
 EntityManager* EntityManager::instance = NULL;
 
@@ -34,6 +36,7 @@ EntityManager::EntityManager() {
         Entity* root = new Entity();
         root->id = 0;
         entities.push_back(root);
+        initUtil();
         initShaders();
         initSystems();
     } else {
@@ -47,8 +50,13 @@ EntityManager::~EntityManager() {
     EntityManager::instance = NULL;
 }
 
+void EntityManager::initUtil() {
+    new BasicShapeRender();
+}
+
 void EntityManager::initShaders() {
     new BasicGShader();
+    new BlinnPhongLShader();
 }
 
 void EntityManager::initSystems() {

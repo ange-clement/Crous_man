@@ -70,6 +70,10 @@ add_executable(
 	common/vboindexer.hpp
 	common/meshGenerator.cpp
 	common/meshGenerator.hpp
+	common/basicShapeRender.cpp
+	common/basicShapeRender.hpp
+	common/gBuffer.cpp
+	common/gBuffer.hpp
 
 	external/image_ppm.cpp
 	external/image_ppm.h
