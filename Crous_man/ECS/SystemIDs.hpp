@@ -2,7 +2,10 @@
 #define SYSTEM_IDS_HPP
 
 enum SystemIDs {
-    SpinID = 0,
+    MeshID = 0,
+    RendererID,
+    CameraID,
+    SpinID,
     NUMBER
 };
 

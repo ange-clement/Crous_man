@@ -12,7 +12,6 @@
 #include "EntityManager.hpp"
 
 #include "ComponentSystem.hpp"
-#include "Entity.hpp"
 
 #include "Bitmap.hpp"
 
@@ -57,10 +56,6 @@ unsigned short ComponentSystem::getComponentId(unsigned short entityID) {
         }
     }
     return (unsigned short) -1;
-}
-
-Entity* getEntity(unsigned short entityID) {
-    return EntityManager::instance->entities[entityID];
 }
 
 

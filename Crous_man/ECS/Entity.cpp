@@ -9,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../Util.hpp"
+
 #include "Entity.hpp"
 #include "Bitmap.hpp"
 #include "../Transform.hpp"

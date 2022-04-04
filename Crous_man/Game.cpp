@@ -26,15 +26,10 @@ GLFWwindow* window;
 #include "Mesh.hpp"
 #include "Scene.hpp"
 #include "InputManager.hpp"
-#include "SceneObjects/Camera.hpp"
-#include "SceneObjects/PointLight.hpp"
-#include "Scenes/Object_control.hpp"
+#include "Scenes/ECS_test.hpp"
 
+#include "Shaders/Shader.hpp"
 #include "ECS/EntityManager.hpp"
-
-#include "SceneObjects/Terrain.hpp"
-#include "SceneObjects/LODObject.hpp"
-#include "Transform.hpp"
 
 
 #include <common/shader.hpp>
@@ -47,13 +42,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 // settings
 unsigned int SCR_WIDTH = 1024;
 unsigned int SCR_HEIGHT = 768;
-
-// model
-SceneObject* scene;
-Camera* camera;
-
-std::vector<PointLight*> pointLights;
-InputManager* inputManager;
 
 /*******************************************************************************/
 
@@ -118,21 +106,16 @@ int main( void )
     
     new EntityManager();
 
+    createSceneECS();
 
-    scene = createSceneObject(camera, pointLights);
-
-    Terrain* terrain = (Terrain*) scene->childrens[0];
-    SceneObject* player = scene->childrens[1];
-    SceneObject* cameraVerticalContainer = scene->childrens[2];
-    LODObject* lod = (LODObject*) scene->childrens[3];
-    float l;
-    inputManager = new InputManager();
 
     // For speed computation
     double lastTime = glfwGetTime();
     float deltaTime;
     float lastFrame;
     int nbFrames = 0;
+
+
 
     EntityManager::instance->initializeAllSystems();
 
@@ -144,22 +127,13 @@ int main( void )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // Inputs
-        inputManager->processInput(window);
-        scene->processInput(window, inputManager, deltaTime);
-
-        EntityManager::instance->updateAllSystems();
-        EntityManager::instance->updateTransforms();
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        scene->updateTransforms();
-        
-        scene->updateLights(pointLights);
-        camera->updateMVP();
-        scene->draw(camera->view, camera->projection);
-
+        EntityManager::instance->updateAllSystems();
+        EntityManager::instance->updateTransforms();
+        //TODO DRAW AFTER UPDATE TRANSFORM !
 
         // Swap buffers
         glfwSwapBuffers(window);
@@ -170,8 +144,6 @@ int main( void )
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0 );
 
-    delete scene;
-    delete camera;
     delete EntityManager::instance;
 
     // Close OpenGL window and terminate GLFW
@@ -183,9 +155,9 @@ int main( void )
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    inputManager->scroll_callback(window, xoffset, yoffset);
+
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    inputManager->framebuffer_size_callback(window, width, height);
+
 }

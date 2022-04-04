@@ -3,6 +3,9 @@
 
 #include "SystemIDs.hpp"
 
+struct MeshC;
+struct Renderer;
+struct CameraC;
 struct Spin;
 
 class Entity;
@@ -15,6 +18,9 @@ public:
     std::vector<Entity*> entities;
     std::vector<ComponentSystem*> systems;
 
+    std::vector<MeshC> meshComponents;
+    std::vector<Renderer> rendererComponents;
+    std::vector<CameraC> cameraComponents;
     std::vector<Spin> spinComponents;
 
 public:
@@ -22,6 +28,7 @@ public:
     EntityManager();
     ~EntityManager();
 
+    void initShaders();
     void initSystems();
 
     void initializeAllSystems();

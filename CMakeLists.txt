@@ -84,6 +84,21 @@ add_executable(
 	Crous_man/Transform.cpp
 	Crous_man/Transform.hpp
 
+	Crous_man/Shaders/Shader.cpp
+	Crous_man/Shaders/Shader.hpp
+	Crous_man/Shaders/MeshShader.cpp
+	Crous_man/Shaders/MeshShader.hpp
+	Crous_man/Shaders/QuadShader.cpp
+	Crous_man/Shaders/QuadShader.hpp
+	Crous_man/Shaders/GShader.cpp
+	Crous_man/Shaders/GShader.hpp
+	Crous_man/Shaders/LShader.cpp
+	Crous_man/Shaders/LShader.hpp
+	Crous_man/Shaders/BasicGShader.cpp
+	Crous_man/Shaders/BasicGShader.hpp
+	Crous_man/Shaders/BlinnPhongLShader.cpp
+	Crous_man/Shaders/BlinnPhongLShader.hpp
+
 	Crous_man/ECS/Bitmap.cpp
 	Crous_man/ECS/Bitmap.hpp
 	Crous_man/ECS/Entity.cpp
@@ -93,8 +108,14 @@ add_executable(
 	Crous_man/ECS/EntityManager.cpp
 	Crous_man/ECS/EntityManager.hpp
 
+	Crous_man/Components/Mesh.cpp
+	Crous_man/Components/Mesh.hpp
 	Crous_man/Components/Spin.cpp
 	Crous_man/Components/Spin.hpp
+	Crous_man/Components/Renderer.cpp
+	Crous_man/Components/Renderer.hpp
+	Crous_man/Components/Camera.cpp
+	Crous_man/Components/Camera.hpp
 	
 
 	Crous_man/SceneObjects/Camera.cpp
@@ -136,6 +157,8 @@ add_executable(
 	Crous_man/Scenes/Systeme_solaire.hpp
 	Crous_man/Scenes/Object_control.cpp
 	Crous_man/Scenes/Object_control.hpp
+	Crous_man/Scenes/ECS_test.cpp
+	Crous_man/Scenes/ECS_test.hpp
 )
 target_link_libraries(Crous_man
 	${ALL_LIBS}

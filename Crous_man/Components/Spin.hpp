@@ -5,6 +5,7 @@
 
 struct Spin {
     float speed;
+    float spinAmount;
 };
 
 class SpinSystem : public virtual ComponentSystem {

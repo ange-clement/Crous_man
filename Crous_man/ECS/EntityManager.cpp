@@ -12,9 +12,15 @@
 #include "SystemIDs.hpp"
 #include "Bitmap.hpp"
 
+#include "../Shaders/BasicGShader.hpp"
+
 #include "EntityManager.hpp"
 
+#include "../Components/Mesh.hpp"
+#include "../Components/Renderer.hpp"
+#include "../Components/Camera.hpp"
 #include "../Components/Spin.hpp"
+
 
 #include "ComponentSystem.hpp"
 #include "Entity.hpp"
@@ -28,6 +34,7 @@ EntityManager::EntityManager() {
         Entity* root = new Entity();
         root->id = 0;
         entities.push_back(root);
+        initShaders();
         initSystems();
     } else {
         std::cerr << "Error : cannot instanciate two EntityManager" << std::endl;
@@ -40,8 +47,15 @@ EntityManager::~EntityManager() {
     EntityManager::instance = NULL;
 }
 
+void EntityManager::initShaders() {
+    new BasicGShader();
+}
+
 void EntityManager::initSystems() {
     systems.resize(SystemIDs::NUMBER);
+    systems[SystemIDs::MeshID] = new MeshSystem();
+    systems[SystemIDs::RendererID] = new RendererSystem();
+    systems[SystemIDs::CameraID] = new CameraSystem();
     systems[SystemIDs::SpinID] = new SpinSystem();
 }
 

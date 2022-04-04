@@ -22,6 +22,9 @@
 #include "../Transform.hpp"
 #include "../Mesh.hpp"
 
+#include "../Components/Mesh.hpp"
+#include "../Components/Renderer.hpp"
+
 #include "Object_control.hpp"
 
 #include "../SceneObjects/PointLight.hpp"
@@ -69,18 +72,6 @@ SceneObject* createSceneObject(Camera*& camera, std::vector<PointLight*>& pointL
     light->transform->translation = glm::vec3(5.0, 5.0, 5.0);
     pointLights.push_back(light);
     scene->addChildren(light);
-
-
-
-
-
-    Entity* test2 = new Entity();
-    EntityManager::instance->addEntity(test2);
-
-    Entity* test = new Entity({SystemIDs::SpinID});
-    EntityManager::instance->addEntity(test);
-    test2->addChildren(test);
-    
 
 
 

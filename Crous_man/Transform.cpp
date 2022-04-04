@@ -136,8 +136,8 @@ glm::mat4 Transform::toMat4() {
 }
 
 glm::mat4 Transform::toNormal() {
-    //return glm::transpose(this->inverse()->toMat4());
-    return glm::transpose(rotation.toMat4());
+    return glm::transpose(this->inverse()->toMat4());
+    //return glm::transpose(rotation.toMat4());
 }
 
 glm::vec3 Transform::getRight() {

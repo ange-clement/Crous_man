@@ -26,13 +26,15 @@ SpinSystem::~SpinSystem() {
 }
 
 void SpinSystem::initialize(unsigned short i, unsigned short entityID) {
-    getSpin(i)->speed = 0.1f;
+    getSpin(i)->speed = 0.01f;
+    getSpin(i)->spinAmount = 0.0f;
 }
 
 void SpinSystem::update(unsigned short i, unsigned short entityID) {
     Spin* s = getSpin(i);
-    //EntityManager::instance->entities[entityID]->transform->rotation.combineRotation(s->speed, glm::vec3(1.0, 0.0, 0.0));
-    EntityManager::instance->entities[entityID]->transform->translation += glm::vec3(s->speed, 0.0, 0.0);
+    s->spinAmount += s->speed;
+    EntityManager::instance->entities[entityID]->transform->rotation.setRotation(s->spinAmount, glm::vec3(0.0, 1.0, 0.0));
+    //EntityManager::instance->entities[entityID]->transform->translation = glm::vec3(s->spinAmount, 0.0, 0.0);
 }
 
 void SpinSystem::addEntityComponent() {
