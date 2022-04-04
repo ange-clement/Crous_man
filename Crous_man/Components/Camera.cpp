@@ -30,6 +30,13 @@ CameraC::CameraC() {
     
 }
 
+void CameraC::updateWidthHeight(unsigned int width, unsigned int height) {
+    this->SCR_WIDTH  = width;
+    this->SCR_HEIGHT = height;
+    this->fov = width /(float) height;
+    this->gBuffer.update(width, height);
+}
+
 CameraSystem::CameraSystem() : ComponentSystem(){
     requiredComponentsBitmap = new Bitmap({SystemIDs::CameraID});
     rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
@@ -102,6 +109,10 @@ void CameraSystem::update(unsigned short i, unsigned short entityID) {
 
 void CameraSystem::addEntityComponent() {
     EntityManager::instance->cameraComponents.push_back(CameraC());
+}
+
+void CameraSystem::setScreenCamera(unsigned short entityID) {
+    this->screenCamera = getCamera(getComponentId(entityID));
 }
 
 CameraC* CameraSystem::getCamera(unsigned short i) {

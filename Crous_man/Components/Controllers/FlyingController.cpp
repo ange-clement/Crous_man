@@ -69,20 +69,22 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
         tr->translation += translationAmount * udirection;
 
     
-    float rotationAmount = fc->sensitivity * InputManager::instance->deltaTime;
-    float rotationX = InputManager::instance->mouseOffsetX * rotationAmount;
-    float rotationY = InputManager::instance->mouseOffsetY * rotationAmount;
+    if (!InputManager::instance->disableMouse) {
+        float rotationAmount = fc->sensitivity * InputManager::instance->deltaTime;
+        float rotationX = InputManager::instance->mouseOffsetX * rotationAmount;
+        float rotationY = InputManager::instance->mouseOffsetY * rotationAmount;
 
-    fc->azimuth += rotationX;
-    fc->zenith  += rotationY;
+        fc->azimuth += rotationX;
+        fc->zenith  += rotationY;
 
-    if(fc->zenith > 1.5f)
-        fc->zenith = 1.5f;
-    if(fc->zenith < -1.5f)
-        fc->zenith = -1.5f;
+        if(fc->zenith > 1.5f)
+            fc->zenith = 1.5f;
+        if(fc->zenith < -1.5f)
+            fc->zenith = -1.5f;
 
-    tr->rotation.setRotation(fc->azimuth, glm::vec3(0.0, 1.0, 0.0));
-    tr->rotation.combineRotation(-fc->zenith, glm::vec3(1.0, 0.0, 0.0));
+        tr->rotation.setRotation(fc->azimuth, glm::vec3(0.0, 1.0, 0.0));
+        tr->rotation.combineRotation(-fc->zenith, glm::vec3(1.0, 0.0, 0.0));
+    }
 }
 
 void FlyingControllerSystem::addEntityComponent() {

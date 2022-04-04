@@ -9,6 +9,10 @@ struct GBuffer {
 
     GBuffer();
     GBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT);
+
+    void update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT);
+
+    void init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT);
 };
 
 #endif

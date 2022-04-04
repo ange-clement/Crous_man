@@ -25,11 +25,13 @@ struct CameraC {
     LShader* lShaderInstance;
 
     CameraC();
+    void updateWidthHeight(unsigned int width, unsigned int height);
 };
 
 class CameraSystem : public virtual ComponentSystem {
 public:
     RendererSystem* rendererInstance;
+    CameraC* screenCamera;
     
 public:
     CameraSystem();
@@ -39,6 +41,8 @@ public:
     virtual void update(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
+
+    void setScreenCamera(unsigned short entityID);
 
     CameraC* getCamera(unsigned short i);
 };

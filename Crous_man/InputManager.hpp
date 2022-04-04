@@ -11,6 +11,7 @@ public:
     float scroll_distance;
 
     bool firstMouseMouve;
+    bool disableMouse;
     float lastMouseX, lastMouseY;
     float mouseOffsetX, mouseOffsetY;
 

@@ -9,6 +9,9 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "ECS/EntityManager.hpp"
+#include "Components/Camera.hpp"
+
 #include "InputManager.hpp"
 
 InputManager* InputManager::instance = NULL;
@@ -21,6 +24,7 @@ InputManager::InputManager() {
         lastMouseY = 0;
         scroll_distance = 0;
         lastFrame = 0.0f;
+        disableMouse = false;
     } else {
         std::cerr << "Error : cannot instanciate two InputManager" << std::endl;
     }
@@ -36,6 +40,16 @@ void InputManager::update(GLFWwindow *window) {
     
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    
+    if (!disableMouse && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS) {
+        disableMouse = true;
+        glfwSetCursorPos(window, SCR_WIDTH/2, SCR_WIDTH/2);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else if (disableMouse && glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE) {
+        disableMouse = false;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
@@ -60,8 +74,11 @@ void InputManager::scroll_callback(GLFWwindow* window, double xoffset, double yo
 }
 
 void InputManager::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    SCR_WIDTH = width;
-    SCR_HEIGHT = height;
+    if (abs((int)SCR_WIDTH - width) > 50 || abs((int)SCR_HEIGHT - height) > 50) {
+        SCR_WIDTH = width;
+        SCR_HEIGHT = height;
 
-    glViewport(0, 0, width, height);
+        glViewport(0, 0, width, height);
+        dynamic_cast<CameraSystem*>(EntityManager::instance->systems[SystemIDs::CameraID])->screenCamera->updateWidthHeight(width, height);
+    }
 }

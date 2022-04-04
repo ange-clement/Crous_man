@@ -16,6 +16,18 @@ GBuffer::GBuffer() {
 }
 
 GBuffer::GBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
+    init(SCR_WIDTH, SCR_HEIGHT);
+}
+
+void GBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
+    glDeleteTextures(1, &gPosition);
+    glDeleteTextures(1, &gNormal);
+    glDeleteTextures(1, &gAlbedoSpec);
+    glDeleteFramebuffers(1, &gBuffer);
+    init(SCR_WIDTH, SCR_HEIGHT);
+}
+
+void GBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
     glGenFramebuffers(1, &gBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 

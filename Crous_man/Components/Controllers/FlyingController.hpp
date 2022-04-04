@@ -1,5 +1,5 @@
-#ifndef FLYING_CONTROLLER_HPP
-#define FLYING_CONTROLLER_HPP
+#ifndef FLYING_CONTROLLER_COMPONENT_HPP
+#define FLYING_CONTROLLER_COMPONENT_HPP
 
 #include <Crous_man/ECS/ComponentSystem.hpp>
 

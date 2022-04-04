@@ -17,6 +17,7 @@
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
+#include "../Components/Camera.hpp"
 
 #include "ECS_test.hpp"
 
@@ -39,4 +40,5 @@ void createSceneECS() {
     Entity* cameraEntity = new Entity({SystemIDs::CameraID, SystemIDs::FlyingControllerID});
     EntityManager::instance->addEntity(cameraEntity);
     cameraEntity->transform->translation = glm::vec3(0.0, 0.0, -10.0);
+    dynamic_cast<CameraSystem*>(EntityManager::instance->systems[SystemIDs::CameraID])->setScreenCamera(cameraEntity->id);
 };
