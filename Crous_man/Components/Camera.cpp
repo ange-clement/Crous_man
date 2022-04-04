@@ -53,7 +53,7 @@ void CameraSystem::update(unsigned short i, unsigned short entityID) {
 
     glm::mat4 view = glm::lookAt(
         e->worldTransform->translation,
-        e->worldTransform->applyToPoint(glm::vec3(0.0, 0.0, -1.0)),
+        e->worldTransform->applyToPoint(glm::vec3(0.0, 0.0, 1.0)),
         glm::vec3(0.0, 1.0, 0.0)
     );
     //view = this->worldTransform->inverse()->toMat4();

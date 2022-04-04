@@ -6,6 +6,7 @@ enum SystemIDs {
     RendererID,
     CameraID,
     SpinID,
+    FlyingControllerID,
     NUMBER
 };
 

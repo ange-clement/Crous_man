@@ -3,8 +3,7 @@
 
 class InputManager {
 public:
-
-    float interpolation = 0.0;
+    static InputManager* instance;
 
     unsigned int SCR_WIDTH = 1024;
     unsigned int SCR_HEIGHT = 768;
@@ -15,10 +14,16 @@ public:
     float lastMouseX, lastMouseY;
     float mouseOffsetX, mouseOffsetY;
 
+    float deltaTime;
+    float lastFrame;
+    int nbFrames = 0;
+
+    GLFWwindow* window;
+
 public:
     InputManager();
     
-    void processInput(GLFWwindow *window);
+    void update(GLFWwindow *window);
 
 
     void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);

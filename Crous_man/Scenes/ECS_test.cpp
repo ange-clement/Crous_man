@@ -36,7 +36,7 @@ void createSceneECS() {
     dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID])->initBuffers(testRendererID, test->id);
 
 
-    Entity* cameraEntity = new Entity({SystemIDs::CameraID});
+    Entity* cameraEntity = new Entity({SystemIDs::CameraID, SystemIDs::FlyingControllerID});
     EntityManager::instance->addEntity(cameraEntity);
-    cameraEntity->transform->translation = glm::vec3(0.0, 0.0, 10.0);
+    cameraEntity->transform->translation = glm::vec3(0.0, 0.0, -10.0);
 };

@@ -120,6 +120,8 @@ add_executable(
 	Crous_man/Components/Renderer.hpp
 	Crous_man/Components/Camera.cpp
 	Crous_man/Components/Camera.hpp
+	Crous_man/Components/Controllers/FlyingController.cpp
+	Crous_man/Components/Controllers/FlyingController.hpp
 	
 
 	Crous_man/SceneObjects/Camera.cpp

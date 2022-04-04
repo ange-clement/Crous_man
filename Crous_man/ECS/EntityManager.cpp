@@ -15,12 +15,15 @@
 #include "../Shaders/BasicGShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
 
+#include "../InputManager.hpp"
+
 #include "EntityManager.hpp"
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
 #include "../Components/Camera.hpp"
 #include "../Components/Spin.hpp"
+#include "../Components/Controllers/FlyingController.hpp"
 
 
 #include "ComponentSystem.hpp"
@@ -52,6 +55,7 @@ EntityManager::~EntityManager() {
 
 void EntityManager::initUtil() {
     new BasicShapeRender();
+    new InputManager();
 }
 
 void EntityManager::initShaders() {
@@ -65,6 +69,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::RendererID] = new RendererSystem();
     systems[SystemIDs::CameraID] = new CameraSystem();
     systems[SystemIDs::SpinID] = new SpinSystem();
+    systems[SystemIDs::FlyingControllerID] = new FlyingControllerSystem();
 }
 
 void EntityManager::initializeAllSystems() {

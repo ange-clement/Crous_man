@@ -94,7 +94,7 @@ int main( void )
     glfwSetCursorPos(window, SCR_WIDTH/2, SCR_WIDTH/2);
 
     // Dark blue background
-    glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -102,34 +102,16 @@ int main( void )
     glDepthFunc(GL_LESS);
 
     // Cull triangles which normal is not towards the camera
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     
     new EntityManager();
 
     createSceneECS();
 
-
-    // For speed computation
-    double lastTime = glfwGetTime();
-    float deltaTime;
-    float lastFrame;
-    int nbFrames = 0;
-
-
-
     EntityManager::instance->initializeAllSystems();
 
     do{
-        // Measure speed
-        // per-frame time logic
-        // --------------------
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-
-        // Clear the screen
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        InputManager::instance->update(window);
 
         EntityManager::instance->updateAllSystems();
         EntityManager::instance->updateTransforms();
@@ -140,7 +122,7 @@ int main( void )
         glfwPollEvents();
         //glfwSetWindowShouldClose(window, true);
 
-    } // Check if the ESC key was pressed or the window was closed
+    }
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0 );
 
@@ -155,9 +137,9 @@ int main( void )
 
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-
+    InputManager::instance->scroll_callback(window, xoffset, yoffset);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-
+    InputManager::instance->framebuffer_size_callback(window, width, height);
 }

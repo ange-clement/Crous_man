@@ -9,6 +9,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Bitmap.hpp"
 #include "../ECS/Entity.hpp"
@@ -26,15 +27,14 @@ SpinSystem::~SpinSystem() {
 }
 
 void SpinSystem::initialize(unsigned short i, unsigned short entityID) {
-    getSpin(i)->speed = 0.01f;
+    getSpin(i)->speed = .5f;
     getSpin(i)->spinAmount = 0.0f;
 }
 
 void SpinSystem::update(unsigned short i, unsigned short entityID) {
     Spin* s = getSpin(i);
-    s->spinAmount += s->speed;
-    EntityManager::instance->entities[entityID]->transform->rotation.setRotation(s->spinAmount, glm::vec3(0.0, 1.0, 0.0));
-    //EntityManager::instance->entities[entityID]->transform->translation = glm::vec3(s->spinAmount, 0.0, 0.0);
+    s->spinAmount += s->speed * InputManager::instance->deltaTime;
+    EntityManager::instance->entities[entityID]->transform->rotation.setRotation(s->spinAmount * 3.14159263, glm::vec3(0.0, 1.0, 0.0));
 }
 
 void SpinSystem::addEntityComponent() {

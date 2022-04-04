@@ -7,6 +7,7 @@ struct MeshC;
 struct Renderer;
 struct CameraC;
 struct Spin;
+struct FlyingController;
 
 class Entity;
 class ComponentSystem;
@@ -22,6 +23,7 @@ public:
     std::vector<Renderer> rendererComponents;
     std::vector<CameraC> cameraComponents;
     std::vector<Spin> spinComponents;
+    std::vector<FlyingController> flyingControllerComponents;
 
 public:
 

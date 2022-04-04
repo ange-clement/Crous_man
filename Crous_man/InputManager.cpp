@@ -11,16 +11,32 @@
 
 #include "InputManager.hpp"
 
+InputManager* InputManager::instance = NULL;
+
 InputManager::InputManager() {
-    firstMouseMouve = true;
-    lastMouseX = 0;
-    lastMouseY = 0;
+    if (InputManager::instance == NULL) {
+        InputManager::instance = this;
+        firstMouseMouve = true;
+        lastMouseX = 0;
+        lastMouseY = 0;
+        scroll_distance = 0;
+        lastFrame = 0.0f;
+    } else {
+        std::cerr << "Error : cannot instanciate two InputManager" << std::endl;
+    }
 }
     
-void InputManager::processInput(GLFWwindow *window) {
+void InputManager::update(GLFWwindow *window) {
+    if (this->window != window) {
+        this->window = window;
+    }
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+    
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    
+
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     if (firstMouseMouve) {
