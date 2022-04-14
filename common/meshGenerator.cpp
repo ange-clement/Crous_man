@@ -47,32 +47,32 @@ void quad(      std::vector<glm::vec3> & vertices,
     triangles.clear();
 
     vertices.push_back(glm::vec3(-1.0,  1.0,  0.0));
-    vertices.push_back(glm::vec3(-1.0, -1.0,  0.0));
     vertices.push_back(glm::vec3( 1.0,  1.0,  0.0));
+    vertices.push_back(glm::vec3(-1.0, -1.0,  0.0));
     vertices.push_back(glm::vec3( 1.0, -1.0,  0.0));
 
     normals.push_back(glm::vec3(0.0, 0.0, 1.0));
     normals.push_back(glm::vec3(0.0, 0.0, 1.0));
 
-    texCoords.push_back(glm::vec2(0.0, 1.0));
-    texCoords.push_back(glm::vec2(0.0, 0.0));
-    texCoords.push_back(glm::vec2(1.0, 1.0));
     texCoords.push_back(glm::vec2(1.0, 0.0));
+    texCoords.push_back(glm::vec2(1.0, 1.0));
+    texCoords.push_back(glm::vec2(0.0, 0.0));
+    texCoords.push_back(glm::vec2(0.0, 1.0));
 
     indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(2);
     indices.push_back(2);
     indices.push_back(1);
+    indices.push_back(1);
+    indices.push_back(2);
     indices.push_back(3);
 
     std::vector<unsigned short> t1;
     t1.push_back(0);
-    t1.push_back(1);
     t1.push_back(2);
+    t1.push_back(1);
     std::vector<unsigned short> t2;
-    t2.push_back(2);
     t2.push_back(1);
+    t2.push_back(2);
     t2.push_back(3);
     triangles.push_back(t1);
     triangles.push_back(t2);

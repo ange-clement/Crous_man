@@ -104,6 +104,8 @@ add_executable(
 	Crous_man/Shaders/BlinnPhongLShader.hpp
 	Crous_man/Shaders/SingleTextureQuadShader.cpp
 	Crous_man/Shaders/SingleTextureQuadShader.hpp
+	Crous_man/Shaders/TextureGShader.cpp
+	Crous_man/Shaders/TextureGShader.hpp
 
 	Crous_man/ECS/Bitmap.cpp
 	Crous_man/ECS/Bitmap.hpp

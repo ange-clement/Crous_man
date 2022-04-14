@@ -11,10 +11,16 @@
 
 #include "GShader.hpp"
 
+#include "../Components/Renderer.hpp"
+
 GShader::GShader(std::string fs) : MeshShader(fs) {
 
 }
 
 GShader::~GShader() {
+
+}
+
+void GShader::prerender(const Renderer* r) {
 
 }

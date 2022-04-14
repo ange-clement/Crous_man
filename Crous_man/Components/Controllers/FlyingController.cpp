@@ -28,7 +28,7 @@ FlyingControllerSystem::~FlyingControllerSystem() {
 
 void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityID) {
     FlyingController* fc = getFlyingController(i);
-    fc->speed = 10.0f;
+    fc->speed = 40.0f;
     fc->sensitivity = 0.12f;
     fc->azimuth = 0.0;
     fc->zenith = 0.0;

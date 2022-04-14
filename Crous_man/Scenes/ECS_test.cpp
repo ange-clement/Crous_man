@@ -9,6 +9,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <common/meshGenerator.hpp>
+#include <common/texture.hpp>
 
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Entity.hpp"
@@ -18,6 +19,7 @@
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
+#include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
 
 #include "ECS_test.hpp"
@@ -36,11 +38,15 @@ void createSceneECS() {
     Mesh* planeMesh = &EntityManager::instance->meshComponents[planeMeshID];
     quad(planeMesh->indexed_vertices, planeMesh->normals, planeMesh->UV, planeMesh->indices, planeMesh->triangles);
     unsigned short planeRendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, plane->id);
-    dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID])->initBuffers(planeRendererID, plane->id);
+    RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+    rendererSystem->initBuffers(planeRendererID, plane->id);
+    Renderer* planeRenderer = rendererSystem->getRenderer(planeRendererID);
+    planeRenderer->diffuseBuffer  = loadTextureFromPPM("../ressources/earth.ppm");
+    planeRenderer->specularBuffer = loadTextureFromPGM("../ressources/heightmap.pgm");
 
-    for (int i = 0; i < 1; i++) {
-        for (int j = 0; j < 1; j++) {
-            for (int k = 0; k < 1; k++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            for (int k = 0; k < 5; k++) {
                 Entity* test = new Entity({SystemIDs::MeshID, SystemIDs::RendererID});
                 EntityManager::instance->addEntity(test);
                 test2->addChildren(test);
@@ -57,11 +63,25 @@ void createSceneECS() {
     
     Entity* light = new Entity({SystemIDs::PointLightID});
     EntityManager::instance->addEntity(light);
-    light->transform->translation = glm::vec3(3.0, 3.0, 0.0);
+    light->transform->translation = glm::vec3(5.0, 3.0, 0.0);
+    unsigned short lightPointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, light->id);
+    PointLight* lightPL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(lightPointLightID);
+    lightPL->color = glm::vec3(0.3, 0.7, 0.9);
     
     Entity* light2 = new Entity({SystemIDs::PointLightID});
     EntityManager::instance->addEntity(light2);
-    light2->transform->translation = glm::vec3(-3.0, 3.0, 0.0);
+    light2->transform->translation = glm::vec3(-5.0, 3.0, 0.0);
+    unsigned short light2PointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, light2->id);
+    PointLight* light2PL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(light2PointLightID);
+    light2PL->color = glm::vec3(0.9, 0.7, 0.3);
+
+    Entity* light3 = new Entity({SystemIDs::PointLightID});
+    EntityManager::instance->addEntity(light3);
+    light3->transform->translation = glm::vec3(0.0, 100.0, 0.0);
+    unsigned short light3PointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, light3->id);
+    PointLight* light3PL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(light3PointLightID);
+    light3PL->linear = 0.01;
+    light3PL->quadratic = 0.0;
 
     Entity* cameraEntity = new Entity({SystemIDs::CameraID, SystemIDs::FlyingControllerID});
     EntityManager::instance->addEntity(cameraEntity);

@@ -8,6 +8,12 @@ struct PointLight {
     
     float linear;
     float quadratic;
+
+    PointLight() {
+        color = glm::vec3(1.0, 1.0, 1.0);
+        linear = .1f;
+        quadratic = 0.02f;
+    }
 };
 
 class PointLightSystem : public virtual ComponentSystem {

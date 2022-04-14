@@ -9,7 +9,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 normal;
 
-out vec2 TexCoord;
+out vec2 TexCoords;
 out vec3 FragPos;
 out vec3 Normal;
 
@@ -17,7 +17,7 @@ void main()
 {
     vec4 Pos = model * vec4(aPos, 1.0);
     FragPos = Pos.xyz;
-    TexCoord = aTexCoords;
+    TexCoords = aTexCoords;
     
     Normal = (normal * vec4(aNormal, 0.0)).xyz;
     

@@ -8,12 +8,13 @@
 #include <glm/glm.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <common/texture.hpp>
 
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Bitmap.hpp"
 #include "../Transform.hpp"
 #include "../ECS/Entity.hpp"
-#include "../Shaders/BasicGShader.hpp"
+#include "../Shaders/TextureGShader.hpp"
 
 #include "../Util.hpp"
 
@@ -34,9 +35,12 @@ RendererSystem::~RendererSystem() {
 void RendererSystem::initialize(unsigned short i, unsigned short entityID) {
     Renderer* r = getRenderer(i);
     if (r->gShaderInstance == NULL) {
-        r->gShaderInstance = BasicGShader::instance;
+        r->gShaderInstance = TextureGShader::instance;
 
         r->meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, entityID);
+
+        r->diffuseBuffer  = loadTextureFromColor(glm::vec3(.408, .087, .915));
+        r->specularBuffer = loadTextureFromFloat(1.0);
     }
 }
 
@@ -86,7 +90,7 @@ void RendererSystem::initBuffers(unsigned short i, unsigned short entityID) {
 
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, r->textCoordBuffer);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 
 
@@ -122,6 +126,7 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         Entity* e = EntityManager::instance->entities[entityID];
         
         gS->use();
+        gS->prerender(r);
     
         glm::mat4 model = e->worldTransform->toMat4();
         glm::mat4 normal = e->worldTransform->toNormal();
@@ -131,6 +136,7 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         glBindVertexArray(r->vertexArray);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
 
         glDrawElements(
                     GL_TRIANGLES,      // mode
@@ -141,6 +147,7 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);

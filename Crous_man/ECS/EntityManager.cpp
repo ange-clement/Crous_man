@@ -15,6 +15,7 @@
 #include "../Shaders/BasicGShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
 #include "../Shaders/SingleTextureQuadShader.hpp"
+#include "../Shaders/TextureGShader.hpp"
 
 #include "../InputManager.hpp"
 
@@ -64,6 +65,7 @@ void EntityManager::initShaders() {
     new BasicGShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
+    new TextureGShader();
 }
 
 void EntityManager::initSystems() {

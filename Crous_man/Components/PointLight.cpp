@@ -27,10 +27,7 @@ PointLightSystem::~PointLightSystem() {
 }
 
 void PointLightSystem::initialize(unsigned short i, unsigned short entityID) {
-    PointLight* pl = getPointLight(i);
-    pl->color = glm::vec3(1.0, 1.0, 1.0);
-    pl->linear = .1f;
-    pl->quadratic = 0.0f;
+    
 }
 
 void PointLightSystem::update(unsigned short i, unsigned short entityID) {

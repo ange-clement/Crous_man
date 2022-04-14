@@ -1,13 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 #include <GL/glew.h>
-
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
+#include <external/image_ppm.h>
+
+GLuint loadTextureFromColor(glm::vec3 color) {
+	GLuint texture; 
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    unsigned char* data = new unsigned char [3];
+	data[0] = color[0]*255.0;
+	data[1] = color[1]*255.0;
+	data[2] = color[2]*255.0;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    delete [] data;
+    return texture;
+}
+
+GLuint loadTextureFromFloat(float value) {
+	GLuint texture; 
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    unsigned char* data = new unsigned char [1];
+	data[0] = value*255.0;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1, 1, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    delete [] data;
+    return texture;
+}
+
+GLuint loadTextureFromPGM(const char* textureName) { 
+	GLuint texture; 
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //load image
+    int width, height;
+    char cNomImgLue[250];
+    sscanf (textureName,"%s",cNomImgLue);
+    OCTET *ImgIn;
+
+    lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &height, &width);
+    int nTaille = height * width;
+
+    allocation_tableau(ImgIn, OCTET, nTaille);
+    lire_image_pgm(cNomImgLue, ImgIn, nTaille);
 
 
-GLuint loadBMP_custom(const char * imagepath){
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, ImgIn);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    free(ImgIn);
+    return texture;
+}
+
+    
+GLuint loadTextureFromPPM(const char* textureName) {
+	GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    //load image
+    int width, height;
+    char cNomImgLue[250];
+    sscanf (textureName,"%s",cNomImgLue);
+    OCTET *ImgIn;
+
+    lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &height, &width);
+    int nTaille = height * width;
+    int nTaille3 = nTaille * 3;
+
+    allocation_tableau(ImgIn, OCTET, nTaille3);
+    lire_image_ppm(cNomImgLue, ImgIn, nTaille);
+
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, ImgIn);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    free(ImgIn);
+    return texture;
+}
+
+
+GLuint loadTextureFromBMP_custom(const char * imagepath){
 
 	printf("Reading image %s\n", imagepath);
 
@@ -124,7 +235,7 @@ GLuint loadBMP_custom(const char * imagepath){
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 
-GLuint loadDDS(const char * imagepath){
+GLuint loadTextureFromDDS(const char * imagepath){
 
 	unsigned char header[124];
 

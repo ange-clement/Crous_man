@@ -17,6 +17,9 @@ struct Renderer {
     GLuint textCoordBuffer;
     GLuint normalsbuffer;
     GLuint elementbuffer;
+
+    GLuint diffuseBuffer;
+    GLuint specularBuffer;
 };
 
 class RendererSystem : public virtual ComponentSystem {
