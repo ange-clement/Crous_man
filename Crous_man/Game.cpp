@@ -111,15 +111,17 @@ int main( void )
     do{
         InputManager::instance->update(window);
 
-        EntityManager::instance->updateAllSystems();
+        EntityManager::instance->update();
         EntityManager::instance->updateTransforms();
-        //TODO DRAW AFTER UPDATE TRANSFORM !
+        EntityManager::instance->updatePhysics();
+        EntityManager::instance->updateAfterPhysics();
+        EntityManager::instance->render();
+        EntityManager::instance->updateAfterRender();
 
         // Swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
         //glfwSetWindowShouldClose(window, true);
-
     }
     while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
            glfwWindowShouldClose(window) == 0 );

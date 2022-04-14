@@ -27,10 +27,6 @@ PointLightSystem::~PointLightSystem() {
 }
 
 void PointLightSystem::initialize(unsigned short i, unsigned short entityID) {
-    
-}
-
-void PointLightSystem::update(unsigned short i, unsigned short entityID) {
 
 }
 

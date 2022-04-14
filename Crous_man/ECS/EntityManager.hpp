@@ -37,9 +37,13 @@ public:
     void initSystems();
 
     void initializeAllSystems();
-    void updateAllSystems();
 
+    void update();
     void updateTransforms();
+    void updatePhysics();
+    void updateAfterPhysics();
+    void render();
+    void updateAfterRender();
 
     unsigned short getComponentId(SystemIDs system, unsigned short entityID);
     bool hasComponent(SystemIDs system, unsigned short entityID);

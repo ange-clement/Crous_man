@@ -45,12 +45,12 @@ void createSceneECS() {
     planeRenderer->specularBuffer = loadTextureFromPGM("../ressources/heightmap.pgm");
 
     for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 10; j++) {
             for (int k = 0; k < 5; k++) {
                 Entity* test = new Entity({SystemIDs::MeshID, SystemIDs::RendererID});
                 EntityManager::instance->addEntity(test);
                 test2->addChildren(test);
-                test->transform->translation = glm::vec3(i*2+3, k*2.0, j*2.0);
+                test->transform->translation = glm::vec3(i*2.0, j*2.0, k*2.0);
                 unsigned short testMeshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, test->id);
                 EntityManager::instance->meshComponents[testMeshID].loadFromFile("../ressources/suzanne.off", false);
                 unsigned short testRendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, test->id);

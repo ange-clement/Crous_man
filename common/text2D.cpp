@@ -21,7 +21,7 @@ unsigned int Text2DUniformID;
 void initText2D(const char * texturePath){
 
 	// Initialize texture
-	Text2DTextureID = loadDDS(texturePath);
+	Text2DTextureID = loadTextureFromDDS(texturePath);
 
 	// Initialize VBO
 	glGenBuffers(1, &Text2DVertexBufferID);

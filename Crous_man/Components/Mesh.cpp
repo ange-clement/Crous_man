@@ -81,10 +81,6 @@ void MeshSystem::initialize(unsigned short i, unsigned short entityID) {
 
 }
 
-void MeshSystem::update(unsigned short i, unsigned short entityID) {
-
-}
-
 void MeshSystem::addEntityComponent() {
     EntityManager::instance->meshComponents.push_back(Mesh());
 }

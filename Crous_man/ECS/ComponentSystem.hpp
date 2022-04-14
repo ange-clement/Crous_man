@@ -14,6 +14,11 @@ public:
     ~ComponentSystem();
 
     virtual void updateAll();
+    virtual void updatePhysicsAll();
+    virtual void updateAfterPhysicsAll();
+    virtual void renderAll();
+    virtual void updateAfterRenderAll();
+    
     void initializeAll();
 
     void addEntity(unsigned short entityID);
@@ -22,7 +27,12 @@ public:
 
     unsigned short getComponentId(unsigned short entityID);
 
-    virtual void update(unsigned short i, unsigned short entityID) = 0;
+    virtual void update(unsigned short i, unsigned short entityID);
+    virtual void updatePhysics(unsigned short i, unsigned short entityID);
+    virtual void updateAfterPhysics(unsigned short i, unsigned short entityID);
+    virtual void render(unsigned short i, unsigned short entityID);
+    virtual void updateAfterRender(unsigned short i, unsigned short entityID);
+
     virtual void initialize(unsigned short i, unsigned short entityID) = 0;
     virtual void addEntityComponent() = 0;
 };

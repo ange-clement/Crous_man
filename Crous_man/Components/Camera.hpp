@@ -43,7 +43,7 @@ public:
 
     ~CameraSystem();
 
-    virtual void update(unsigned short i, unsigned short entityID);
+    virtual void render(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
 

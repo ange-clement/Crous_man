@@ -87,14 +87,36 @@ void EntityManager::initializeAllSystems() {
     }
 }
 
-void EntityManager::updateAllSystems() {
+
+
+
+void EntityManager::update() {
     for (size_t i = 0, size = systems.size(); i < size; i++) {
         systems[i]->updateAll();
     }
 }
-
 void EntityManager::updateTransforms() {
     this->entities[0]->updateTransforms();
+}
+void EntityManager::updatePhysics() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->updatePhysicsAll();
+    }
+}
+void EntityManager::updateAfterPhysics() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->updateAfterPhysicsAll();
+    }
+}
+void EntityManager::render() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->renderAll();
+    }
+}
+void EntityManager::updateAfterRender() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->updateAfterRenderAll();
+    }
 }
 
 

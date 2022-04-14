@@ -26,7 +26,6 @@ public:
 
     ~MeshSystem();
 
-    virtual void update(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
 

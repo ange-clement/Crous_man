@@ -61,7 +61,7 @@ void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
 }
 
-void CameraSystem::update(unsigned short i, unsigned short entityID) {
+void CameraSystem::render(unsigned short i, unsigned short entityID) {
     Entity* e = EntityManager::instance->entities[entityID];
     Camera* c = getCamera(i);
 

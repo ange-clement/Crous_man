@@ -105,10 +105,6 @@ void RendererSystem::initBuffers(unsigned short i, unsigned short entityID) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void RendererSystem::update(unsigned short i, unsigned short entityID) {
-
-}
-
 void RendererSystem::addEntityComponent() {
     EntityManager::instance->rendererComponents.push_back(Renderer());
 }
