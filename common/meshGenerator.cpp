@@ -1,3 +1,14 @@
+#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
+#include "meshGenerator.hpp"
+
+#define PI 3.14159263
 
 /**
  * The functions in this file create models in an
@@ -18,6 +29,54 @@
  *
  */
 
+
+/**
+ * Create a model of a quad on xy plane with coordinates equals -1, 0 or 1.
+ */
+void quad(      std::vector<glm::vec3> & vertices,
+                std::vector<glm::vec3> & normals,
+                std::vector<glm::vec2> & texCoords,
+                std::vector<unsigned short> & indices,
+                std::vector<std::vector<unsigned short>> & triangles
+                )
+{
+    vertices.clear();
+    normals.clear();
+    texCoords.clear();
+    indices.clear();
+    triangles.clear();
+
+    vertices.push_back(glm::vec3(-1.0,  1.0,  0.0));
+    vertices.push_back(glm::vec3(-1.0, -1.0,  0.0));
+    vertices.push_back(glm::vec3( 1.0,  1.0,  0.0));
+    vertices.push_back(glm::vec3( 1.0, -1.0,  0.0));
+
+    normals.push_back(glm::vec3(0.0, 0.0, 1.0));
+    normals.push_back(glm::vec3(0.0, 0.0, 1.0));
+
+    texCoords.push_back(glm::vec2(0.0, 1.0));
+    texCoords.push_back(glm::vec2(0.0, 0.0));
+    texCoords.push_back(glm::vec2(1.0, 1.0));
+    texCoords.push_back(glm::vec2(1.0, 0.0));
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(2);
+    indices.push_back(1);
+    indices.push_back(3);
+
+    std::vector<unsigned short> t1;
+    t1.push_back(0);
+    t1.push_back(1);
+    t1.push_back(2);
+    std::vector<unsigned short> t2;
+    t2.push_back(2);
+    t2.push_back(1);
+    t2.push_back(3);
+    triangles.push_back(t1);
+    triangles.push_back(t2);
+}
 
 /**
  * Create a model of a cube, centered at the origin.  (This is not
@@ -143,17 +202,6 @@
 //         indices: indices
 //     };
 // }
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-
-#include "meshGenerator.hpp"
-
-#define PI 3.14159263
 
 /**
  * Create a model of a sphere.  The z-axis is the axis of the sphere,

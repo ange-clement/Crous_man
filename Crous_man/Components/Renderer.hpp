@@ -5,7 +5,7 @@
 
 class GShader;
 
-struct MeshC;
+struct Mesh;
 
 struct Renderer {
     unsigned short meshID;
@@ -34,7 +34,7 @@ public:
     void renderAll(glm::mat4 view, glm::mat4 projection);
 
     Renderer* getRenderer(unsigned short i);
-    MeshC* getMesh(unsigned short i);
+    Mesh* getMesh(unsigned short i);
 };
 
 #endif

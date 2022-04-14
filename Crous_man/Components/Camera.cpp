@@ -12,34 +12,41 @@
 
 #include <common/basicShapeRender.hpp>
 
+#include "../Util.hpp"
+
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Bitmap.hpp"
 #include "../ECS/Entity.hpp"
 #include "../Transform.hpp"
 
 #include "../Shaders/BlinnPhongLShader.hpp"
+#include "../Shaders/SingleTextureQuadShader.hpp"
 
 #include "Camera.hpp"
 
 #include "Renderer.hpp"
+#include "PointLight.hpp"
 #include <common/gBuffer.hpp>
 
 #include "../Shaders/LShader.hpp"
+#include "../Shaders/PEShader.hpp"
 
-CameraC::CameraC() {
+Camera::Camera() {
     
 }
 
-void CameraC::updateWidthHeight(unsigned int width, unsigned int height) {
+void Camera::updateWidthHeight(unsigned int width, unsigned int height) {
     this->SCR_WIDTH  = width;
     this->SCR_HEIGHT = height;
     this->fov = width /(float) height;
     this->gBuffer.update(width, height);
+    this->textureFramebuffer.update(width, height);
 }
 
 CameraSystem::CameraSystem() : ComponentSystem(){
     requiredComponentsBitmap = new Bitmap({SystemIDs::CameraID});
     rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+    pointLightInstance = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID]);
 }
 
 CameraSystem::~CameraSystem() {
@@ -47,16 +54,16 @@ CameraSystem::~CameraSystem() {
 }
 
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
-    CameraC* c = getCamera(i);
-    c->frameBufferObject = 0;
+    Camera* c = getCamera(i);
     c->lShaderInstance = BlinnPhongLShader::instance;
+    c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
+    c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
 }
 
 void CameraSystem::update(unsigned short i, unsigned short entityID) {
-    //TODO bind framebuffer et light?
     Entity* e = EntityManager::instance->entities[entityID];
-    CameraC* c = getCamera(i);
+    Camera* c = getCamera(i);
 
     glm::mat4 view = glm::lookAt(
         e->worldTransform->translation,
@@ -77,44 +84,50 @@ void CameraSystem::update(unsigned short i, unsigned short entityID) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     rendererInstance->renderAll(view, projection);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0); // TODO bind framebuffer
 
+    c->textureFramebuffer.use();
     // 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
     // -----------------------------------------------------------------------------------------------------------------------
     LShader* ls = c->lShaderInstance;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     ls->use();
     ls->setViewPos(e->worldTransform->translation);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, c->gBuffer.gPosition);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, c->gBuffer.gNormal);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, c->gBuffer.gAlbedoSpec);
-    // // TODO send light relevant uniforms
-    // for (unsigned int i = 0; i < lightPositions.size(); i++)
-    // {
-    //     shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
-    //     shaderLightingPass.setVec3("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-    //     // update attenuation parameters and calculate radius
-    //     const float linear = 0.7f;
-    //     const float quadratic = 1.8f;
-    //     shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
-    //     shaderLightingPass.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
-    // }
-    // shaderLightingPass.setVec3("viewPos", camera.Position);
+    ls->setBuffers(c->gBuffer.gPosition, c->gBuffer.gNormal, c->gBuffer.gAlbedoSpec);
+
+    // send light relevant uniforms
+    std::vector<PointLight>* lights = &EntityManager::instance->pointLightComponents;
+    Entity* lightEntity;
+    PointLight* l;
+    for (unsigned int i = 0; i < lights->size(); i++)
+    {
+        lightEntity = EntityManager::instance->entities[pointLightInstance->entityIDs[i]];
+        l = &(*lights)[i];
+        ls->setLight(i, lightEntity->worldTransform->translation, l->color, l->linear, l->quadratic);
+    }
     // finally render quad
+    BasicShapeRender::instance->renderQuad();
+
+    //TODO bind final framebuffer ( 0 iff screen )
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // 3. post effect pass: do something with the image then render it
+    // ---------------------------------------------------------------
+    //TODO : plusieurs PEShaders? (ping pong framebuffer ou écrire dans une texture?)
+    PEShader* pe = c->peShaderInstance;
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    pe->use();
+    pe->setColorTexture(c->textureFramebuffer.textureColorBuffer);
     BasicShapeRender::instance->renderQuad();
 }
 
 void CameraSystem::addEntityComponent() {
-    EntityManager::instance->cameraComponents.push_back(CameraC());
+    EntityManager::instance->cameraComponents.push_back(Camera());
 }
 
 void CameraSystem::setScreenCamera(unsigned short entityID) {
     this->screenCamera = getCamera(getComponentId(entityID));
 }
 
-CameraC* CameraSystem::getCamera(unsigned short i) {
+Camera* CameraSystem::getCamera(unsigned short i) {
     return &EntityManager::instance->cameraComponents[i];
 }

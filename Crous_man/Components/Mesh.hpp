@@ -3,7 +3,7 @@
 
 #include "../ECS/ComponentSystem.hpp"
 
-struct MeshC {
+struct Mesh {
     std::vector<glm::vec3> indexed_vertices;
     std::vector<unsigned short> indices;
     std::vector<std::vector<unsigned short>> triangles;
@@ -30,7 +30,7 @@ public:
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
 
-    MeshC* getMesh(unsigned short i);
+    Mesh* getMesh(unsigned short i);
 };
 
 #endif

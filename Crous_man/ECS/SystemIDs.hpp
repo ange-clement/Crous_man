@@ -4,6 +4,7 @@
 enum SystemIDs {
     MeshID = 0,
     RendererID,
+    PointLightID,
     CameraID,
     SpinID,
     FlyingControllerID,

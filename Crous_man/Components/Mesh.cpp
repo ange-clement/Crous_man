@@ -16,7 +16,7 @@
 
 #include "Mesh.hpp"
 
-void MeshC::loadFromFile(std::string filename, bool fileHasNormals) {
+void Mesh::loadFromFile(std::string filename, bool fileHasNormals) {
     if (fileHasNormals) {
         openOFF(filename, this->indexed_vertices, this->normals, this->indices, this->triangles, true);
     }
@@ -34,7 +34,7 @@ void MeshC::loadFromFile(std::string filename, bool fileHasNormals) {
     }
 }
 
-void MeshC::computeTrianglesNormals(){
+void Mesh::computeTrianglesNormals(){
     triangle_normals.clear();
     size_t size = triangles.size();
     triangle_normals.resize(size);
@@ -46,7 +46,7 @@ void MeshC::computeTrianglesNormals(){
     }
 }
 
-void MeshC::computeSmoothVertexNormal(){
+void Mesh::computeSmoothVertexNormal(){
     normals.clear();
     size_t size = indexed_vertices.size();
     normals.resize(size);
@@ -62,7 +62,7 @@ void MeshC::computeSmoothVertexNormal(){
     }
 }
 
-void MeshC::computeNormals() {
+void Mesh::computeNormals() {
     computeTrianglesNormals();
     computeSmoothVertexNormal();
 }
@@ -86,9 +86,9 @@ void MeshSystem::update(unsigned short i, unsigned short entityID) {
 }
 
 void MeshSystem::addEntityComponent() {
-    EntityManager::instance->meshComponents.push_back(MeshC());
+    EntityManager::instance->meshComponents.push_back(Mesh());
 }
 
-MeshC* MeshSystem::getMesh(unsigned short i) {
+Mesh* MeshSystem::getMesh(unsigned short i) {
     return &EntityManager::instance->meshComponents[i];
 }

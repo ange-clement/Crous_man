@@ -74,6 +74,8 @@ add_executable(
 	common/basicShapeRender.hpp
 	common/gBuffer.cpp
 	common/gBuffer.hpp
+	common/textureFramebuffer.cpp
+	common/textureFramebuffer.hpp
 
 	external/image_ppm.cpp
 	external/image_ppm.h
@@ -81,10 +83,6 @@ add_executable(
 	Crous_man/Util.cpp
 	Crous_man/Util.hpp
 
-	Crous_man/Mesh.cpp
-	Crous_man/Mesh.hpp
-	Crous_man/Scene.cpp
-	Crous_man/Scene.hpp
 	Crous_man/Transform.cpp
 	Crous_man/Transform.hpp
 
@@ -98,10 +96,14 @@ add_executable(
 	Crous_man/Shaders/GShader.hpp
 	Crous_man/Shaders/LShader.cpp
 	Crous_man/Shaders/LShader.hpp
+	Crous_man/Shaders/PEShader.cpp
+	Crous_man/Shaders/PEShader.hpp
 	Crous_man/Shaders/BasicGShader.cpp
 	Crous_man/Shaders/BasicGShader.hpp
 	Crous_man/Shaders/BlinnPhongLShader.cpp
 	Crous_man/Shaders/BlinnPhongLShader.hpp
+	Crous_man/Shaders/SingleTextureQuadShader.cpp
+	Crous_man/Shaders/SingleTextureQuadShader.hpp
 
 	Crous_man/ECS/Bitmap.cpp
 	Crous_man/ECS/Bitmap.hpp
@@ -120,49 +122,14 @@ add_executable(
 	Crous_man/Components/Renderer.hpp
 	Crous_man/Components/Camera.cpp
 	Crous_man/Components/Camera.hpp
+	Crous_man/Components/PointLight.cpp
+	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
-	
-
-	Crous_man/SceneObjects/Camera.cpp
-	Crous_man/SceneObjects/Camera.hpp
-	Crous_man/SceneObjects/Terrain.cpp
-	Crous_man/SceneObjects/Terrain.hpp
-	Crous_man/SceneObjects/LODObject.cpp
-	Crous_man/SceneObjects/LODObject.hpp
-	Crous_man/SceneObjects/PointLight.cpp
-	Crous_man/SceneObjects/PointLight.hpp
-
-	Crous_man/SceneObjects/Solaire/Planet.cpp
-	Crous_man/SceneObjects/Solaire/Planet.hpp
-	Crous_man/SceneObjects/Solaire/Sun.cpp
-	Crous_man/SceneObjects/Solaire/Sun.hpp
-	Crous_man/SceneObjects/Solaire/Earth.cpp
-	Crous_man/SceneObjects/Solaire/Earth.hpp
-	Crous_man/SceneObjects/Solaire/Moon.cpp
-	Crous_man/SceneObjects/Solaire/Moon.hpp
-	Crous_man/SceneObjects/Solaire/SpinningObject.cpp
-	Crous_man/SceneObjects/Solaire/SpinningObject.hpp
-
-	Crous_man/SceneObjects/UtilObjects/MouseControlObject.cpp
-	Crous_man/SceneObjects/UtilObjects/MouseControlObject.hpp
-	Crous_man/SceneObjects/UtilObjects/KeyboardControlObject.cpp
-	Crous_man/SceneObjects/UtilObjects/KeyboardControlObject.hpp
-	Crous_man/SceneObjects/UtilObjects/CharacterControlObject.cpp
-	Crous_man/SceneObjects/UtilObjects/CharacterControlObject.hpp
-	Crous_man/SceneObjects/UtilObjects/MouseVerticalControlObject.cpp
-	Crous_man/SceneObjects/UtilObjects/MouseVerticalControlObject.hpp
-
 
 	Crous_man/InputManager.cpp
 	Crous_man/InputManager.hpp
 
-	Crous_man/Scenes/SampleScene.cpp
-	Crous_man/Scenes/SampleScene.hpp
-	Crous_man/Scenes/Systeme_solaire.cpp
-	Crous_man/Scenes/Systeme_solaire.hpp
-	Crous_man/Scenes/Object_control.cpp
-	Crous_man/Scenes/Object_control.hpp
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
 )

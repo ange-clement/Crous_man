@@ -23,8 +23,6 @@ GLFWwindow* window;
 // Include my stuff
 #include "Util.hpp"
 
-#include "Mesh.hpp"
-#include "Scene.hpp"
 #include "InputManager.hpp"
 #include "Scenes/ECS_test.hpp"
 

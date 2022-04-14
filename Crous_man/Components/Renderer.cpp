@@ -45,7 +45,7 @@ void RendererSystem::initBuffers(unsigned short i, unsigned short entityID) {
     if (r->gShaderInstance == NULL) {
         initialize(i, entityID);
     }
-    MeshC* m = getMesh(r->meshID);
+    Mesh* m = getMesh(r->meshID);
 
     r->gShaderInstance->use();
 
@@ -117,7 +117,7 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         entityID = entityIDs[i];
 
         Renderer* r = getRenderer(i);
-        MeshC* m = getMesh(r->meshID);
+        Mesh* m = getMesh(r->meshID);
         GShader* gS = r->gShaderInstance;
         Entity* e = EntityManager::instance->entities[entityID];
         
@@ -152,6 +152,6 @@ Renderer* RendererSystem::getRenderer(unsigned short i) {
     return &EntityManager::instance->rendererComponents[i];
 }
 
-MeshC* RendererSystem::getMesh(unsigned short i) {
+Mesh* RendererSystem::getMesh(unsigned short i) {
     return &EntityManager::instance->meshComponents[i];
 }

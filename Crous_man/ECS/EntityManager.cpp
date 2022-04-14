@@ -14,6 +14,7 @@
 
 #include "../Shaders/BasicGShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
+#include "../Shaders/SingleTextureQuadShader.hpp"
 
 #include "../InputManager.hpp"
 
@@ -21,6 +22,7 @@
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
+#include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
@@ -61,12 +63,17 @@ void EntityManager::initUtil() {
 void EntityManager::initShaders() {
     new BasicGShader();
     new BlinnPhongLShader();
+    new SingleTextureQuadShader();
 }
 
 void EntityManager::initSystems() {
+    if (SystemIDs::NUMBER >= 16) {
+        std::cout << "WARNING TOO MANY COMPONENTS" << std::endl;
+    }
     systems.resize(SystemIDs::NUMBER);
     systems[SystemIDs::MeshID] = new MeshSystem();
     systems[SystemIDs::RendererID] = new RendererSystem();
+    systems[SystemIDs::PointLightID] = new PointLightSystem();
     systems[SystemIDs::CameraID] = new CameraSystem();
     systems[SystemIDs::SpinID] = new SpinSystem();
     systems[SystemIDs::FlyingControllerID] = new FlyingControllerSystem();

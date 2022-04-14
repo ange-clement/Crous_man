@@ -3,16 +3,16 @@
 
 #include "../ECS/ComponentSystem.hpp"
 #include <common/gBuffer.hpp>
+#include <common/textureFramebuffer.hpp>
 
 class LShader;
+class PEShader;
 
 class RendererSystem;
+class PointLightSystem;
 
 
-struct CameraC {
-    unsigned int frameBufferObject;
-    GBuffer gBuffer;
-
+struct Camera {
     unsigned int SCR_WIDTH = 1024;
     unsigned int SCR_HEIGHT = 768;
 
@@ -21,17 +21,22 @@ struct CameraC {
     float minRange = 0.01;
     float maxRange = 1000.0;
 
+    TextureFramebuffer textureFramebuffer;
+    
+    GBuffer gBuffer;
 
     LShader* lShaderInstance;
+    PEShader* peShaderInstance;
 
-    CameraC();
+    Camera();
     void updateWidthHeight(unsigned int width, unsigned int height);
 };
 
 class CameraSystem : public virtual ComponentSystem {
 public:
     RendererSystem* rendererInstance;
-    CameraC* screenCamera;
+    PointLightSystem* pointLightInstance;
+    Camera* screenCamera;
     
 public:
     CameraSystem();
@@ -44,7 +49,7 @@ public:
 
     void setScreenCamera(unsigned short entityID);
 
-    CameraC* getCamera(unsigned short i);
+    Camera* getCamera(unsigned short i);
 };
 
 #endif

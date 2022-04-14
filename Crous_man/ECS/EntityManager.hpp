@@ -3,9 +3,10 @@
 
 #include "SystemIDs.hpp"
 
-struct MeshC;
+struct Mesh;
 struct Renderer;
-struct CameraC;
+struct Camera;
+struct PointLight;
 struct Spin;
 struct FlyingController;
 
@@ -19,9 +20,10 @@ public:
     std::vector<Entity*> entities;
     std::vector<ComponentSystem*> systems;
 
-    std::vector<MeshC> meshComponents;
+    std::vector<Mesh> meshComponents;
     std::vector<Renderer> rendererComponents;
-    std::vector<CameraC> cameraComponents;
+    std::vector<PointLight> pointLightComponents;
+    std::vector<Camera> cameraComponents;
     std::vector<Spin> spinComponents;
     std::vector<FlyingController> flyingControllerComponents;
 
