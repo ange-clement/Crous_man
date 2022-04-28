@@ -38,9 +38,9 @@ void createSceneECS() {
         ->setRendererDiffuseSpecular("../ressources/earth.ppm", "../ressources/heightmap.pgm")
         ->build();
 
-    int nbI = 5;
-    int nbJ = 10;
-    int nbK = 5;
+    int nbI = 2;
+    int nbJ = 2;
+    int nbK = 2;
     for (int i = 0; i < nbI; i++) {
         for (int j = 0; j < nbJ; j++) {
             for (int k = 0; k < nbK; k++) {
@@ -56,6 +56,13 @@ void createSceneECS() {
         }
     }
     std::cout << "\r                                                                             " << std::endl;
+
+    Entity* explosionCube = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(0.0, 1.0, 10.0))
+        ->setMeshAsFilePLY("../ressources/fragment/cubeFragment.ply")
+        ->updateRenderer()
+        ->setRendererDiffuseColor(glm::vec3(1.0, 1.0, 1.0))
+        ->build();
     
     Entity* blueLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setTranslation(glm::vec3(5.0, 3.0, 0.0))

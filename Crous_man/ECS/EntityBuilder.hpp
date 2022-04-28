@@ -13,9 +13,11 @@ public:
 
 	EntityBuilder* setMeshAsQuad();
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
+	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
 
 	EntityBuilder* updateRenderer();
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
+	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
 
 	EntityBuilder* setLightColor(glm::vec3 color);
 	EntityBuilder* setLightLinear(float linear);

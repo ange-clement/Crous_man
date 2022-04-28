@@ -113,6 +113,151 @@ bool loadOBJ(
     return true;
 }
 
+bool loadPLY(
+    std::string const& filename,
+    std::vector< glm::vec3 >& o_vertices,
+    std::vector< glm::vec3 >& o_normals,
+    std::vector<glm::vec2>& o_UV,
+    std::vector< unsigned short >& indices,
+    std::vector< std::vector<unsigned short> >& o_triangles)
+{
+    std::ifstream myfile;
+    myfile.open(filename.c_str());
+    if (!myfile.is_open())
+    {
+        std::cout << filename << " cannot be opened" << std::endl;
+        return false;
+    }
+
+    std::string magic_s;
+
+    myfile >> magic_s;
+
+    if (magic_s != "ply")
+    {
+        std::cout << magic_s << " != ply :   We handle ONLY *.ply files." << std::endl;
+        myfile.close();
+        exit(1);
+    }
+
+
+    std::string s;
+    int n_vertices, n_faces;
+    bool inHeader = true;
+
+    while (inHeader) {
+        myfile >> s;
+        if (s == "format") {
+            myfile >> s;
+            if (s != "ascii") {
+                std::cout << s << " != ascii :   We handle ONLY *.ply files with ascii encoding." << std::endl;
+                myfile.close();
+                exit(1);
+            }
+            std::getline(myfile, magic_s);
+        }
+        else if (s == "comment" || s == "property") {
+            std::getline(myfile, magic_s);
+        }
+        else if (s == "element") {
+            myfile >> s;
+            if (s == "vertex") {
+                myfile >> n_vertices;
+            }
+            else if (s == "face") {
+                myfile >> n_faces;
+            }
+            else {
+                std::cout << "Warning : element " << magic_s << " unrecognised (ignoring it)." << std::endl;
+            }
+            std::getline(myfile, magic_s);
+        }
+        else if (s == "end_header") {
+            inHeader = false;
+            std::getline(myfile, magic_s);
+        }
+        else {
+            std::cout << "Warning : line with " << magic_s << " ";
+            std::getline(myfile, magic_s);
+            std::cout << magic_s << " unrecognised (ignoring it)." << std::endl;
+        }
+    }
+
+    //std::cout << "finished reading header : n_vertices=" << n_vertices << ", n_faces=" << n_faces << std::endl;
+
+    o_vertices.clear();
+    o_normals.clear();
+    o_UV.clear();
+
+    for (int v = 0; v < n_vertices; ++v)
+    {
+        float x, y, z, nx, ny, nz, s, t;
+
+        myfile >> x >> y >> z >> nx >> ny >> nz >> s >> t;
+        o_vertices.push_back(glm::vec3(x, y, z));
+        o_normals.push_back(glm::vec3(nx, ny, nz));
+        o_UV.push_back(glm::vec2(s, t));
+        //std::cout << x << " " << y << " " << z << " " << nx << " " << ny << " " << nz << " " << s << " " << t << std::endl;
+    }
+
+    indices.clear();
+    o_triangles.clear();
+
+    int n_vertices_on_face;
+    unsigned int _v1, _v2, _v3, _v4;
+    for (int f = 0; f < n_faces; ++f)
+    {
+        myfile >> n_vertices_on_face;
+
+        if (n_vertices_on_face == 3)
+        {
+            std::vector< unsigned short > _v;
+            myfile >> _v1 >> _v2 >> _v3;
+            _v.push_back(_v1);
+            _v.push_back(_v2);
+            _v.push_back(_v3);
+            o_triangles.push_back(_v);
+            indices.push_back(_v1);
+            indices.push_back(_v2);
+            indices.push_back(_v3);
+            //std::cout << _v1 << " " << _v2 << " " << _v3 << std::endl;
+        }
+        else if (n_vertices_on_face == 4)
+        {
+            std::vector< unsigned short > _v;
+            myfile >> _v1 >> _v2 >> _v3 >> _v4;
+            _v.push_back(_v1);
+            _v.push_back(_v2);
+            _v.push_back(_v3);
+            o_triangles.push_back(_v);
+            indices.push_back(_v1);
+            indices.push_back(_v2);
+            indices.push_back(_v3);
+
+            //std::cout << _v1 << " " << _v2 << " " << _v3 << std::endl;
+
+            _v.clear();
+            _v.push_back(_v1);
+            _v.push_back(_v3);
+            _v.push_back(_v4);
+            o_triangles.push_back(_v);
+            indices.push_back(_v1);
+            indices.push_back(_v3);
+            indices.push_back(_v4);
+
+            //std::cout << _v1 << " " << _v3 << " " << _v4 << std::endl;
+        }
+        else {
+            std::cout << "We handle ONLY *.ply files with 3 or 4 vertices per face" << std::endl;
+            myfile.close();
+            exit(1);
+        }
+    }
+
+    myfile.close();
+    return true;
+}
+
 bool loadOFF( const std::string & filename ,
               std::vector< glm::vec3 > & vertices ,
               std::vector< unsigned short > & indices,

@@ -45,6 +45,12 @@ EntityBuilder* EntityBuilder::setMeshAsFile(std::string meshFile, bool fileHasNo
 	return this;
 }
 
+EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile) {
+	unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
+	EntityManager::instance->meshComponents[meshID].loadFromFilePLY(meshFile);
+	return this;
+}
+
 
 EntityBuilder* EntityBuilder::updateRenderer() {
 	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
@@ -59,6 +65,14 @@ EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile
 	Renderer* renderer = rendererSystem->getRenderer(rendererID);
 	renderer->diffuseBuffer = loadTextureFromPPM("../ressources/earth.ppm");
 	renderer->specularBuffer = loadTextureFromPGM("../ressources/heightmap.pgm");
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
+	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
+	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+	Renderer* renderer = rendererSystem->getRenderer(rendererID);
+	renderer->diffuseBuffer = loadTextureFromColor(diffuseColor);
 	return this;
 }
 

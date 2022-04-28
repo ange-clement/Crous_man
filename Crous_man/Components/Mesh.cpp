@@ -34,6 +34,11 @@ void Mesh::loadFromFile(std::string filename, bool fileHasNormals) {
     }
 }
 
+void Mesh::loadFromFilePLY(std::string filename) {
+    loadPLY(filename, this->indexed_vertices, this->normals, this->UV, this->indices, this->triangles);
+    computeTrianglesNormals();
+}
+
 void Mesh::computeTrianglesNormals(){
     triangle_normals.clear();
     size_t size = triangles.size();
