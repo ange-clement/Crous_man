@@ -30,7 +30,7 @@ Bitmap::Bitmap(std::initializer_list<SystemIDs> systems) {
 void Bitmap::loadFromSystemIDS(std::initializer_list<SystemIDs> systems) {
     this->bitmap = 0;
     for (SystemIDs system : systems) {
-        this->bitmap += pow(2, system);
+        this->bitmap += pow(2.0f, system);
     }
 }
 

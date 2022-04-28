@@ -32,3 +32,8 @@
 *.app
 
 build/*
+
+# Visual studio 2019
+out/*
+.vs/*
+CMakeSettings.json
