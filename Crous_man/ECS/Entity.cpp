@@ -19,6 +19,7 @@ Entity::Entity() {
     componentsBitmap = new Bitmap();
     transform = new Transform();
     worldTransform = new Transform();
+    id = 0;
     parent = NULL;
 }
 

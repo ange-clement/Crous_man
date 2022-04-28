@@ -15,6 +15,7 @@ public:
     Bitmap(std::initializer_list<SystemIDs> systems);
 
     void loadFromSystemIDS(std::initializer_list<SystemIDs> systems);
+    void addId(SystemIDs other);
 
     Bitmap* combine(const Bitmap* other);
 

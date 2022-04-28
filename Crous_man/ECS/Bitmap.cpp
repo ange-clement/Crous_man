@@ -30,13 +30,18 @@ Bitmap::Bitmap(std::initializer_list<SystemIDs> systems) {
 void Bitmap::loadFromSystemIDS(std::initializer_list<SystemIDs> systems) {
     this->bitmap = 0;
     for (SystemIDs system : systems) {
-        this->bitmap += pow(2.0f, system);
+        this->addId(system);
     }
+}
+
+void Bitmap::addId(SystemIDs other) {
+    this->bitmap += pow(2.0f, other);
 }
 
 Bitmap* Bitmap::combine(const Bitmap* other) {
     return new Bitmap(this->bitmap & other->bitmap);
 }
+
 
 bool Bitmap::equals(const Bitmap* other) {
     return this->bitmap == other->bitmap;

@@ -134,7 +134,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
-)
+ "Crous_man/ECS/EntityBuilder.hpp" "Crous_man/ECS/EntityBuilder.cpp")
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )
