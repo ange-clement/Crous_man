@@ -126,6 +126,8 @@ add_executable(
 	Crous_man/Components/Camera.hpp
 	Crous_man/Components/PointLight.cpp
 	Crous_man/Components/PointLight.hpp
+	Crous_man/Components/Destructible.cpp
+	Crous_man/Components/Destructible.hpp
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
 
@@ -134,7 +136,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
- "Crous_man/ECS/EntityBuilder.hpp" "Crous_man/ECS/EntityBuilder.cpp")
+ "Crous_man/ECS/EntityBuilder.hpp" "Crous_man/ECS/EntityBuilder.cpp" "Crous_man/Components/Destructible.hpp")
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

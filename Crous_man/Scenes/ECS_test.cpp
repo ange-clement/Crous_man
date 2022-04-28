@@ -57,9 +57,23 @@ void createSceneECS() {
     }
     std::cout << "\r                                                                             " << std::endl;
 
-    Entity* explosionCube = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-        ->setTranslation(glm::vec3(0.0, 1.0, 10.0))
+    Entity* explosionCube = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
+        ->setTranslation(glm::vec3(1.0, 1.0, 10.0))
         ->setMeshAsFilePLY("../ressources/fragment/cubeFragment.ply")
+        ->setDestructibleMeshes({
+            "../ressources/fragment/cubeFragment1.ply",
+            "../ressources/fragment/cubeFragment2.ply",
+            "../ressources/fragment/cubeFragment3.ply",
+            "../ressources/fragment/cubeFragment4.ply",
+            "../ressources/fragment/cubeFragment5.ply",
+            "../ressources/fragment/cubeFragment6.ply",
+            "../ressources/fragment/cubeFragment7.ply",
+            "../ressources/fragment/cubeFragment8.ply",
+            "../ressources/fragment/cubeFragment9.ply",
+            "../ressources/fragment/cubeFragment10.ply",
+            "../ressources/fragment/cubeFragment11.ply",
+            "../ressources/fragment/cubeFragment12.ply",
+            "../ressources/fragment/cubeFragment13.ply", })
         ->updateRenderer()
         ->setRendererDiffuseColor(glm::vec3(1.0, 1.0, 1.0))
         ->build();

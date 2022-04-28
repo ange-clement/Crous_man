@@ -18,6 +18,9 @@ public:
 	EntityBuilder* updateRenderer();
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
+	EntityBuilder* setRendererDraw(bool draw);
+
+	EntityBuilder* setDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
 
 	EntityBuilder* setLightColor(glm::vec3 color);
 	EntityBuilder* setLightLinear(float linear);

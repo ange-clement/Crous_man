@@ -8,6 +8,7 @@ class GShader;
 struct Mesh;
 
 struct Renderer {
+    bool draw = true;
     unsigned short meshID;
     GShader* gShaderInstance;
 

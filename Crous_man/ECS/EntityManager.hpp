@@ -8,6 +8,7 @@ struct Renderer;
 struct Camera;
 struct PointLight;
 struct Spin;
+struct Destructible;
 struct FlyingController;
 
 class Entity;
@@ -25,6 +26,7 @@ public:
     std::vector<PointLight> pointLightComponents;
     std::vector<Camera> cameraComponents;
     std::vector<Spin> spinComponents;
+    std::vector<Destructible> destructibleComponents;
     std::vector<FlyingController> flyingControllerComponents;
 
 public:

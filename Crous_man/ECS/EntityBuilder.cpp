@@ -17,6 +17,7 @@
 #include "../Transform.hpp"
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
+#include "../Components/Destructible.hpp"
 #include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
 
@@ -73,6 +74,25 @@ EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
 	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
 	Renderer* renderer = rendererSystem->getRenderer(rendererID);
 	renderer->diffuseBuffer = loadTextureFromColor(diffuseColor);
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setRendererDraw(bool draw) {
+	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
+	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+	Renderer* renderer = rendererSystem->getRenderer(rendererID);
+	renderer->draw = draw;
+	return this;
+}
+
+
+EntityBuilder* EntityBuilder::setDestructibleMeshes(std::initializer_list<std::string> meshesFiles) {
+	unsigned short destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, this->buildEntity->id);
+	Destructible* destructible = dynamic_cast<DestructibleSystem*>(EntityManager::instance->systems[SystemIDs::DestructibleID])->getDestructible(destructibleID);
+	destructible->fragmentMeshFiles.reserve(meshesFiles.size());
+	for (std::string meshFile : meshesFiles) {
+		destructible->fragmentMeshFiles.push_back(meshFile);
+	}
 	return this;
 }
 

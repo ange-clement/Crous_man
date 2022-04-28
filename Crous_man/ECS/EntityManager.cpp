@@ -26,6 +26,7 @@
 #include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
 #include "../Components/Spin.hpp"
+#include "../Components/Destructible.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 
 
@@ -78,6 +79,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::PointLightID] = new PointLightSystem();
     systems[SystemIDs::CameraID] = new CameraSystem();
     systems[SystemIDs::SpinID] = new SpinSystem();
+    systems[SystemIDs::DestructibleID] = new DestructibleSystem();
     systems[SystemIDs::FlyingControllerID] = new FlyingControllerSystem();
 }
 

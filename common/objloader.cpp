@@ -204,53 +204,29 @@ bool loadPLY(
     o_triangles.clear();
 
     int n_vertices_on_face;
-    unsigned int _v1, _v2, _v3, _v4;
+    unsigned int _v1, _v2, _v3;
     for (int f = 0; f < n_faces; ++f)
     {
         myfile >> n_vertices_on_face;
 
-        if (n_vertices_on_face == 3)
-        {
-            std::vector< unsigned short > _v;
-            myfile >> _v1 >> _v2 >> _v3;
-            _v.push_back(_v1);
-            _v.push_back(_v2);
-            _v.push_back(_v3);
-            o_triangles.push_back(_v);
-            indices.push_back(_v1);
-            indices.push_back(_v2);
-            indices.push_back(_v3);
-            //std::cout << _v1 << " " << _v2 << " " << _v3 << std::endl;
-        }
-        else if (n_vertices_on_face == 4)
-        {
-            std::vector< unsigned short > _v;
-            myfile >> _v1 >> _v2 >> _v3 >> _v4;
-            _v.push_back(_v1);
-            _v.push_back(_v2);
-            _v.push_back(_v3);
-            o_triangles.push_back(_v);
-            indices.push_back(_v1);
-            indices.push_back(_v2);
-            indices.push_back(_v3);
-
-            //std::cout << _v1 << " " << _v2 << " " << _v3 << std::endl;
-
-            _v.clear();
-            _v.push_back(_v1);
-            _v.push_back(_v3);
-            _v.push_back(_v4);
-            o_triangles.push_back(_v);
-            indices.push_back(_v1);
-            indices.push_back(_v3);
-            indices.push_back(_v4);
-
-            //std::cout << _v1 << " " << _v3 << " " << _v4 << std::endl;
-        }
-        else {
-            std::cout << "We handle ONLY *.ply files with 3 or 4 vertices per face" << std::endl;
+        if (n_vertices_on_face < 3) {
+            std::cout << "We handle ONLY *.ply files with 3 or more vertices per face" << std::endl;
             myfile.close();
             exit(1);
+        }
+
+        myfile >> _v1 >> _v2;
+        for (int i = 0, size = n_vertices_on_face - 2; i < size; i++) {
+            myfile >> _v3;
+            std::vector< unsigned short > _v;
+            _v.push_back(_v1);
+            _v.push_back(_v2);
+            _v.push_back(_v3);
+            o_triangles.push_back(_v);
+            indices.push_back(_v1);
+            indices.push_back(_v2);
+            indices.push_back(_v3);
+            _v2 = _v3;
         }
     }
 

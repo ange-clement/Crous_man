@@ -120,6 +120,10 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         Mesh* m = getMesh(r->meshID);
         GShader* gS = r->gShaderInstance;
         Entity* e = EntityManager::instance->entities[entityID];
+
+        if (!r->draw) {
+            continue;
+        }
         
         gS->use();
         gS->prerender(r);
