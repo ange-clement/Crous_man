@@ -81,6 +81,8 @@ void ComponentSystem::updateAfterRender(unsigned short i, unsigned short entityI
 
 void ComponentSystem::initializeAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
         this->initialize(i, entityIDs[i]);
     }
 }
@@ -95,17 +97,13 @@ void ComponentSystem::removeEntity(unsigned short entityID) {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         if (entityIDs[i] == entityID) {
             this->entityIDs[i] = (unsigned short) -1;
+            return;
         }
     }
 }
 
 bool ComponentSystem::containsEntity(unsigned short entityID) {
-    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == entityID) {
-            return true;
-        }
-    }
-    return false;
+    return getComponentId(entityID) != (unsigned short)-1;
 }
 
 unsigned short ComponentSystem::getComponentId(unsigned short entityID) {

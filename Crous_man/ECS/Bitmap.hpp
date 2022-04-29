@@ -9,6 +9,7 @@ public:
 
 public:
     Bitmap();
+    ~Bitmap();
 
     Bitmap(unsigned short bitmap);
 

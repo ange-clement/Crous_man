@@ -52,6 +52,7 @@ public:
 
     void addEntity(Entity* entity);
     void reevaluateEntity(Entity* entity);
+    void removeEntity(Entity* entity);
 };
 
 #endif

@@ -168,3 +168,18 @@ void EntityManager::reevaluateEntity(Entity* entity) {
         }
     }
 }
+
+void EntityManager::removeEntity(Entity* entity) {
+    Bitmap* entityBitmap;
+    Bitmap* systemBitmap;
+
+    for (ComponentSystem* system : systems) {
+        entityBitmap = entity->componentsBitmap;
+        systemBitmap = system->requiredComponentsBitmap;
+        if (entityBitmap->combine(systemBitmap)->equals(systemBitmap)) {
+            system->removeEntity(entity->id);
+        }
+    }
+
+    entity->removeAllChildrens();
+}

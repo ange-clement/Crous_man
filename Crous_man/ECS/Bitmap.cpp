@@ -18,6 +18,9 @@
 Bitmap::Bitmap() : Bitmap(0) {
 
 }
+Bitmap::~Bitmap() {
+
+}
 
 Bitmap::Bitmap(unsigned short bitmap) {
     this->bitmap = bitmap;

@@ -100,6 +100,8 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     PointLight* l;
     for (unsigned int i = 0; i < lights->size(); i++)
     {
+        if (pointLightInstance->entityIDs[i] == (unsigned short)-1)
+            continue;
         lightEntity = EntityManager::instance->entities[pointLightInstance->entityIDs[i]];
         l = &(*lights)[i];
         ls->setLight(i, lightEntity->worldTransform->translation, l->color, l->linear, l->quadratic);

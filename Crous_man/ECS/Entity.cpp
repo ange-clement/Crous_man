@@ -31,6 +31,7 @@ Entity::Entity(std::initializer_list<SystemIDs> systems) : Entity() {
 }
 
 Entity::~Entity() {
+    delete componentsBitmap;
     delete transform;
     delete worldTransform;
 
@@ -51,6 +52,14 @@ void Entity::addChildren(Entity* children) {
 
     this->childrens.push_back(children);
     children->parent = this;
+}
+
+void Entity::removeAllChildrens() {
+    while (childrens.size() > 0) {
+        EntityManager::instance->removeEntity(childrens.back());
+        delete childrens.back();
+        childrens.pop_back();
+    }
 }
 
 void Entity::addComponent(SystemIDs componentId) {
