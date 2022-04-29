@@ -35,7 +35,7 @@ void Bitmap::loadFromSystemIDS(std::initializer_list<SystemIDs> systems) {
 }
 
 void Bitmap::addId(SystemIDs other) {
-    this->bitmap += pow(2.0f, other);
+    this->bitmap |= 1 << other;
 }
 
 Bitmap* Bitmap::combine(const Bitmap* other) {
