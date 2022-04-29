@@ -58,7 +58,7 @@ void createSceneECS() {
     std::cout << "\r                                                                             " << std::endl;
 
     Entity* explosionCube = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
-        ->setTranslation(glm::vec3(1.0, 1.0, 10.0))
+        ->setTranslation(glm::vec3(1.0, 3.0, 10.0))
         ->setMeshAsFilePLY("../ressources/fragment/cubeFragment.ply")
         ->addDestructibleMeshes({
             "../ressources/fragment/cubeFragment1.ply",

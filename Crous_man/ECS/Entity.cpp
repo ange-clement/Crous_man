@@ -11,6 +11,9 @@
 
 #include "../Util.hpp"
 
+#include "EntityManager.hpp"
+#include "ComponentSystem.hpp"
+
 #include "Entity.hpp"
 #include "Bitmap.hpp"
 #include "../Transform.hpp"
@@ -49,6 +52,26 @@ void Entity::addChildren(Entity* children) {
     this->childrens.push_back(children);
     children->parent = this;
 }
+
+void Entity::addComponent(SystemIDs componentId) {
+    ComponentSystem* system = EntityManager::instance->systems[componentId];
+    this->componentsBitmap->addBitmap(system->requiredComponentsBitmap);
+    EntityManager::instance->reevaluateEntity(this);
+}
+
+bool Entity::removeComponent(SystemIDs componentId) {
+    ComponentSystem* system = EntityManager::instance->systems[componentId];
+
+    if (this->componentsBitmap->combine(system->requiredComponentsBitmap)->equals(system->requiredComponentsBitmap)) {
+        this->componentsBitmap->removeBitmap(system->requiredComponentsBitmap);
+        EntityManager::instance->reevaluateEntity(this);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 
 void Entity::updateTransforms() {
     Transform* parentTransform;

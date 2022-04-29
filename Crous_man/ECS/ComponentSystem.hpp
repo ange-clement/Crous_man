@@ -22,8 +22,8 @@ public:
     void initializeAll();
 
     void addEntity(unsigned short entityID);
-
     void removeEntity(unsigned short entityID);
+    bool containsEntity(unsigned short entityID);
 
     unsigned short getComponentId(unsigned short entityID);
 

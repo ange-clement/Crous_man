@@ -26,26 +26,36 @@ ComponentSystem::~ComponentSystem() {
 
 void ComponentSystem::updateAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
         this->update(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updatePhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updatePhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterPhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updateAfterPhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::renderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->render(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterRenderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updateAfterRender(i, entityIDs[i]);
     }
 }
@@ -81,12 +91,21 @@ void ComponentSystem::addEntity(unsigned short entityID) {
 }
 
 void ComponentSystem::removeEntity(unsigned short entityID) {
-    //TODO
+    //Just mark it as re-writable
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         if (entityIDs[i] == entityID) {
             this->entityIDs[i] = (unsigned short) -1;
         }
     }
+}
+
+bool ComponentSystem::containsEntity(unsigned short entityID) {
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == entityID) {
+            return true;
+        }
+    }
+    return false;
 }
 
 unsigned short ComponentSystem::getComponentId(unsigned short entityID) {

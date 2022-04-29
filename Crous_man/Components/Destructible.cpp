@@ -61,15 +61,19 @@ Destructible* DestructibleSystem::getDestructible(unsigned short i) {
 
 void DestructibleSystem::destroy(unsigned short i) {
     Entity* entity = EntityManager::instance->entities[this->entityIDs[i]];
+    
+    entity->removeComponent(SystemIDs::DestructibleID);
 
     unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, entity->id);
     Renderer* renderer = rendererSystem->getRenderer(rendererID);
     renderer->draw = false;
 
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
-        entity->childrens[c]->transform->translation = glm::vec3(10, 10, 10) * glm::vec3(rand() / (float) RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0);
         rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, entity->childrens[c]->id);
         renderer = rendererSystem->getRenderer(rendererID);
         renderer->draw = true;
+
+        //Testing
+        entity->childrens[c]->transform->translation = glm::vec3(0.3, 0.3, 0.3) * glm::vec3(rand() / (float) RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0);
     }
 }

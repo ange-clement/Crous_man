@@ -149,3 +149,22 @@ void EntityManager::addEntity(Entity* entity) {
     entities.push_back(entity);
     entities[0]->addChildren(entity);
 }
+
+void EntityManager::reevaluateEntity(Entity* entity) {
+    Bitmap* entityBitmap;
+    Bitmap* systemBitmap;
+
+    for (ComponentSystem* system : systems) {
+        entityBitmap = entity->componentsBitmap;
+        systemBitmap = system->requiredComponentsBitmap;
+        if (entityBitmap->combine(systemBitmap)->equals(systemBitmap)) {
+            if (!system->containsEntity(entity->id)) {
+                system->addEntity(entity->id);
+                system->initialize(system->entityIDs.size() - 1, entity->id);
+            }
+        }
+        else if (system->containsEntity(entity->id)) {
+            system->removeEntity(entity->id);
+        }
+    }
+}
