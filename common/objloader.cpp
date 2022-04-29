@@ -119,7 +119,9 @@ bool loadPLY(
     std::vector< glm::vec3 >& o_normals,
     std::vector<glm::vec2>& o_UV,
     std::vector< unsigned short >& indices,
-    std::vector< std::vector<unsigned short> >& o_triangles)
+    std::vector< std::vector<unsigned short> >& o_triangles,
+    bool invertTriangles
+)
 {
     std::ifstream myfile;
     myfile.open(filename.c_str());
@@ -194,6 +196,11 @@ bool loadPLY(
         float x, y, z, nx, ny, nz, s, t;
 
         myfile >> x >> y >> z >> nx >> ny >> nz >> s >> t;
+        if (invertTriangles) {
+            nx = -nx;
+            ny = -ny;
+            nz = -nz;
+        }
         o_vertices.push_back(glm::vec3(x, y, z));
         o_normals.push_back(glm::vec3(nx, ny, nz));
         o_UV.push_back(glm::vec2(s, t));
@@ -219,13 +226,24 @@ bool loadPLY(
         for (int i = 0, size = n_vertices_on_face - 2; i < size; i++) {
             myfile >> _v3;
             std::vector< unsigned short > _v;
-            _v.push_back(_v1);
-            _v.push_back(_v2);
-            _v.push_back(_v3);
-            o_triangles.push_back(_v);
-            indices.push_back(_v1);
-            indices.push_back(_v2);
-            indices.push_back(_v3);
+            if (!invertTriangles) {
+                _v.push_back(_v1);
+                _v.push_back(_v2);
+                _v.push_back(_v3);
+                o_triangles.push_back(_v);
+                indices.push_back(_v1);
+                indices.push_back(_v2);
+                indices.push_back(_v3);
+            }
+            else {
+                _v.push_back(_v3);
+                _v.push_back(_v2);
+                _v.push_back(_v1);
+                o_triangles.push_back(_v);
+                indices.push_back(_v3);
+                indices.push_back(_v2);
+                indices.push_back(_v1);
+            }
             _v2 = _v3;
         }
     }

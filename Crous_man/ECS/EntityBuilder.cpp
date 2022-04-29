@@ -47,8 +47,11 @@ EntityBuilder* EntityBuilder::setMeshAsFile(std::string meshFile, bool fileHasNo
 }
 
 EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile) {
+	return setMeshAsFilePLY(meshFile, false);
+}
+EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile, bool invertTriangles) {
 	unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
-	EntityManager::instance->meshComponents[meshID].loadFromFilePLY(meshFile);
+	EntityManager::instance->meshComponents[meshID].loadFromFilePLY(meshFile, invertTriangles);
 	return this;
 }
 
@@ -85,13 +88,15 @@ EntityBuilder* EntityBuilder::setRendererDraw(bool draw) {
 	return this;
 }
 
-
-EntityBuilder* EntityBuilder::setDestructibleMeshes(std::initializer_list<std::string> meshesFiles) {
+EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::string> meshesFiles) {
+	return addDestructibleMeshes(meshesFiles, false);
+}
+EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles) {
 	unsigned short destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, this->buildEntity->id);
 	Destructible* destructible = dynamic_cast<DestructibleSystem*>(EntityManager::instance->systems[SystemIDs::DestructibleID])->getDestructible(destructibleID);
-	destructible->fragmentMeshFiles.reserve(meshesFiles.size());
 	for (std::string meshFile : meshesFiles) {
 		destructible->fragmentMeshFiles.push_back(meshFile);
+		destructible->fragmentMeshInvertTriangle.push_back(invertTriangles);
 	}
 	return this;
 }

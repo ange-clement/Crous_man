@@ -6,6 +6,7 @@
 struct Destructible {
     float destructionAmount = 1.0;
     std::vector<std::string> fragmentMeshFiles;
+    std::vector<bool> fragmentMeshInvertTriangle;
 };
 
 class DestructibleSystem : public virtual ComponentSystem {

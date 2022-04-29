@@ -12,7 +12,7 @@ struct Mesh {
     std::vector<glm::vec2> UV;
 
     void loadFromFile(std::string filename, bool fileHasNormals);
-    void loadFromFilePLY(std::string filename);
+    void loadFromFilePLY(std::string filename, bool invertTriangles);
 
     void computeTrianglesNormals();
 

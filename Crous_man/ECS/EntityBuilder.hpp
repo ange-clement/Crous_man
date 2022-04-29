@@ -14,13 +14,15 @@ public:
 	EntityBuilder* setMeshAsQuad();
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
+	EntityBuilder* setMeshAsFilePLY(std::string meshFile, bool invertTriangles);
 
 	EntityBuilder* updateRenderer();
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
 	EntityBuilder* setRendererDraw(bool draw);
 
-	EntityBuilder* setDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
+	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
+	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles);
 
 	EntityBuilder* setLightColor(glm::vec3 color);
 	EntityBuilder* setLightLinear(float linear);

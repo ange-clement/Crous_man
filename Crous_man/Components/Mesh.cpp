@@ -34,8 +34,8 @@ void Mesh::loadFromFile(std::string filename, bool fileHasNormals) {
     }
 }
 
-void Mesh::loadFromFilePLY(std::string filename) {
-    loadPLY(filename, this->indexed_vertices, this->normals, this->UV, this->indices, this->triangles);
+void Mesh::loadFromFilePLY(std::string filename, bool invertTriangles) {
+    loadPLY(filename, this->indexed_vertices, this->normals, this->UV, this->indices, this->triangles, invertTriangles);
     computeTrianglesNormals();
 }
 

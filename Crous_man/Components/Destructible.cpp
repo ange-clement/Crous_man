@@ -37,7 +37,7 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
     for (size_t s = 0, size = destructible->fragmentMeshFiles.size(); s < size; s++) {
         Entity* childFragment = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
             ->setChildOf(entity)
-            ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s])
+            ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s], destructible->fragmentMeshInvertTriangle[s])
             ->updateRenderer()
             ->setRendererDiffuseColor(glm::vec3(1.0, 1.0, 1.0))
             ->setRendererDraw(false)
@@ -67,7 +67,7 @@ void DestructibleSystem::destroy(unsigned short i) {
     renderer->draw = false;
 
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
-        entity->childrens[c]->transform->translation = glm::vec3(rand() / (float) RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0);
+        entity->childrens[c]->transform->translation = glm::vec3(10, 10, 10) * glm::vec3(rand() / (float) RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0, rand() / (float)RAND_MAX * 2.0 - 1.0);
         rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, entity->childrens[c]->id);
         renderer = rendererSystem->getRenderer(rendererID);
         renderer->draw = true;

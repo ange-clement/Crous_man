@@ -15,7 +15,8 @@ bool loadPLY(
     std::vector< glm::vec3 >& o_normals,
     std::vector<glm::vec2>& o_UV,
     std::vector< unsigned short >& indices,
-    std::vector< std::vector<unsigned short> >& o_triangles
+    std::vector< std::vector<unsigned short> >& o_triangles,
+    bool invertTriangles
 );
 
 
