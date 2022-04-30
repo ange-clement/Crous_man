@@ -31,6 +31,21 @@ void ComponentSystem::updateAll() {
         this->update(i, entityIDs[i]);
     }
 }
+void ComponentSystem::updateCollisionAll() {
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+        this->updateCollision(i, entityIDs[i]);
+    }
+}
+void ComponentSystem::updateOnCollideAll() {
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+        //TODO add colision data and call only if object is in collision
+        this->updateOnCollide(i, entityIDs[i]);
+    }
+}
 void ComponentSystem::updatePhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         if (entityIDs[i] == (unsigned short) -1)
@@ -63,6 +78,12 @@ void ComponentSystem::updateAfterRenderAll() {
 
 
 void ComponentSystem::update(unsigned short i, unsigned short entityID) {
+
+}
+void ComponentSystem::updateCollision(unsigned short i, unsigned short entityID) {
+
+}
+void ComponentSystem::updateOnCollide(unsigned short i, unsigned short entityID) {
 
 }
 void ComponentSystem::updatePhysics(unsigned short i, unsigned short entityID) {

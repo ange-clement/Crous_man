@@ -113,6 +113,8 @@ int main( void )
 
         EntityManager::instance->update();
         EntityManager::instance->updateTransforms();
+        EntityManager::instance->updateCollision();
+        EntityManager::instance->updateOnCollide();
         EntityManager::instance->updatePhysics();
         EntityManager::instance->updateAfterPhysics();
         EntityManager::instance->render();

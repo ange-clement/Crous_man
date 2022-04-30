@@ -100,6 +100,16 @@ void EntityManager::update() {
 void EntityManager::updateTransforms() {
     this->entities[0]->updateTransforms();
 }
+void EntityManager::updateCollision() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->updateCollisionAll();
+    }
+}
+void EntityManager::updateOnCollide() {
+    for (size_t i = 0, size = systems.size(); i < size; i++) {
+        systems[i]->updateOnCollideAll();
+    }
+}
 void EntityManager::updatePhysics() {
     for (size_t i = 0, size = systems.size(); i < size; i++) {
         systems[i]->updatePhysicsAll();

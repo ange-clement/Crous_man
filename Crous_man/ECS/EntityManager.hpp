@@ -42,6 +42,8 @@ public:
 
     void update();
     void updateTransforms();
+    void updateCollision();
+    void updateOnCollide();
     void updatePhysics();
     void updateAfterPhysics();
     void render();
