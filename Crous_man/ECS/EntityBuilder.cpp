@@ -193,10 +193,14 @@ EntityBuilder* EntityBuilder::setRotation(float angle, glm::vec3 axis) {
 	return this;
 }
 
+
+
 EntityBuilder* EntityBuilder::setChildOf(Entity* parent) {
 	parent->addChildren(this->buildEntity);
 	return this;
 }
+
+
 
 Entity* EntityBuilder::build() {
 	return this->buildEntity;
