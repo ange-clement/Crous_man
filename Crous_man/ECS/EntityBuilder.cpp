@@ -30,19 +30,36 @@
 EntityBuilder::EntityBuilder(std::initializer_list<SystemIDs> systems) {
 	this->buildEntity = new Entity(systems);
 	EntityManager::instance->addEntity(this->buildEntity);
+
+	this->mesh = NULL;
+
+	this->rendererSystem = NULL;
+	this->renderer = NULL;
+	this->rendererID = (unsigned short)-1;
+
+	this->destructible = NULL;
+
+	this->pointLight = NULL;
 }
 
 
+
+Mesh* EntityBuilder::getMesh() {
+	if (this->mesh == NULL) {
+		unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
+		this->mesh = &EntityManager::instance->meshComponents[meshID];
+	}
+	return this->mesh;
+}
+
 EntityBuilder* EntityBuilder::setMeshAsQuad() {
-	unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
-	Mesh* mesh = &EntityManager::instance->meshComponents[meshID];
+	Mesh* mesh = this->getMesh();
 	quad(mesh->indexed_vertices, mesh->normals, mesh->UV, mesh->indices, mesh->triangles);
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setMeshAsFile(std::string meshFile, bool fileHasNormals) {
-	unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
-	EntityManager::instance->meshComponents[meshID].loadFromFile(meshFile, false);
+	this->getMesh()->loadFromFile(meshFile, false);
 	return this;
 }
 
@@ -50,50 +67,76 @@ EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile) {
 	return setMeshAsFilePLY(meshFile, false);
 }
 EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile, bool invertTriangles) {
-	unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
-	EntityManager::instance->meshComponents[meshID].loadFromFilePLY(meshFile, invertTriangles);
+	this->getMesh()->loadFromFilePLY(meshFile, invertTriangles);
 	return this;
 }
 
 
+
+RendererSystem* EntityBuilder::getRendererSystem() {
+	if (this->rendererSystem == NULL) {
+		this->rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+	}
+	return this->rendererSystem;
+}
+
+Renderer* EntityBuilder::getRenderer() {
+	if (this->renderer == NULL) {
+		unsigned short rendererID = this->getRendererID();
+		this->renderer = &EntityManager::instance->rendererComponents[rendererID];
+	}
+	return this->renderer;
+}
+
+unsigned short EntityBuilder::getRendererID() {
+	if (this->rendererID == (unsigned short)-1) {
+		this->rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
+	}
+	return this->rendererID;
+}
+
 EntityBuilder* EntityBuilder::updateRenderer() {
-	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
-	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+	unsigned short rendererID = this->getRendererID();
+	RendererSystem* rendererSystem = this->getRendererSystem();
 	rendererSystem->initBuffers(rendererID, this->buildEntity->id);
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile) {
-	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
-	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
-	Renderer* renderer = rendererSystem->getRenderer(rendererID);
+	Renderer* renderer = this->getRenderer();
 	renderer->diffuseBuffer = loadTextureFromPPM("../ressources/earth.ppm");
 	renderer->specularBuffer = loadTextureFromPGM("../ressources/heightmap.pgm");
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
-	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
-	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
-	Renderer* renderer = rendererSystem->getRenderer(rendererID);
+	Renderer* renderer = this->getRenderer();
 	renderer->diffuseBuffer = loadTextureFromColor(diffuseColor);
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setRendererDraw(bool draw) {
-	unsigned short rendererID = EntityManager::instance->getComponentId(SystemIDs::RendererID, this->buildEntity->id);
-	RendererSystem* rendererSystem = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
-	Renderer* renderer = rendererSystem->getRenderer(rendererID);
+	Renderer* renderer = this->getRenderer();
 	renderer->draw = draw;
 	return this;
+}
+
+
+
+Destructible* EntityBuilder::getDestructible() {
+	if (this->destructible == NULL) {
+		unsigned short destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, this->buildEntity->id);
+		this->destructible = &EntityManager::instance->destructibleComponents[destructibleID];
+	}
+	return this->destructible;
 }
 
 EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::string> meshesFiles) {
 	return addDestructibleMeshes(meshesFiles, false);
 }
+
 EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles) {
-	unsigned short destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, this->buildEntity->id);
-	Destructible* destructible = dynamic_cast<DestructibleSystem*>(EntityManager::instance->systems[SystemIDs::DestructibleID])->getDestructible(destructibleID);
+	Destructible* destructible = this->getDestructible();
 	for (std::string meshFile : meshesFiles) {
 		destructible->fragmentMeshFiles.push_back(meshFile);
 		destructible->fragmentMeshInvertTriangle.push_back(invertTriangles);
@@ -102,26 +145,34 @@ EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::s
 }
 
 
+
+PointLight* EntityBuilder::getPointLight() {
+	if (this->pointLight == NULL) {
+		unsigned short pointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, this->buildEntity->id);
+		this->pointLight = &EntityManager::instance->pointLightComponents[pointLightID];
+	}
+	return this->pointLight;
+}
+
 EntityBuilder* EntityBuilder::setLightColor(glm::vec3 color) {
-	unsigned short pointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, this->buildEntity->id);
-	PointLight* PL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(pointLightID);
+	PointLight* PL = this->getPointLight();
 	PL->color = color;
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setLightLinear(float linear) {
-	unsigned short pointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, this->buildEntity->id);
-	PointLight* PL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(pointLightID);
+	PointLight* PL = this->getPointLight();
 	PL->linear = linear;
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setLightQuadratic(float quadratic) {
-	unsigned short pointLightID = EntityManager::instance->getComponentId(SystemIDs::PointLightID, this->buildEntity->id);
-	PointLight* PL = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID])->getPointLight(pointLightID);
+	PointLight* PL = this->getPointLight();
 	PL->quadratic = quadratic;
 	return this;
 }
+
+
 
 EntityBuilder* EntityBuilder::setAsScreenCamera() {
 	dynamic_cast<CameraSystem*>(EntityManager::instance->systems[SystemIDs::CameraID])->setScreenCamera(this->buildEntity->id);
