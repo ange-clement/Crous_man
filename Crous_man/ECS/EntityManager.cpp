@@ -18,6 +18,7 @@
 #include "../Shaders/TextureGShader.hpp"
 
 #include "../InputManager.hpp"
+#include "../SoundManager.hpp"
 
 #include "EntityManager.hpp"
 
@@ -55,11 +56,14 @@ EntityManager::~EntityManager() {
     entities.clear();
     spinComponents.clear();
     EntityManager::instance = NULL;
+
+    delete SoundManager::instance;
 }
 
 void EntityManager::initUtil() {
     new BasicShapeRender();
     new InputManager();
+    new SoundManager();
 }
 
 void EntityManager::initShaders() {

@@ -15,6 +15,7 @@
 #include "../ECS/Entity.hpp"
 
 #include "../Transform.hpp"
+#include "../SoundManager.hpp"
 
 #include "Spin.hpp"
 

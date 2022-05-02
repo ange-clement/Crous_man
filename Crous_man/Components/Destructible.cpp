@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "../Transform.hpp"
+#include "../SoundManager.hpp"
 
 #include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
@@ -60,6 +61,7 @@ Destructible* DestructibleSystem::getDestructible(unsigned short i) {
 }
 
 void DestructibleSystem::destroy(unsigned short i) {
+    SoundManager::instance->play("../ressources/Sounds/SKULL_TRUMPET.ogg");
     Entity* entity = EntityManager::instance->entities[this->entityIDs[i]];
     
     entity->removeComponent(SystemIDs::DestructibleID);

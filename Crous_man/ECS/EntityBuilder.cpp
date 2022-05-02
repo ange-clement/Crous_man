@@ -104,8 +104,8 @@ EntityBuilder* EntityBuilder::updateRenderer() {
 
 EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile) {
 	Renderer* renderer = this->getRenderer();
-	renderer->diffuseBuffer = loadTextureFromPPM("../ressources/earth.ppm");
-	renderer->specularBuffer = loadTextureFromPGM("../ressources/heightmap.pgm");
+	renderer->diffuseBuffer = loadTextureFromPPM(diffuseFile.c_str());
+	renderer->specularBuffer = loadTextureFromPGM(specularFile.c_str());
 	return this;
 }
 

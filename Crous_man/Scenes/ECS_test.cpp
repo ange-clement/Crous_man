@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
+
 #include <common/meshGenerator.hpp>
 #include <common/texture.hpp>
 
@@ -17,6 +18,7 @@
 #include "../ECS/Bitmap.hpp"
 
 #include "../Transform.hpp"
+#include "../SoundManager.hpp"
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
@@ -35,7 +37,7 @@ void createSceneECS() {
         ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
         ->setMeshAsQuad()
         ->updateRenderer()
-        ->setRendererDiffuseSpecular("../ressources/earth.ppm", "../ressources/heightmap.pgm")
+        ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
         ->build();
 
     int nbI = 2;
@@ -47,7 +49,7 @@ void createSceneECS() {
                 Entity* monke = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
                     ->setChildOf(monkeContainer)
                     ->setTranslation(glm::vec3(i * 2.0, j * 2.0, k * 2.0))
-                    ->setMeshAsFile("../ressources/suzanne.off", false)
+                    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
                     ->updateRenderer()
                     ->build();
 
@@ -59,22 +61,22 @@ void createSceneECS() {
 
     Entity* explosionCube = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
         ->setTranslation(glm::vec3(1.0, 3.0, 10.0))
-        ->setMeshAsFilePLY("../ressources/fragment/cubeFragment.ply")
+        ->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
         ->addDestructibleMeshes({
-            "../ressources/fragment/cubeFragment1.ply",
-            "../ressources/fragment/cubeFragment2.ply",
-            "../ressources/fragment/cubeFragment3.ply",
-            "../ressources/fragment/cubeFragment4.ply",
-            "../ressources/fragment/cubeFragment5.ply",
-            "../ressources/fragment/cubeFragment6.ply",
-            "../ressources/fragment/cubeFragment7.ply",
-            "../ressources/fragment/cubeFragment8.ply",
-            "../ressources/fragment/cubeFragment9.ply",
-            "../ressources/fragment/cubeFragment10.ply",
-            "../ressources/fragment/cubeFragment11.ply",
-            "../ressources/fragment/cubeFragment12.ply" })
+            "../ressources/Models/fragment/cubeFragment1.ply",
+            "../ressources/Models/fragment/cubeFragment2.ply",
+            "../ressources/Models/fragment/cubeFragment3.ply",
+            "../ressources/Models/fragment/cubeFragment4.ply",
+            "../ressources/Models/fragment/cubeFragment5.ply",
+            "../ressources/Models/fragment/cubeFragment6.ply",
+            "../ressources/Models/fragment/cubeFragment7.ply",
+            "../ressources/Models/fragment/cubeFragment8.ply",
+            "../ressources/Models/fragment/cubeFragment9.ply",
+            "../ressources/Models/fragment/cubeFragment10.ply",
+            "../ressources/Models/fragment/cubeFragment11.ply",
+            "../ressources/Models/fragment/cubeFragment12.ply" })
         ->addDestructibleMeshes({
-            "../ressources/fragment/cubeFragment13.ply"
+            "../ressources/Models/fragment/cubeFragment13.ply"
             }, true)
         ->updateRenderer()
         ->setRendererDiffuseColor(glm::vec3(1.0, 1.0, 1.0))
@@ -100,4 +102,7 @@ void createSceneECS() {
         ->setTranslation(glm::vec3(0.0, 0.0, -10.0))
         ->setAsScreenCamera()
         ->build();
+
+    SoundManager::instance->play("../ressources/Sounds/start.wav");
+
 };
