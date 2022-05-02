@@ -44,6 +44,8 @@ public:
 
     void update();
     void updateTransforms();
+    void updateCollision();
+    void updateOnCollide();
     void updatePhysics();
     void updateAfterPhysics();
     void render();
@@ -53,6 +55,8 @@ public:
     bool hasComponent(SystemIDs system, unsigned short entityID);
 
     void addEntity(Entity* entity);
+    void reevaluateEntity(Entity* entity);
+    void removeEntity(Entity* entity);
 };
 
 #endif

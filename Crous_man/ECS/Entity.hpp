@@ -27,6 +27,10 @@ public:
     ~Entity();
 
     void addChildren(Entity* children);
+    void removeAllChildrens();
+
+    void addComponent(SystemIDs componentId);
+    bool removeComponent(SystemIDs componentId);
 
     void updateTransforms();
 };

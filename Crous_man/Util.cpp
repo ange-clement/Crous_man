@@ -16,6 +16,10 @@ glm::mat3 getFromMat4(glm::mat4 mat) {
     return glm::mat3(mat[0][0], mat[0][1], mat[0][2], mat[1][0], mat[1][1], mat[1][2], mat[2][0], mat[2][1], mat[2][2]);
 }
 
+void print(float v) {
+    std::cout << v << std::endl;
+}
+
 void print(glm::vec2 v) {
     std::cout << v[0] << " "<< v[1] << std::endl;
 }

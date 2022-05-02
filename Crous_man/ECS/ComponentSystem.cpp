@@ -26,26 +26,51 @@ ComponentSystem::~ComponentSystem() {
 
 void ComponentSystem::updateAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
         this->update(i, entityIDs[i]);
+    }
+}
+void ComponentSystem::updateCollisionAll() {
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+        this->updateCollision(i, entityIDs[i]);
+    }
+}
+void ComponentSystem::updateOnCollideAll() {
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+        //TODO add colision data and call only if object is in collision
+        this->updateOnCollide(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updatePhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updatePhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterPhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updateAfterPhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::renderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->render(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterRenderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short) -1)
+            continue;
         this->updateAfterRender(i, entityIDs[i]);
     }
 }
@@ -53,6 +78,12 @@ void ComponentSystem::updateAfterRenderAll() {
 
 
 void ComponentSystem::update(unsigned short i, unsigned short entityID) {
+
+}
+void ComponentSystem::updateCollision(unsigned short i, unsigned short entityID) {
+
+}
+void ComponentSystem::updateOnCollide(unsigned short i, unsigned short entityID) {
 
 }
 void ComponentSystem::updatePhysics(unsigned short i, unsigned short entityID) {
@@ -71,6 +102,8 @@ void ComponentSystem::updateAfterRender(unsigned short i, unsigned short entityI
 
 void ComponentSystem::initializeAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
         this->initialize(i, entityIDs[i]);
     }
 }
@@ -81,12 +114,17 @@ void ComponentSystem::addEntity(unsigned short entityID) {
 }
 
 void ComponentSystem::removeEntity(unsigned short entityID) {
-    //TODO
+    //Just mark it as re-writable
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         if (entityIDs[i] == entityID) {
             this->entityIDs[i] = (unsigned short) -1;
+            return;
         }
     }
+}
+
+bool ComponentSystem::containsEntity(unsigned short entityID) {
+    return getComponentId(entityID) != (unsigned short)-1;
 }
 
 unsigned short ComponentSystem::getComponentId(unsigned short entityID) {

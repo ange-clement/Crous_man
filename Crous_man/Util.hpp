@@ -3,6 +3,8 @@
 
 glm::mat3 getFromMat4(glm::mat4 mat);
 
+void print(float v);
+
 void print(glm::vec2 v);
 
 void print(glm::vec3 v);

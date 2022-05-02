@@ -14,6 +14,8 @@ public:
     ~ComponentSystem();
 
     virtual void updateAll();
+    virtual void updateCollisionAll();
+    virtual void updateOnCollideAll();
     virtual void updatePhysicsAll();
     virtual void updateAfterPhysicsAll();
     virtual void renderAll();
@@ -22,12 +24,14 @@ public:
     void initializeAll();
 
     void addEntity(unsigned short entityID);
-
     void removeEntity(unsigned short entityID);
+    bool containsEntity(unsigned short entityID);
 
     unsigned short getComponentId(unsigned short entityID);
 
     virtual void update(unsigned short i, unsigned short entityID);
+    virtual void updateCollision(unsigned short i, unsigned short entityID);
+    virtual void updateOnCollide(unsigned short i, unsigned short entityID);
     virtual void updatePhysics(unsigned short i, unsigned short entityID);
     virtual void updateAfterPhysics(unsigned short i, unsigned short entityID);
     virtual void render(unsigned short i, unsigned short entityID);

@@ -18,6 +18,9 @@
 Bitmap::Bitmap() : Bitmap(0) {
 
 }
+Bitmap::~Bitmap() {
+
+}
 
 Bitmap::Bitmap(unsigned short bitmap) {
     this->bitmap = bitmap;
@@ -35,7 +38,16 @@ void Bitmap::loadFromSystemIDS(std::initializer_list<SystemIDs> systems) {
 }
 
 void Bitmap::addId(SystemIDs other) {
-    this->bitmap += pow(2.0f, other);
+    this->bitmap |= 1 << other;
+}
+void Bitmap::removeId(SystemIDs other) {
+    this->bitmap ^= 1 << other;
+}
+void Bitmap::addBitmap(const Bitmap* other) {
+    this->bitmap |= other->bitmap;
+}
+void Bitmap::removeBitmap(const Bitmap* other) {
+    this->bitmap ^= other->bitmap;
 }
 
 Bitmap* Bitmap::combine(const Bitmap* other) {
