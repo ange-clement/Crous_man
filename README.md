@@ -2,6 +2,7 @@
 Crous_man game : the movie : the game
 
 ## Build and Launch : 
+Il faut copier les fichiers de 'copyToBuild' dans le dossier build.
 ### Linux :
 #### build
 ```
