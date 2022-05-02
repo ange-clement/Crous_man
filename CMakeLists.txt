@@ -74,6 +74,8 @@ add_executable(
 	common/meshGenerator.hpp
 	common/basicShapeRender.cpp
 	common/basicShapeRender.hpp
+	common/frameBuffer.cpp
+	common/frameBuffer.hpp
 	common/gBuffer.cpp
 	common/gBuffer.hpp
 	common/textureFramebuffer.cpp
@@ -142,10 +144,12 @@ add_executable(
 
 	Crous_man/InputManager.cpp
 	Crous_man/InputManager.hpp
+	Crous_man/SoundManager.cpp
+	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
- "Crous_man/SoundManager.hpp" "Crous_man/SoundManager.cpp")
+)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )
