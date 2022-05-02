@@ -14,6 +14,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Fortran module files
 *.mod
@@ -23,6 +24,7 @@
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.exe
@@ -32,9 +34,6 @@
 build/*
 
 # Visual studio 2019
-out/build/x64-Debug/.cmake
-out/build/x64-Debug/CMakeFiles
-out/build/x64-Debug/external
-out/build/x64-Debug/Testing
+out/*
 .vs/*
 CMakeSettings.json
