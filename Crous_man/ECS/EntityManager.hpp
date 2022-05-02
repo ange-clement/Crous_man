@@ -10,6 +10,7 @@ struct PointLight;
 struct Spin;
 struct Destructible;
 struct FlyingController;
+struct Collider;
 
 class Entity;
 class ComponentSystem;
@@ -28,6 +29,7 @@ public:
     std::vector<Spin> spinComponents;
     std::vector<Destructible> destructibleComponents;
     std::vector<FlyingController> flyingControllerComponents;
+    std::vector<Collider> colliderComponents;
 
 public:
 

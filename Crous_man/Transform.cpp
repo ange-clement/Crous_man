@@ -71,7 +71,6 @@ void Rotation::lookAt(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
 }
 
 
-
 Transform::Transform() {
     translation = glm::vec3(0.0, 0.0, 0.0);
     scaling = glm::vec3(1.0, 1.0, 1.0);

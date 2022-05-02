@@ -20,6 +20,7 @@
 #include "../Components/Destructible.hpp"
 #include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
+#include "../Components/Collider.hpp"
 
 #include "Bitmap.hpp"
 #include "EntityManager.hpp"
@@ -141,6 +142,38 @@ EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::s
 		destructible->fragmentMeshFiles.push_back(meshFile);
 		destructible->fragmentMeshInvertTriangle.push_back(invertTriangles);
 	}
+	return this;
+}
+
+
+EntityBuilder* EntityBuilder::setColliderType(colliderType type) {
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->type = type;
+	return this;
+}
+EntityBuilder* EntityBuilder::setColliderPosition(glm::vec3 pos) {
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->position = pos;
+	return this;
+}
+EntityBuilder* EntityBuilder::setColliderRadius(float radius) {
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->radius = radius;
+	return this;
+}
+EntityBuilder* EntityBuilder::setColliderSize(glm::vec3 size) {
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->size = size;
+	return this;
+}
+EntityBuilder* EntityBuilder::setColliderOrientation(glm::mat3 orientation) {
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->orientation = orientation;
 	return this;
 }
 

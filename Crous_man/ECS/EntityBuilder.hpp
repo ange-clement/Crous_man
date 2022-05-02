@@ -13,6 +13,7 @@ struct Destructible;
 struct PointLight;
 
 class Entity;
+enum colliderType;
 
 class EntityBuilder {
 private:
@@ -47,6 +48,13 @@ public:
 	Destructible* getDestructible();
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles);
+
+	EntityBuilder* setColliderType(colliderType type);
+	EntityBuilder* setColliderPosition(glm::vec3 pos);
+	EntityBuilder* setColliderRadius(float radius);
+	EntityBuilder* setColliderSize(glm::vec3 size);
+	EntityBuilder* setColliderOrientation(glm::mat3 orientation);
+
 
 	PointLight* getPointLight();
 	EntityBuilder* setLightColor(glm::vec3 color);
