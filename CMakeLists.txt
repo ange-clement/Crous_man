@@ -115,6 +115,8 @@ add_executable(
 	Crous_man/ECS/ComponentSystem.hpp
 	Crous_man/ECS/EntityManager.cpp
 	Crous_man/ECS/EntityManager.hpp
+	Crous_man/ECS/EntityBuilder.cpp
+	Crous_man/ECS/EntityBuilder.hpp
 
 	Crous_man/Components/Mesh.cpp
 	Crous_man/Components/Mesh.hpp
@@ -128,6 +130,11 @@ add_executable(
 	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Destructible.cpp
 	Crous_man/Components/Destructible.hpp
+
+	
+	Crous_man/Components/Collider.cpp
+	Crous_man/Components/Collider.hpp
+
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
 
@@ -136,7 +143,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
- "Crous_man/ECS/EntityBuilder.hpp" "Crous_man/ECS/EntityBuilder.cpp" "Crous_man/Components/Destructible.hpp")
+)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )
@@ -159,4 +166,3 @@ add_custom_command(
 elseif (${CMAKE_GENERATOR} MATCHES "Xcode" )
 
 endif (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
-

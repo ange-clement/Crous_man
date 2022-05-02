@@ -9,6 +9,7 @@ enum SystemIDs {
     SpinID,
     DestructibleID,
     FlyingControllerID,
+    ColliderID,
     NUMBER
 };
 

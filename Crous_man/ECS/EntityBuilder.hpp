@@ -4,6 +4,7 @@
 #include "SystemIDs.hpp"
 
 class Entity;
+enum colliderType;
 
 class EntityBuilder {
 private:
@@ -21,6 +22,13 @@ public:
 	EntityBuilder* setRendererDraw(bool draw);
 
 	EntityBuilder* setDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
+
+	EntityBuilder* setColliderType(colliderType type);
+	EntityBuilder* setColliderPosition(glm::vec3 pos);
+	EntityBuilder* setColliderRadius(float radius);
+	EntityBuilder* setColliderSize(glm::vec3 size);
+	EntityBuilder* setColliderOrientation(glm::mat3 orientation);
+
 
 	EntityBuilder* setLightColor(glm::vec3 color);
 	EntityBuilder* setLightLinear(float linear);

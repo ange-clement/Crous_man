@@ -27,6 +27,7 @@
 #include "../Components/Camera.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Destructible.hpp"
+#include "../Components/Collider.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 
 
@@ -74,6 +75,7 @@ void EntityManager::initSystems() {
         std::cout << "WARNING TOO MANY COMPONENTS" << std::endl;
     }
     systems.resize(SystemIDs::NUMBER);
+
     systems[SystemIDs::MeshID] = new MeshSystem();
     systems[SystemIDs::RendererID] = new RendererSystem();
     systems[SystemIDs::PointLightID] = new PointLightSystem();
@@ -81,6 +83,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::SpinID] = new SpinSystem();
     systems[SystemIDs::DestructibleID] = new DestructibleSystem();
     systems[SystemIDs::FlyingControllerID] = new FlyingControllerSystem();
+    systems[SystemIDs::ColliderID] = new ColliderSystem();
 }
 
 void EntityManager::initializeAllSystems() {

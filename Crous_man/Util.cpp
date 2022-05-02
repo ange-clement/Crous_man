@@ -40,3 +40,23 @@ void print(glm::mat3 m) {
     print(m[1]);
     print(m[2]);
 }
+
+void minVec3(glm::vec3 v1, glm::vec3 v2, glm::vec3& res) {
+    res = glm::vec3(
+        ((v1.x < v2.x) ? v1.x : v2.x),
+        ((v1.y < v2.y) ? v1.y : v2.y),
+        ((v1.z < v2.z) ? v1.z : v2.z)
+    );
+}
+
+void maxVec3(glm::vec3 v1, glm::vec3 v2, glm::vec3& res) {
+    res = glm::vec3(
+        ((v1.x > v2.x) ? v1.x : v2.x),
+        ((v1.y > v2.y) ? v1.y : v2.y),
+        ((v1.z > v2.z) ? v1.z : v2.z)
+    );
+}
+
+bool compareWithEpsilon(float f1, float f2) {
+    return (std::abs(f1 - f2) <= FLT_EPSILON * std::max(1.0f, std::max(std::abs(f1), std::abs(f2))));
+}
