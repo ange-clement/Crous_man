@@ -32,7 +32,7 @@ void ColliderSystem::initCollisionResultMap() {
     unsigned short entityID;
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         entityID = entityIDs[i];
-        std::vector<ColliderResult*> res;
+        std::vector<ColliderResult> res;
         res.reserve(entityIDs.size()-1);
         collisionResultMap.insert(CollisionResultMap::value_type(entityID,res));
     }
@@ -81,11 +81,11 @@ void ColliderSystem::simpleCollisionResolution(unsigned short i, unsigned short 
     Collider* c_i = getCollider(i);
 
     for (size_t j = 0, size = entityIDs.size(); j < size; j++) {
-        if (!collisionResultMap[i][j]) {
+        //if (!collisionResultMap[i][j]) {
             entityIDJ = entityIDs[j];
             Collider* c_j = getCollider(j);
 
-        }
+        //}
         
     }
 }
@@ -101,8 +101,8 @@ void ColliderSystem::simpleCollisionResolution() {
         for (size_t j = i+1; j < entityIDs.size(); j++){
             entityID_second = entityIDs[j];
             Collider* c_second = getCollider(j);
-            ColliderResult* res;
-            intersect(*c_first,*c_second,res);
+            ColliderResult res;
+            intersect(*c_first,*c_second,&res);
             
             collisionResultMap[i][j] = res;
             collisionResultMap[j][i] = res;
@@ -835,9 +835,9 @@ bool PlanePlaneIntersection(const glm::vec3 normal_plan_1, float distance_to_ori
 }
 
 
-ColliderResult ColliderSystem::intersect(Collider c1, Collider c2, ColliderResult* res) {
+void ColliderSystem::intersect(Collider c1, Collider c2, ColliderResult* res) {
     //Compute collisions depend on the collider type
-    if (c1.type == colliderType::AABB && c2.type == colliderType::AABB)     return AABBAABBCollision(c1, c2);
+    /*if (c1.type == colliderType::AABB && c2.type == colliderType::AABB)     return AABBAABBCollision(c1, c2);
     if (c1.type == colliderType::AABB && c2.type == colliderType::Sphere)   return SphereAABBCollision(c1, c2);
     if (c1.type == colliderType::Sphere && c2.type == colliderType::AABB)   return SphereAABBCollision(c2, c1);
     if (c1.type == colliderType::OBB && c2.type == colliderType::AABB)      return AABBOBBCollision(c2, c1);
@@ -845,10 +845,10 @@ ColliderResult ColliderSystem::intersect(Collider c1, Collider c2, ColliderResul
     if (c1.type == colliderType::Sphere && c2.type == colliderType::Sphere) return SphereSphereCollision(c1, c2);
     if (c1.type == colliderType::Sphere && c2.type == colliderType::OBB)    return SphereOBBCollision(c1, c2);
     if (c1.type == colliderType::OBB && c2.type == colliderType::Sphere)    return SphereOBBCollision(c2, c1);
-    if (c1.type == colliderType::OBB && c2.type == colliderType::OBB)       return OBBOBBCollisionCollision(c2, c1);
+    if (c1.type == colliderType::OBB && c2.type == colliderType::OBB)       return OBBOBBCollisionCollision(c2, c1);*/
 
-    ColliderResult res;
-    res.isInCollision = false;
+    //ColliderResult res;
+    res->isInCollision = false;
     std::cout << "NO COLLISION TEST FOUND !" << std::endl;
-    return res;
+    //return *res;
 }

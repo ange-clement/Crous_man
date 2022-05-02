@@ -30,7 +30,7 @@ struct ColliderResult{
     glm::vec3 pointCollision;
 };
 
-typedef std::map<unsigned short, std::vector<ColliderResult*>> CollisionResultMap;
+typedef std::map<unsigned short, std::vector<ColliderResult>> CollisionResultMap;
 
 class ColliderSystem : public ComponentSystem {
 private :
