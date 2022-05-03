@@ -106,10 +106,15 @@ add_executable(
 	Crous_man/Shaders/LShader.hpp
 	Crous_man/Shaders/PEShader.cpp
 	Crous_man/Shaders/PEShader.hpp
+
 	Crous_man/Shaders/BasicGShader.cpp
 	Crous_man/Shaders/BasicGShader.hpp
+	Crous_man/Shaders/DepthMeshEShader.cpp
+	Crous_man/Shaders/DepthMeshEShader.hpp
 	Crous_man/Shaders/BlinnPhongLShader.cpp
 	Crous_man/Shaders/BlinnPhongLShader.hpp
+	Crous_man/Shaders/BlinnPhongShadowLShader.cpp
+	Crous_man/Shaders/BlinnPhongShadowLShader.hpp
 	Crous_man/Shaders/SingleTextureQuadShader.cpp
 	Crous_man/Shaders/SingleTextureQuadShader.hpp
 	Crous_man/Shaders/TextureGShader.cpp

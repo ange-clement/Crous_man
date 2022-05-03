@@ -22,7 +22,7 @@ public:
 
     void updateBufferWidthHeight(unsigned int width, unsigned int height);
 
-    void use();
+    virtual void use();
 };
 
 #endif

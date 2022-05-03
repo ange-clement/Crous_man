@@ -31,6 +31,5 @@ void MeshEShader::updateBufferWidthHeight(unsigned int width, unsigned int heigh
 
 void MeshEShader::use() {
 	MeshShader::use();
-	std::cout << "use?" << std::endl;
 	this->fBuffer->use();
 }

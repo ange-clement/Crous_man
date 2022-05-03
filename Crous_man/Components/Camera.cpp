@@ -20,7 +20,9 @@
 #include "../ECS/Entity.hpp"
 #include "../Transform.hpp"
 
+#include "../Shaders/DepthMeshEShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
+#include "../Shaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/SingleTextureQuadShader.hpp"
 
 #include "Camera.hpp"
@@ -66,7 +68,11 @@ CameraSystem::~CameraSystem() {
 
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     Camera* c = getCamera(i);
-    c->lShaderInstance = BlinnPhongLShader::instance;
+    DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
+    depthEShader->use();
+    depthEShader->setFromPos(glm::vec3(0.0, 0.0, 0.0));
+    c->meshEShadersinstances.push_back(depthEShader);
+    c->lShaderInstance = BlinnPhongShadowLShader::instance;
     c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
     c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
@@ -99,6 +105,10 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     // ---------------------------------------------------------------------
     //  2.1 mesh effect pass : render the scene meshes
     //  ----------------------------------------------
+    
+    //glDisable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
+    //glClear(GL_DEPTH_BUFFER_BIT);
     for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
         rendererInstance->renderUsingShader(c->meshEShadersinstances[i], view, projection);
     }

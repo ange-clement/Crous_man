@@ -16,6 +16,10 @@ BlinnPhongShadowLShader* BlinnPhongShadowLShader::instance = NULL;
 BlinnPhongShadowLShader::BlinnPhongShadowLShader() : LShader("Shaders/BlinnPhongShadowLShader.glsl") {
     if (BlinnPhongShadowLShader::instance == NULL) {
         BlinnPhongShadowLShader::instance = this;
+
+        this->gShadow = glGetUniformLocation(this->programID, "gShadow");
+
+        glUniform1i(this->gShadow, 3);
     }
     else {
         std::cerr << "Error : cannot instanciate two BlinnPhongShadowLShader" << std::endl;
@@ -24,4 +28,10 @@ BlinnPhongShadowLShader::BlinnPhongShadowLShader() : LShader("Shaders/BlinnPhong
 
 BlinnPhongShadowLShader::~BlinnPhongShadowLShader() {
 
+}
+
+void BlinnPhongShadowLShader::useBuffers(std::vector<GLuint> buffers) {
+    glUniform1i(this->gShadow, 3);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, buffers[0]);
 }

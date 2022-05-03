@@ -24,3 +24,7 @@ QuadEShader::~QuadEShader() {
 void QuadEShader::updateBufferWidthHeight(unsigned int width, unsigned int height) {
 	fBuffer->update(width, height);
 }
+
+void QuadEShader::useBuffers(std::vector<GLuint> buffers) {
+
+}

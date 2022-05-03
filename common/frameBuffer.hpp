@@ -4,8 +4,8 @@
 
 class FrameBuffer {
 public:
-    unsigned int frameBufferObject;
-    unsigned int* buffers;
+    GLuint  frameBufferObject;
+    GLuint* buffers;
     unsigned int numberOfBuffer;
     unsigned int rboDepth;
 

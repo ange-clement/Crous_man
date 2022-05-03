@@ -7,9 +7,13 @@ class BlinnPhongShadowLShader : public LShader {
 public:
     static BlinnPhongShadowLShader* instance;
 
+    GLuint gShadow;
+
 public:
     BlinnPhongShadowLShader();
     ~BlinnPhongShadowLShader();
+
+    void useBuffers(std::vector<GLuint> buffers);
 };
 
 #endif
