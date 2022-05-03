@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 #include "../ECS/ComponentSystem.hpp"
+#include "../Shaders/ColliderShader.hpp"
+
 
 enum colliderType {
     Sphere,
@@ -14,6 +16,7 @@ struct Collider{
     unsigned short entityID;
     colliderType type;
 
+    glm::vec3 center;
     glm::vec3 position;
     
     //For sphere data
@@ -23,38 +26,63 @@ struct Collider{
     glm::vec3 size;
     //For OBB
     glm::mat3 orientation;
+
+    //For rendering, empty list instead
+    bool drawable = false;
+    bool draw = false;
+
+    std::vector<glm::vec3> vertices;
+    std::vector<unsigned short> indices;
+    GLuint vertexbuffer;
+    GLuint elementbuffer;
+    GLuint VertexArrayID;
+    ColliderShader* shader;
 };
-struct ColliderResult{
+
+class ColliderResult {
+public :
+    ColliderResult();
+    ~ColliderResult();
+
     bool isInCollision;
     float penetrationDistance;
     glm::vec3 pointCollision;
 };
 
-typedef std::map<unsigned short, std::vector<ColliderResult>> CollisionResultMap;
+typedef std::map<unsigned short, std::vector<ColliderResult*>> CollisionResultMap;
 
 class ColliderSystem : public ComponentSystem {
 private :
+
     CollisionResultMap collisionResultMap;
 
-    void initCollisionResultMap();
     void simpleCollisionResolution();
-    void simpleCollisionResolution(unsigned short i, unsigned short entityID);
     void QuadTreeCollisionResolution();
     void OcTreeCollisionResolution();
 
 public :
+    bool drawColliders;
+
     ColliderSystem();
     ~ColliderSystem();
 
     virtual void update(unsigned short i, unsigned short entityID);
-    virtual void updatePhysics(unsigned short i, unsigned short entityID);
+    
+    virtual void updateCollision(unsigned short i, unsigned short entityID);
+    virtual void updateOnCollide(unsigned short i, unsigned short entityID);
+
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
 
-    virtual void intersect(Collider c1, Collider c2, ColliderResult* res);
-    virtual void computeAllIntersections();
+    ColliderResult* intersect(Collider c1, Collider c2);
+    virtual void updateCollisionAll();
+    virtual void updateOnCollideAll();
 
     Collider* getCollider(unsigned short i);
+
+    void renderAll(glm::mat4 view, glm::mat4 projection);
+    void drawCollider(unsigned short i);
+    bool isInContactWithSomething(unsigned short i);
 };
 
 
@@ -77,7 +105,6 @@ bool pointInDynamicAABB(const glm::vec3& point, const Collider& aabb);
 bool pointInOBB(const glm::vec3& point, const Collider& obb);
 bool pointOnPlane(const glm::vec3& point, const glm::vec3 normal_plan, float distance_to_origin);
 bool pointOnLine(const glm::vec3& point, const glm::vec3& start_line, const glm::vec3& end_line);
-
 
 //Collision resolution
 #endif

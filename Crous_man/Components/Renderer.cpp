@@ -113,7 +113,6 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
     unsigned short entityID;
     
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-
         entityID = entityIDs[i];
         if (entityID == (unsigned short)-1)
             continue;

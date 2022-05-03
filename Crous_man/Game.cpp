@@ -103,14 +103,17 @@ int main( void )
     glEnable(GL_CULL_FACE);
     
     new EntityManager();
+    
+    createSceneCollider();
 
-    createSceneECS();
-
+    //createSceneECS();
     EntityManager::instance->initializeAllSystems();
-
+    
+    
     do{
         InputManager::instance->update(window);
 
+        //TODO delata time ?
         EntityManager::instance->update();
         EntityManager::instance->updateTransforms();
         EntityManager::instance->updateCollision();

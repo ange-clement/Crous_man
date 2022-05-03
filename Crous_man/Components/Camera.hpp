@@ -7,6 +7,7 @@
 
 class LShader;
 class PEShader;
+class ColliderSystem;
 
 class RendererSystem;
 class PointLightSystem;
@@ -36,6 +37,7 @@ class CameraSystem : public virtual ComponentSystem {
 public:
     RendererSystem* rendererInstance;
     PointLightSystem* pointLightInstance;
+    ColliderSystem* colliderRenderInstance;
     Camera* screenCamera;
     
 public:

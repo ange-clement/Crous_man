@@ -26,6 +26,7 @@
 
 #include "Renderer.hpp"
 #include "PointLight.hpp"
+#include "Collider.hpp"
 #include <common/gBuffer.hpp>
 
 #include "../Shaders/LShader.hpp"
@@ -44,9 +45,10 @@ void Camera::updateWidthHeight(unsigned int width, unsigned int height) {
 }
 
 CameraSystem::CameraSystem() : ComponentSystem(){
-    requiredComponentsBitmap = new Bitmap({SystemIDs::CameraID});
-    rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
-    pointLightInstance = dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID]);
+    requiredComponentsBitmap =  new Bitmap({SystemIDs::CameraID});
+    rendererInstance =          dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
+    pointLightInstance =        dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID]);
+    colliderRenderInstance =    dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
 }
 
 CameraSystem::~CameraSystem() {
@@ -120,6 +122,9 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     pe->use();
     pe->setColorTexture(c->textureFramebuffer.textureColorBuffer);
     BasicShapeRender::instance->renderQuad();
+
+    //Now render basic colliders
+    colliderRenderInstance->renderAll(view, projection);
 }
 
 void CameraSystem::addEntityComponent() {

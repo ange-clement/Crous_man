@@ -24,6 +24,7 @@
 #include "../Components/Renderer.hpp"
 #include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
+#include "../Components/Collider.hpp"
 
 #include "ECS_test.hpp"
 
@@ -38,6 +39,7 @@ void createSceneECS() {
         ->setMeshAsQuad()
         ->updateRenderer()
         ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
+        ->setColliderType(colliderType::Sphere)
         ->build();
 
     int nbI = 2;
@@ -106,3 +108,39 @@ void createSceneECS() {
     SoundManager::instance->play("../ressources/Sounds/start.wav");
 
 };
+
+void createSceneCollider() {
+   
+    Entity* plane = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
+        ->setScale(glm::vec3(100.0, 100.0, 1.0))
+        ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
+        ->setMeshAsQuad()
+        ->updateRenderer()
+        ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
+        ->fitAABBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
+   
+   Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+       ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
+       ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+       ->updateRenderer()
+       ->fitSphereColliderToMesh()
+       ->setRenderingCollider()
+       ->build();
+
+    Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
+        ->setLightLinear(0.01)
+        ->setLightQuadratic(0.0)
+        ->build();
+
+    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FlyingControllerID }))
+        ->setTranslation(glm::vec3(0.0, 0.0, -10.0))
+        ->setAsScreenCamera()
+        ->build();
+
+    SoundManager::instance->play("../ressources/Sounds/start.wav");
+}

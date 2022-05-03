@@ -3,4 +3,6 @@
 
 void createSceneECS();
 
+void createSceneCollider();
+
 #endif
