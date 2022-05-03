@@ -18,78 +18,170 @@
 
 #include "Collider.hpp"
 
+ColliderResult::ColliderResult() {
+
+}
+ColliderResult::~ColliderResult() {
+
+}
+
 void logCollisionResultMap(CollisionResultMap m) {
     for (auto const& x : m){
         std::cout << x.first  << " : [" << std::endl;
         for (auto const& el : x.second) {
-            std::cout << el.isInCollision << "," << el.penetrationDistance << "{" << el.pointCollision.x << "," << el.pointCollision.y << "," << el.pointCollision.z << "}" << std::endl;
+            if (el) {
+                std::cout << el->isInCollision << "," << el->penetrationDistance << "{" << el->pointCollision.x << "," << el->pointCollision.y << "," << el->pointCollision.z << "}" << std::endl;
+            }
+            else {
+                std::cout << 0 << std::endl;
+            }
         }
         std::cout << "]" << std::endl;
     }
 }
 
-void ColliderSystem::initCollisionResultMap() {
-    unsigned short entityID;
-    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        entityID = entityIDs[i];
-        std::vector<ColliderResult> res;
-        res.reserve(entityIDs.size()-1);
-        collisionResultMap.insert(CollisionResultMap::value_type(entityID,res));
-    }
-}
 
 ColliderSystem::ColliderSystem() : ComponentSystem() {
     requiredComponentsBitmap = new Bitmap({SystemIDs::ColliderID});
-    initCollisionResultMap();
 }
 
-ColliderSystem::~ColliderSystem() {}
+ColliderSystem::~ColliderSystem() {
+
+}
 
 void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
     getCollider(i)->entityID    = entityID;
-    getCollider(i)->position    = glm::vec3(0);
-    getCollider(i)->radius      = 1.0f;
-    getCollider(i)->type        = colliderType::Sphere;
-    getCollider(i)->size        = glm::vec3(0);
     getCollider(i)->orientation = EntityManager::instance->entities[entityID]->worldTransform->rotation.rotationMatrix;
+
+    //Init collider datas
+    std::vector<ColliderResult*> res;
+    res.resize(entityIDs.size(), 0);
+    collisionResultMap.insert(CollisionResultMap::value_type(i, res));
 }
 
 void ColliderSystem::update(unsigned short i, unsigned short entityID) {
     //We move all the positions from all colliders
     Entity* entity = EntityManager::instance->entities[entityID];
-    entity->worldTransform->applyToPoint(getCollider(i)->position);
+    getCollider(i)->position = entity->worldTransform->applyToPoint(getCollider(i)->center);
+    
+    if (glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_PRESS) {
+        drawCollider(i);
+    }
 }
 
-void ColliderSystem::updatePhysics(unsigned short i, unsigned short entityID) {
-    //Update collisions
-
-}
 void ColliderSystem::addEntityComponent() {
     EntityManager::instance->colliderComponents.push_back(Collider());
 }
 
 
-//General intersection function
-void ColliderSystem::computeAllIntersections() {
-    //Iterate over all colliders and compute collision answers
-    simpleCollisionResolution();
-    logCollisionResultMap(this->collisionResultMap);
-}
-
-void ColliderSystem::simpleCollisionResolution(unsigned short i, unsigned short entityID) {
+void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) {
+    //std::cout << "UPDATE COLLISION" << std::endl;
+    //std::cout << " i " << i << std::endl;
+    //std::cout << " entity " << entityID << std::endl;
+    
     unsigned short entityIDJ;
     Collider* c_i = getCollider(i);
 
-    for (size_t j = 0, size = entityIDs.size(); j < size; j++) {
-        //if (!collisionResultMap[i][j]) {
+    /*print(c_i->center);
+    print(c_i->position);
+    print(c_i->orientation);*/
+
+    std::vector<ColliderResult*> res = collisionResultMap.at(i);
+
+    for (size_t j = i+1, size = entityIDs.size(); j < size; j++) {
+        //std::cout << "j " << j << std::endl;
+
+        if (!res[j]) {
+            //std::cout << " compute intersection " << j << std::endl;
             entityIDJ = entityIDs[j];
             Collider* c_j = getCollider(j);
 
-        //}
-        
+            ColliderResult* resC = intersect(*c_i, *c_j);
+            collisionResultMap.at(i)[j] = resC;
+            collisionResultMap.at(j)[i] = resC;
+        }
     }
 }
 
+void ColliderSystem::updateOnCollide(unsigned short i, unsigned short entityID) {
+    //std::cout << "UPDATE ON COLLIDE" << std::endl;
+    //std::cout << " i " << i << std::endl;
+    //std::cout << " entity " << entityID << std::endl;
+
+    for (size_t j = 0; j < entityIDs.size(); j++){
+        collisionResultMap.at(i)[j] = 0;
+    }
+}
+
+void ColliderSystem::updateCollisionAll() {
+    ComponentSystem::updateCollisionAll();
+    //logCollisionResultMap(collisionResultMap);
+}
+
+void ColliderSystem::updateOnCollideAll() {
+    ComponentSystem::updateOnCollideAll();
+    //logCollisionResultMap(collisionResultMap);
+}
+
+bool ColliderSystem::isInContactWithSomething(unsigned short i) {
+    for (size_t j = 0; j < entityIDs.size(); j++){
+        ColliderResult* r = collisionResultMap.at(i)[j];
+        if (r && r->isInCollision) return true;
+    }
+    return false;
+}
+
+void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
+    //std::cout << "RENDER ALL COLLIDER : " << this->drawColliders << std::endl;
+   
+        unsigned short entityID;
+        //std::cout << "==== RENDER ALL COLLIDER" << std::endl;
+
+        for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+            //std::cout << "i : " << i << std::endl;
+            entityID = entityIDs[i];
+
+            if (entityID == (unsigned short)-1) {
+                continue;
+            }
+
+            Collider* c = getCollider(i);
+            if (!c->drawable || !c->draw) {
+                continue;
+            }
+            Entity* e = EntityManager::instance->entities[entityID];
+            glm::vec3 color = (isInContactWithSomething(i)) ? glm::vec3(1, 0, 0) : glm::vec3(0, 1, 0);
+            
+            //std::cout << "=> CSHADER USE"<< std::endl;
+            c->shader->use();
+            glm::mat4 model = e->worldTransform->toMat4();
+            
+            //std::cout << "=> CSHADER MVP" << std::endl;
+            c->shader->setMVP(model, view, projection);
+            glUniform3fv(c->shader->colliderColor, 1, &color[0]);
+
+            //std::cout << "=> CSHADER DRAW ELEM" << std::endl;
+            //std::cout << "vertex : "    << c->vertices.size() << std::endl;
+            //std::cout << "indices : " << c->indices.size() << std::endl;
+            
+            glLineWidth(10.0f);
+
+            glBindVertexArray(c->VertexArrayID);
+            glEnableVertexAttribArray(0);
+            glDrawElements(GL_LINES, c->indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+            glDisableVertexAttribArray(0);
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
+
+    //std::cout << " === RENDER ALL COLLIDER END" << std::endl;
+}
+
+void ColliderSystem::drawCollider(unsigned short i) {
+    Collider* c = getCollider(i);
+    c->draw = true;
+}
 
 void ColliderSystem::simpleCollisionResolution() {
     unsigned short entityID_first;
@@ -101,22 +193,19 @@ void ColliderSystem::simpleCollisionResolution() {
         for (size_t j = i+1; j < entityIDs.size(); j++){
             entityID_second = entityIDs[j];
             Collider* c_second = getCollider(j);
-            ColliderResult res;
-            intersect(*c_first,*c_second,&res);
-            
+            ColliderResult* res = intersect(*c_first,*c_second);
             collisionResultMap[i][j] = res;
             collisionResultMap[j][i] = res;
         }
     }
 }
-
-
 void ColliderSystem::QuadTreeCollisionResolution() {
 
 }
 void ColliderSystem::OcTreeCollisionResolution() {
 
 }
+
 
 Collider* ColliderSystem::getCollider(unsigned short i) {
     return &EntityManager::instance->colliderComponents[i];
@@ -385,32 +474,32 @@ Interval GetIntervalAABB(const Collider& aabb, const glm::vec3& axis, bool dynam
     return result;
 }
 
-ColliderResult OverlapOnAxisAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool dynamicAABB = true) {
+ColliderResult* OverlapOnAxisAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool dynamicAABB = true) {
     assert(aabb.type == colliderType::AABB);
     assert(obb.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = axis;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = axis;
 
     Interval a = GetIntervalAABB(aabb, axis, dynamicAABB);
     Interval b = GetIntervalOBB(obb, axis);
 
-    res.isInCollision = ((b.min <= a.max) && (a.min <= b.max));
-    res.penetrationDistance = std::min(a.max-b.min,b.max-a.min);
+    res->isInCollision = ((b.min <= a.max) && (a.min <= b.max));
+    res->penetrationDistance = std::min(a.max-b.min,b.max-a.min);
     return res;
 }
 
-ColliderResult OverlapOnAxisOBBOBB(const Collider& obb1, const Collider& obb2, const glm::vec3& axis) {
+ColliderResult* OverlapOnAxisOBBOBB(const Collider& obb1, const Collider& obb2, const glm::vec3& axis) {
     assert(obb1.type == colliderType::OBB);
     assert(obb2.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = axis;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = axis;
     Interval a = GetIntervalOBB(obb1, axis);
     Interval b = GetIntervalOBB(obb1, axis);
 
-    res.isInCollision = ((b.min <= a.max) && (a.min <= b.max));
-    res.penetrationDistance = std::min(a.max - b.min, b.max - a.min);
+    res->isInCollision = ((b.min <= a.max) && (a.min <= b.max));
+    res->penetrationDistance = std::min(a.max - b.min, b.max - a.min);
     return res;
 }
 
@@ -418,14 +507,14 @@ ColliderResult OverlapOnAxisOBBOBB(const Collider& obb1, const Collider& obb2, c
 //Functions for compute type of collisions
 //Collision between two AABB
 //TODO TEST
-ColliderResult AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, bool dynamicAABB = true) {
+ColliderResult* AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, bool dynamicAABB = true) {
     assert(aabb1.type == colliderType::AABB);
     assert(aabb2.type == colliderType::AABB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 min_1;
     glm::vec3 min_2;
@@ -446,7 +535,7 @@ ColliderResult AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, b
 
     bool incontact = overlap_x && overlap_y && overlap_z;
     if (incontact) {
-        res.isInCollision = true;
+        res->isInCollision = true;
         //If the two colliders are in contact
         //try to find the min distance to split them
 
@@ -467,21 +556,21 @@ ColliderResult AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, b
         float z = (dist_z_1 < dist_z_2) ? dist_z_1 : dist_z_2;
 
         if (x <= z && x <= y) {
-            res.penetrationDistance = x;
+            res->penetrationDistance = x;
             z = 0;
             y = 0;
         }
         else if (y <= x && y <= z) {
-            res.penetrationDistance = y;
+            res->penetrationDistance = y;
             x = 0;
             z = 0;
         }
         else if (z <= y && z <= x) {
-            res.penetrationDistance = z;
+            res->penetrationDistance = z;
             x = 0;
             y = 0;
         }
-        res.pointCollision = glm::normalize(glm::vec3(x * x_factor, y * y_factor, z * z_factor));
+        res->pointCollision = glm::normalize(glm::vec3(x * x_factor, y * y_factor, z * z_factor));
     }
     return res;
 }
@@ -489,19 +578,19 @@ ColliderResult AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, b
 
 //Collision between two Sphere
 //TODO TEST
-ColliderResult SphereSphereCollision(Collider sp1, Collider sp2) {
+ColliderResult* SphereSphereCollision(Collider sp1, Collider sp2) {
     assert(sp1.type == colliderType::Sphere);
     assert(sp2.type == colliderType::Sphere);
 
-    ColliderResult res;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->isInCollision = false;
 
     glm::vec3 mvt = sp1.position - sp2.position;
     float distance = glm::length(mvt);
     if (distance < (sp1.radius + sp2.radius)) {
-        res.isInCollision = true;
-        res.penetrationDistance = (sp1.radius - distance) + sp2.radius;
-        res.pointCollision = ((distance == 0) ? glm::vec3(0, 1, 0) : glm::normalize(mvt));
+        res->isInCollision = true;
+        res->penetrationDistance = (sp1.radius - distance) + sp2.radius;
+        res->pointCollision = ((distance == 0) ? glm::vec3(0, 1, 0) : glm::normalize(mvt));
     }
     return res;
 }
@@ -547,14 +636,14 @@ glm::vec3 perform_direction(glm::vec3 target, float& penetration, float radius) 
 }
 //Collision between an AABB and a sphere
 //TODO TEST
-ColliderResult SphereAABBCollision(const Collider& aabb, const Collider& sphere, bool dynamicAABB = true) {
+ColliderResult* SphereAABBCollision(const Collider& aabb, const Collider& sphere, bool dynamicAABB = true) {
     assert(aabb.type == colliderType::AABB);
     assert(sphere.type == colliderType::Sphere);
     
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 min;
     glm::vec3 max;
@@ -579,7 +668,7 @@ ColliderResult SphereAABBCollision(const Collider& aabb, const Collider& sphere,
 
     if (distance < sphere.radius) {
         //We got a contact
-        res.isInCollision = true;
+        res->isInCollision = true;
 
         //If both are in the same place
         if (distance == 0) {
@@ -587,35 +676,35 @@ ColliderResult SphereAABBCollision(const Collider& aabb, const Collider& sphere,
             glm::vec3 dist = max - min;
 
             if (dist.y <= dist.x && dist.y <= dist.z) {
-                res.penetrationDistance = dist.y + sphere.radius;
-                res.pointCollision = glm::vec3(0, 1, 0);
+                res->penetrationDistance = dist.y + sphere.radius;
+                res->pointCollision = glm::vec3(0, 1, 0);
             }
             else if (dist.x <= dist.y && dist.x <= dist.z) {
-                res.penetrationDistance = dist.x + sphere.radius;
-                res.pointCollision = glm::vec3(1, 0, 0);
+                res->penetrationDistance = dist.x + sphere.radius;
+                res->pointCollision = glm::vec3(1, 0, 0);
             }
             else if (dist.z <= dist.y && dist.z <= dist.x) {
-                res.penetrationDistance = dist.z + sphere.radius;
-                res.pointCollision = glm::vec3(0, 0, 1);
+                res->penetrationDistance = dist.z + sphere.radius;
+                res->pointCollision = glm::vec3(0, 0, 1);
             }
         }
         else {
             //We need to know the direction of the minimum penetration
-            res.pointCollision = perform_direction(difference, res.penetrationDistance, sphere.radius);
+            res->pointCollision = perform_direction(difference, res->penetrationDistance, sphere.radius);
         }
     }
     return res;
 }
 
 //TODO TEST
-ColliderResult SphereAABBCollision_bis(const Collider& aabb, const Collider& sphere) {
+ColliderResult* SphereAABBCollision_bis(const Collider& aabb, const Collider& sphere) {
     assert(aabb.type == colliderType::AABB);
     assert(sphere.type == colliderType::Sphere);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 closestPoint = closestPointAABB(aabb, sphere.position);
     glm::vec3 dif = sphere.position - closestPoint;
@@ -626,22 +715,22 @@ ColliderResult SphereAABBCollision_bis(const Collider& aabb, const Collider& sph
         //We got a collision then
         glm::vec3 closestPointSp    = closestPointSphere(sphere, aabb.position);
         dif = closestPoint - closestPointSp;
-        res.pointCollision          = glm::normalize(dif);
-        res.penetrationDistance     = glm::length(dif);
-        res.isInCollision           = true;
+        res->pointCollision          = glm::normalize(dif);
+        res->penetrationDistance     = glm::length(dif);
+        res->isInCollision           = true;
     }
     return res;
 }
 
 //TODO TEST
-ColliderResult SphereOBBCollision(const Collider& sphere, const Collider& obb) {
+ColliderResult* SphereOBBCollision(const Collider& sphere, const Collider& obb) {
     assert(sphere.type == colliderType::Sphere);
     assert(obb.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 closestPoint = closestPointOBB(obb, sphere.position);
     glm::vec3 dif = sphere.position - closestPoint;
@@ -652,21 +741,21 @@ ColliderResult SphereOBBCollision(const Collider& sphere, const Collider& obb) {
         //We got a collision then
         glm::vec3 closestPointSp    = closestPointSphere(sphere, obb.position);
         dif = closestPoint - closestPointSp;
-        res.pointCollision          = glm::normalize(dif);
-        res.penetrationDistance     = glm::length(dif);
-        res.isInCollision           = true;
+        res->pointCollision          = glm::normalize(dif);
+        res->penetrationDistance     = glm::length(dif);
+        res->isInCollision           = true;
     }
     return res;
 }
 
 //TODO TEST
-ColliderResult SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin) {
+ColliderResult* SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin) {
     assert(sphere.type == colliderType::Sphere);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 closestPoint = closestPointPlane(sphere.position, normal_plan,distance_to_origin);
     glm::vec3 dif = sphere.position - closestPoint;
@@ -675,22 +764,22 @@ ColliderResult SpherePlaneCollision(const Collider& sphere, const glm::vec3 norm
 
     if (dist_squared < radius_squared) {
         //We got a collision then       
-        res.pointCollision = glm::normalize(dif);
-        res.penetrationDistance = glm::length(dif) - sphere.radius;
-        res.isInCollision = true;
+        res->pointCollision = glm::normalize(dif);
+        res->penetrationDistance = glm::length(dif) - sphere.radius;
+        res->isInCollision = true;
     }
     return res;
 }
 
 //TODO TEST
-ColliderResult AABBOBBCollision(const Collider& aabb, const Collider& obb, bool dynamicAABB = true) {
+ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb, bool dynamicAABB = true) {
     assert(aabb.type == colliderType::AABB);
     assert(obb.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = FLT_MAX;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = FLT_MAX;
+    res->isInCollision = false;
 
     glm::vec3 test[15] = {
         glm::vec3(1, 0, 0), // AABB axis 1
@@ -709,32 +798,34 @@ ColliderResult AABBOBBCollision(const Collider& aabb, const Collider& obb, bool 
     }
 
     for (int i = 0; i < 15; ++i) {
-        ColliderResult cres = OverlapOnAxisAABBOBB(aabb, obb, test[i], dynamicAABB);
-        if (!cres.isInCollision) {
+        ColliderResult* cres = OverlapOnAxisAABBOBB(aabb, obb, test[i], dynamicAABB);
+        if (!cres->isInCollision) {
             // Seperating axis found
+            delete cres;
             return res;
         }else {
             //else if this axe is less distance to answer collision
-            if (cres.penetrationDistance < res.penetrationDistance) {
-                res.pointCollision = test[i];
-                res.penetrationDistance = cres.penetrationDistance;
+            if (cres->penetrationDistance < res->penetrationDistance) {
+                res->pointCollision = test[i];
+                res->penetrationDistance = cres->penetrationDistance;
             }
         }
+        delete cres;
     }
     // Seperating axis not found
     //We have an intersection here
-    res.isInCollision = true;
+    res->isInCollision = true;
     return res;
 }
 
 //TODO TEST
-ColliderResult AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin) {
+ColliderResult* AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin) {
     assert(aabb.type == colliderType::AABB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
     
     // Project the half extents of the AABB onto the plane normal
     float pLen = 
@@ -746,22 +837,22 @@ ColliderResult AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_p
     float dist = glm::dot(normal_plan, aabb.position) - distance_to_origin;
     // Intersection occurs if the distance falls within the projected side
     if (std::abs(dist) <= pLen) {
-        res.isInCollision = true;
-        res.penetrationDistance = pLen - std::abs(dist);
-        res.pointCollision = (dist<0)? -normal_plan : normal_plan;
+        res->isInCollision = true;
+        res->penetrationDistance = pLen - std::abs(dist);
+        res->pointCollision = (dist<0)? -normal_plan : normal_plan;
     }
     return res;
 }
 
 //TODO TEST
-ColliderResult OBBOBBCollisionCollision(const Collider& obb1, const Collider& obb2) {
+ColliderResult* OBBOBBCollisionCollision(const Collider& obb1, const Collider& obb2) {
     assert(obb1.type == colliderType::OBB);
     assert(obb2.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     glm::vec3 test[15] = {
         obb1.orientation[0],
@@ -780,33 +871,33 @@ ColliderResult OBBOBBCollisionCollision(const Collider& obb1, const Collider& ob
     }
 
     for (int i = 0; i < 15; ++i) {
-        ColliderResult cres = OverlapOnAxisOBBOBB(obb1, obb2, test[i]);
-        if (!cres.isInCollision) {
+        ColliderResult* cres = OverlapOnAxisOBBOBB(obb1, obb2, test[i]);
+        if (!cres->isInCollision) {
             // Seperating axis found
             return res;
         }
         else {
             //else if this axe is less distance to answer collision
-            if (cres.penetrationDistance < res.penetrationDistance) {
-                res.pointCollision = test[i];
-                res.penetrationDistance = cres.penetrationDistance;
+            if (cres->penetrationDistance < res->penetrationDistance) {
+                res->pointCollision = test[i];
+                res->penetrationDistance = cres->penetrationDistance;
             }
         }
     }
     // Seperating axis not found
     //We have an intersection here
-    res.isInCollision = true;
+    res->isInCollision = true;
     return res;
 }
 
 //TODO TEST
-ColliderResult OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin) {
+ColliderResult* OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin) {
     assert(obb.type == colliderType::OBB);
 
-    ColliderResult res;
-    res.pointCollision = glm::vec3(0);
-    res.penetrationDistance = 0;
-    res.isInCollision = false;
+    ColliderResult* res = new ColliderResult();
+    res->pointCollision = glm::vec3(0);
+    res->penetrationDistance = 0;
+    res->isInCollision = false;
 
     // Project the half extents of the AABB onto the plane normal
     float pLen = 
@@ -818,9 +909,9 @@ ColliderResult OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_pla
     // Intersection occurs if the distance falls within the projected side
     
     if (std::abs(dist) <= pLen) {
-        res.isInCollision = true;
-        res.penetrationDistance = pLen - std::abs(dist);
-        res.pointCollision = (dist < 0) ? -normal_plan : normal_plan;
+        res->isInCollision = true;
+        res->penetrationDistance = pLen - std::abs(dist);
+        res->pointCollision = (dist < 0) ? -normal_plan : normal_plan;
     }
     return res;
 }
@@ -835,9 +926,9 @@ bool PlanePlaneIntersection(const glm::vec3 normal_plan_1, float distance_to_ori
 }
 
 
-void ColliderSystem::intersect(Collider c1, Collider c2, ColliderResult* res) {
+ColliderResult* ColliderSystem::intersect(Collider c1, Collider c2) {
     //Compute collisions depend on the collider type
-    /*if (c1.type == colliderType::AABB && c2.type == colliderType::AABB)     return AABBAABBCollision(c1, c2);
+    if (c1.type == colliderType::AABB && c2.type == colliderType::AABB)     return AABBAABBCollision(c1, c2);
     if (c1.type == colliderType::AABB && c2.type == colliderType::Sphere)   return SphereAABBCollision(c1, c2);
     if (c1.type == colliderType::Sphere && c2.type == colliderType::AABB)   return SphereAABBCollision(c2, c1);
     if (c1.type == colliderType::OBB && c2.type == colliderType::AABB)      return AABBOBBCollision(c2, c1);
@@ -845,10 +936,10 @@ void ColliderSystem::intersect(Collider c1, Collider c2, ColliderResult* res) {
     if (c1.type == colliderType::Sphere && c2.type == colliderType::Sphere) return SphereSphereCollision(c1, c2);
     if (c1.type == colliderType::Sphere && c2.type == colliderType::OBB)    return SphereOBBCollision(c1, c2);
     if (c1.type == colliderType::OBB && c2.type == colliderType::Sphere)    return SphereOBBCollision(c2, c1);
-    if (c1.type == colliderType::OBB && c2.type == colliderType::OBB)       return OBBOBBCollisionCollision(c2, c1);*/
+    if (c1.type == colliderType::OBB && c2.type == colliderType::OBB)       return OBBOBBCollisionCollision(c2, c1);
 
-    //ColliderResult res;
+    ColliderResult* res = new ColliderResult();
     res->isInCollision = false;
     std::cout << "NO COLLISION TEST FOUND !" << std::endl;
-    //return *res;
+    return res;
 }

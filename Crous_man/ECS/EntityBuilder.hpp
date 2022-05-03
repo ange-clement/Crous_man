@@ -55,6 +55,11 @@ public:
 	EntityBuilder* setColliderSize(glm::vec3 size);
 	EntityBuilder* setColliderOrientation(glm::mat3 orientation);
 
+	EntityBuilder* fitSphereColliderToMesh();
+	EntityBuilder* fitAABBColliderToMesh();
+	EntityBuilder* fitOBBColliderToMesh();
+	EntityBuilder* setRenderingCollider();
+
 
 	PointLight* getPointLight();
 	EntityBuilder* setLightColor(glm::vec3 color);

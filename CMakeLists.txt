@@ -108,6 +108,8 @@ add_executable(
 	Crous_man/Shaders/SingleTextureQuadShader.hpp
 	Crous_man/Shaders/TextureGShader.cpp
 	Crous_man/Shaders/TextureGShader.hpp
+	Crous_man/Shaders/ColliderShader.cpp
+	Crous_man/Shaders/ColliderShader.hpp
 
 	Crous_man/ECS/Bitmap.cpp
 	Crous_man/ECS/Bitmap.hpp
@@ -145,7 +147,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
- "Crous_man/SoundManager.hpp" "Crous_man/SoundManager.cpp")
+ "Crous_man/SoundManager.hpp" "Crous_man/SoundManager.cpp" "Crous_man/Shaders/ColliderShader.cpp" "Crous_man/Shaders/ColliderShader.hpp")
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

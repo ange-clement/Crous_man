@@ -75,19 +75,20 @@ void EntityManager::initShaders() {
 }
 
 void EntityManager::initSystems() {
+
     if (SystemIDs::NUMBER >= 16) {
         std::cout << "WARNING TOO MANY COMPONENTS" << std::endl;
     }
     systems.resize(SystemIDs::NUMBER);
 
-    systems[SystemIDs::MeshID] = new MeshSystem();
-    systems[SystemIDs::RendererID] = new RendererSystem();
-    systems[SystemIDs::PointLightID] = new PointLightSystem();
-    systems[SystemIDs::CameraID] = new CameraSystem();
-    systems[SystemIDs::SpinID] = new SpinSystem();
-    systems[SystemIDs::DestructibleID] = new DestructibleSystem();
-    systems[SystemIDs::FlyingControllerID] = new FlyingControllerSystem();
-    systems[SystemIDs::ColliderID] = new ColliderSystem();
+    systems[SystemIDs::MeshID] =                new MeshSystem();
+    systems[SystemIDs::RendererID] =            new RendererSystem();
+    systems[SystemIDs::PointLightID] =          new PointLightSystem();
+    systems[SystemIDs::ColliderID] =            new ColliderSystem();
+    systems[SystemIDs::CameraID] =              new CameraSystem();
+    systems[SystemIDs::SpinID] =                new SpinSystem();
+    systems[SystemIDs::DestructibleID] =        new DestructibleSystem();
+    systems[SystemIDs::FlyingControllerID] =    new FlyingControllerSystem();
 }
 
 void EntityManager::initializeAllSystems() {
