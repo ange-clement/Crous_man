@@ -171,9 +171,8 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     BasicShapeRender::instance->renderQuad();
 
     //Now render basic colliders
-    glDisable(GL_DEPTH_TEST);
+    glClear(GL_DEPTH_BUFFER_BIT);
     colliderRenderInstance->renderAll(view, projection);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void CameraSystem::addEntityComponent() {
