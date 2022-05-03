@@ -70,7 +70,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
         e->worldTransform->applyToPoint(glm::vec3(0.0, 0.0, 1.0)),
         glm::vec3(0.0, 1.0, 0.0)
     );
-    //view = this->worldTransform->inverse()->toMat4();
+    //glm::mat4 view = e->worldTransform->inverse()->toMat4();
 
     glm::mat4 projection = glm::perspective(
         c->fov,
