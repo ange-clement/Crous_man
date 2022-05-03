@@ -4,6 +4,7 @@
 #include "../ECS/ComponentSystem.hpp"
 
 class GShader;
+class MeshEShader;
 
 struct Mesh;
 
@@ -35,6 +36,7 @@ public:
     void initBuffers(unsigned short i, unsigned short entityID);
 
     void renderAll(glm::mat4 view, glm::mat4 projection);
+    void renderUsingShader(MeshEShader* shader, glm::mat4 view, glm::mat4 projection);
 
     Renderer* getRenderer(unsigned short i);
     Mesh* getMesh(unsigned short i);

@@ -5,10 +5,12 @@
 #include <common/gBuffer.hpp>
 #include <common/textureFramebuffer.hpp>
 
+class MeshEShader;
+class QuadEShader;
 class LShader;
 class PEShader;
-class ColliderSystem;
 
+class ColliderSystem;
 class RendererSystem;
 class PointLightSystem;
 
@@ -22,10 +24,11 @@ struct Camera {
     float minRange = 0.01;
     float maxRange = 1000.0;
 
-    TextureFramebuffer textureFramebuffer;
-    
-    GBuffer gBuffer;
+    GBuffer gBuffer;                        // Frammebuffer contenant les textures du GShader (fragPos, normal, albedo, specular)
+    TextureFramebuffer textureFramebuffer;  // Frammebuffer contenant la texture du LShader
 
+    std::vector<MeshEShader*> meshEShadersinstances;
+    std::vector<QuadEShader*> quadEShadersinstances;
     LShader* lShaderInstance;
     PEShader* peShaderInstance;
 

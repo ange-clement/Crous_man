@@ -11,13 +11,18 @@
 
 #include "frameBuffer.hpp"
 
-FrameBuffer::FrameBuffer() {
-
-}
 
 FrameBuffer::FrameBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, unsigned int numberOfBuffer) {
     this->numberOfBuffer = numberOfBuffer;
     init(SCR_WIDTH, SCR_HEIGHT);
+}
+
+FrameBuffer::~FrameBuffer() {
+    for (unsigned int i = 0; i < numberOfBuffer; i++) {
+        glDeleteTextures(1, &buffers[i]);
+    }
+    glDeleteFramebuffers(1, &frameBufferObject);
+    delete buffers;
 }
 
 void FrameBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
@@ -29,6 +34,8 @@ void FrameBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
 }
 
 void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
+    this->width = SCR_WIDTH;
+    this->height = SCR_HEIGHT;
     glGenFramebuffers(1, &frameBufferObject);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
 
@@ -55,4 +62,9 @@ void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FrameBuffer::use() {
+    glViewport(0, 0, this->width, this->height);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->frameBufferObject);
 }
