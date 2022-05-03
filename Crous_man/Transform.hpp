@@ -51,6 +51,10 @@ public:
 
     glm::mat4 toMat4();
 
+    glm::mat4 toMat4NoScaling();
+
+    glm::mat4 toMat4NoScalingNoRotation();
+
     glm::mat4 toNormal();
 
     glm::vec3 getRight();

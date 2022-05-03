@@ -134,6 +134,22 @@ glm::mat4 Transform::toMat4() {
     return mat;
 }
 
+glm::mat4 Transform::toMat4NoScaling() {
+    glm::mat4 mat = rotation.toMat4();
+    mat[3][0] = translation[0];
+    mat[3][1] = translation[1];
+    mat[3][2] = translation[2];
+    return mat;
+}
+
+glm::mat4 Transform::toMat4NoScalingNoRotation() {
+    glm::mat4 mat;
+    mat[3][0] = translation[0];
+    mat[3][1] = translation[1];
+    mat[3][2] = translation[2];
+    return mat;
+}
+
 glm::mat4 Transform::toNormal() {
     return glm::transpose(this->inverse()->toMat4());
     //return glm::transpose(rotation.toMat4());

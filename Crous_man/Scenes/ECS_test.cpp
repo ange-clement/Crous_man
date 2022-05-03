@@ -111,6 +111,14 @@ void createSceneECS() {
 
 void createSceneCollider() {
    
+    Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+        ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
+        ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->updateRenderer()
+        ->fitSphereColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
     Entity* plane = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
         ->setScale(glm::vec3(100.0, 100.0, 1.0))
@@ -121,15 +129,7 @@ void createSceneCollider() {
         ->fitAABBColliderToMesh()
         ->setRenderingCollider()
         ->build();
-
    
-   Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
-       ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
-       ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-       ->updateRenderer()
-       ->fitSphereColliderToMesh()
-       ->setRenderingCollider()
-       ->build();
 
     Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))

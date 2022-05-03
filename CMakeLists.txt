@@ -136,13 +136,13 @@ add_executable(
 	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Destructible.cpp
 	Crous_man/Components/Destructible.hpp
-
-	
 	Crous_man/Components/Collider.cpp
 	Crous_man/Components/Collider.hpp
 
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
+	Crous_man/Components/Controllers/SimpleMovementPlayer.cpp
+	Crous_man/Components/Controllers/SimpleMovementPlayer.hpp
 
 	Crous_man/InputManager.cpp
 	Crous_man/InputManager.hpp

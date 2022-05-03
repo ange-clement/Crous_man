@@ -30,6 +30,7 @@
 #include "../Components/Destructible.hpp"
 #include "../Components/Collider.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
+#include "../Components/Controllers/SimpleMovementPlayer.hpp"
 
 
 #include "ComponentSystem.hpp"
@@ -72,6 +73,7 @@ void EntityManager::initShaders() {
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
     new TextureGShader();
+    new ColliderShader();
 }
 
 void EntityManager::initSystems() {
@@ -81,14 +83,15 @@ void EntityManager::initSystems() {
     }
     systems.resize(SystemIDs::NUMBER);
 
-    systems[SystemIDs::MeshID] =                new MeshSystem();
-    systems[SystemIDs::RendererID] =            new RendererSystem();
-    systems[SystemIDs::PointLightID] =          new PointLightSystem();
-    systems[SystemIDs::ColliderID] =            new ColliderSystem();
-    systems[SystemIDs::CameraID] =              new CameraSystem();
-    systems[SystemIDs::SpinID] =                new SpinSystem();
-    systems[SystemIDs::DestructibleID] =        new DestructibleSystem();
-    systems[SystemIDs::FlyingControllerID] =    new FlyingControllerSystem();
+    systems[SystemIDs::MeshID] =                    new MeshSystem();
+    systems[SystemIDs::RendererID] =                new RendererSystem();
+    systems[SystemIDs::PointLightID] =              new PointLightSystem();
+    systems[SystemIDs::ColliderID] =                new ColliderSystem();
+    systems[SystemIDs::CameraID] =                  new CameraSystem();
+    systems[SystemIDs::SpinID] =                    new SpinSystem();
+    systems[SystemIDs::DestructibleID] =            new DestructibleSystem();
+    systems[SystemIDs::FlyingControllerID] =        new FlyingControllerSystem();
+    systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
 }
 
 void EntityManager::initializeAllSystems() {

@@ -11,6 +11,7 @@ struct Spin;
 struct Destructible;
 struct FlyingController;
 struct Collider;
+struct SimpleMovementPlayer;
 
 class Entity;
 class ComponentSystem;
@@ -30,7 +31,7 @@ public:
     std::vector<Destructible> destructibleComponents;
     std::vector<FlyingController> flyingControllerComponents;
     std::vector<Collider> colliderComponents;
-
+    std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;
 public:
 
     EntityManager();

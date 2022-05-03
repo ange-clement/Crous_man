@@ -60,6 +60,8 @@ private :
     void QuadTreeCollisionResolution();
     void OcTreeCollisionResolution();
 
+    void clearAllCollision();
+
 public :
     bool drawColliders;
 
