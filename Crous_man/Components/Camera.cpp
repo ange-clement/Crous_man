@@ -11,6 +11,7 @@
 
 
 #include <common/basicShapeRender.hpp>
+#include <common/FrameBuffer.hpp>
 
 #include "../Util.hpp"
 
@@ -19,7 +20,9 @@
 #include "../ECS/Entity.hpp"
 #include "../Transform.hpp"
 
+#include "../Shaders/DepthMeshEShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
+#include "../Shaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/SingleTextureQuadShader.hpp"
 
 #include "Camera.hpp"
@@ -29,6 +32,8 @@
 #include "Collider.hpp"
 #include <common/gBuffer.hpp>
 
+#include "../Shaders/MeshEShader.hpp"
+#include "../Shaders/QuadEShader.hpp"
 #include "../Shaders/LShader.hpp"
 #include "../Shaders/PEShader.hpp"
 
@@ -42,6 +47,12 @@ void Camera::updateWidthHeight(unsigned int width, unsigned int height) {
     this->fov = width /(float) height;
     this->gBuffer.update(width, height);
     this->textureFramebuffer.update(width, height);
+    for (unsigned int i = 0, size = this->quadEShadersinstances.size(); i < size; i++) {
+        this->quadEShadersinstances[i]->updateBufferWidthHeight(width, height);
+    }
+    for (unsigned int i = 0, size = this->meshEShadersinstances.size(); i < size; i++) {
+        this->meshEShadersinstances[i]->updateBufferWidthHeight(width, height);
+    }
 }
 
 CameraSystem::CameraSystem() : ComponentSystem(){
@@ -57,7 +68,11 @@ CameraSystem::~CameraSystem() {
 
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     Camera* c = getCamera(i);
-    c->lShaderInstance = BlinnPhongLShader::instance;
+    DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
+    depthEShader->use();
+    depthEShader->setFromPos(glm::vec3(0.0, 0.0, 0.0));
+    c->meshEShadersinstances.push_back(depthEShader);
+    c->lShaderInstance = BlinnPhongShadowLShader::instance;
     c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
     c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
@@ -86,6 +101,37 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     rendererInstance->renderAll(view, projection);
 
+    // 2. effect pass: Add new textures that may be used by the light shader
+    // ---------------------------------------------------------------------
+    //  2.1 mesh effect pass : render the scene meshes
+    //  ----------------------------------------------
+    
+    //glDisable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
+    //glClear(GL_DEPTH_BUFFER_BIT);
+    for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
+        rendererInstance->renderUsingShader(c->meshEShadersinstances[i], view, projection);
+    }
+    //  2.2 quad effect pass : render a quad and use previous buffers to generate
+    //  ----------------------------------------------
+    for (unsigned int i = 0, size = c->quadEShadersinstances.size(); i < size; i++) {
+        //TODO
+    }
+    // Then recover all the buffers into a list
+    std::vector<GLuint> buffers;
+    for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
+        FrameBuffer* fb = c->meshEShadersinstances[i]->fBuffer;
+        for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
+            buffers.push_back(fb->buffers[b]);
+        }
+    }
+    for (unsigned int i = 0, size = c->quadEShadersinstances.size(); i < size; i++) {
+        FrameBuffer* fb = c->quadEShadersinstances[i]->fBuffer;
+        for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
+            buffers.push_back(fb->buffers[b]);
+        }
+    }
+
 
     c->textureFramebuffer.use();
     // 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
@@ -95,6 +141,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     ls->use();
     ls->setViewPos(e->worldTransform->translation);
     ls->setBuffers(c->gBuffer.gPosition, c->gBuffer.gNormal, c->gBuffer.gAlbedoSpec);
+    ls->useBuffers(buffers);
 
     // send light relevant uniforms
     std::vector<PointLight>* lights = &EntityManager::instance->pointLightComponents;

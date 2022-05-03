@@ -13,7 +13,9 @@
 #include "Bitmap.hpp"
 
 #include "../Shaders/BasicGShader.hpp"
+#include "../Shaders/DepthMeshEShader.hpp"
 #include "../Shaders/BlinnPhongLShader.hpp"
+#include "../Shaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/SingleTextureQuadShader.hpp"
 #include "../Shaders/TextureGShader.hpp"
 
@@ -70,6 +72,8 @@ void EntityManager::initUtil() {
 
 void EntityManager::initShaders() {
     new BasicGShader();
+    new DepthMeshEShader();
+    new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
     new TextureGShader();

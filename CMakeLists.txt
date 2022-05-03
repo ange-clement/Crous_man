@@ -98,14 +98,23 @@ add_executable(
 	Crous_man/Shaders/QuadShader.hpp
 	Crous_man/Shaders/GShader.cpp
 	Crous_man/Shaders/GShader.hpp
+	Crous_man/Shaders/MeshEShader.cpp
+	Crous_man/Shaders/MeshEShader.hpp
+	Crous_man/Shaders/QuadEShader.cpp
+	Crous_man/Shaders/QuadEShader.hpp
 	Crous_man/Shaders/LShader.cpp
 	Crous_man/Shaders/LShader.hpp
 	Crous_man/Shaders/PEShader.cpp
 	Crous_man/Shaders/PEShader.hpp
+
 	Crous_man/Shaders/BasicGShader.cpp
 	Crous_man/Shaders/BasicGShader.hpp
+	Crous_man/Shaders/DepthMeshEShader.cpp
+	Crous_man/Shaders/DepthMeshEShader.hpp
 	Crous_man/Shaders/BlinnPhongLShader.cpp
 	Crous_man/Shaders/BlinnPhongLShader.hpp
+	Crous_man/Shaders/BlinnPhongShadowLShader.cpp
+	Crous_man/Shaders/BlinnPhongShadowLShader.hpp
 	Crous_man/Shaders/SingleTextureQuadShader.cpp
 	Crous_man/Shaders/SingleTextureQuadShader.hpp
 	Crous_man/Shaders/TextureGShader.cpp
@@ -150,8 +159,7 @@ add_executable(
 	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
-	Crous_man/Scenes/ECS_test.hpp
-	)
+	Crous_man/Scenes/ECS_test.hpp)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

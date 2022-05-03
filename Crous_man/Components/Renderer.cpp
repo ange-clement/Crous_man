@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <functional>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +22,7 @@
 #include "Renderer.hpp"
 
 #include "../Shaders/GShader.hpp"
+#include "../Shaders/MeshEShader.hpp"
 #include "Mesh.hpp"
 
 
@@ -144,6 +146,51 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
                     m->indices.size(), // count
                     GL_UNSIGNED_SHORT, // type
                     (void*)0           // element array buffer offset
+        );
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+}
+
+void RendererSystem::renderUsingShader(MeshEShader* shader, glm::mat4 view, glm::mat4 projection) {
+    unsigned short entityID;
+
+    shader->use();
+
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        entityID = entityIDs[i];
+        if (entityID == (unsigned short)-1)
+            continue;
+
+        Renderer* r = getRenderer(i);
+        Mesh* m = getMesh(r->meshID);
+        Entity* e = EntityManager::instance->entities[entityID];
+
+        if (!shader->acceptRendererIf(r)) {
+            continue;
+        }
+
+        glm::mat4 model = e->worldTransform->toMat4();
+        glm::mat4 normal = e->worldTransform->toNormal();
+
+        shader->setMVPN(model, view, projection, normal);
+
+        glBindVertexArray(r->vertexArray);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+
+        glDrawElements(
+            GL_TRIANGLES,      // mode
+            m->indices.size(), // count
+            GL_UNSIGNED_SHORT, // type
+            (void*)0           // element array buffer offset
         );
 
         glDisableVertexAttribArray(0);

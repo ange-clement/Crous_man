@@ -50,6 +50,10 @@ void LShader::setBuffers(GLuint gPosition, GLuint gNormal, GLuint gAlbedo) {
     glBindTexture(GL_TEXTURE_2D, gAlbedo);
 }
 
+void LShader::useBuffers(std::vector<GLuint> buffers) {
+
+}
+
 void LShader::setLight(unsigned int index, glm::vec3 position, glm::vec3 color, float linear, float quadratic) {
     GLuint posPos       = glGetUniformLocation(this->programID, ("lights[" + std::to_string(index) + "].Position").c_str());
     GLuint colorPos     = glGetUniformLocation(this->programID, ("lights[" + std::to_string(index) + "].Color").c_str());

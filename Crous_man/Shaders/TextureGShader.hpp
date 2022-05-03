@@ -16,7 +16,6 @@ public:
     TextureGShader();
     ~TextureGShader();
 
-    void use();
     void setBuffers(GLuint uDiffuseTexture, GLuint uSpecularTexture);
     void prerender(const Renderer* r);
 };

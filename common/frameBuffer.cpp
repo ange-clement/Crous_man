@@ -11,13 +11,19 @@
 
 #include "frameBuffer.hpp"
 
-FrameBuffer::FrameBuffer() {
-
-}
 
 FrameBuffer::FrameBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, unsigned int numberOfBuffer) {
     this->numberOfBuffer = numberOfBuffer;
+    this->buffers = new GLuint[numberOfBuffer];
     init(SCR_WIDTH, SCR_HEIGHT);
+}
+
+FrameBuffer::~FrameBuffer() {
+    for (unsigned int i = 0; i < numberOfBuffer; i++) {
+        glDeleteTextures(1, &buffers[i]);
+    }
+    glDeleteFramebuffers(1, &frameBufferObject);
+    delete buffers;
 }
 
 void FrameBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
@@ -29,12 +35,15 @@ void FrameBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
 }
 
 void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
+    this->width = SCR_WIDTH;
+    this->height = SCR_HEIGHT;
     glGenFramebuffers(1, &frameBufferObject);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject);
 
     unsigned int* attachments = new unsigned int[this->numberOfBuffer];
 
     for (unsigned int i = 0; i < this->numberOfBuffer; i++) {
+        std::cout << GL_COLOR_ATTACHMENT0 + i << std::endl;
         glGenTextures(1, &buffers[i]);
         glBindTexture(GL_TEXTURE_2D, buffers[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -55,4 +64,10 @@ void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+}
+
+void FrameBuffer::use() {
+    //glViewport(0, 0, this->width, this->height);
+    glBindFramebuffer(GL_FRAMEBUFFER, this->frameBufferObject);
 }
