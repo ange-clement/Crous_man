@@ -47,9 +47,9 @@ void main()
         float attenuation = 1.0 / (1.0 + lights[i].Linear * distance + lights[i].Quadratic * distance * distance);
         diffuse *= attenuation;
         specular *= attenuation;
-        lighting += diffuse + specular;
+        lighting += shadow * (diffuse + specular);
     }
-    FragColor = vec4(shadow + lighting, 1.0);
+    FragColor = vec4(lighting, 1.0);
 
     //FragColor = vec4(vec3(shadow), 1.0);
 }

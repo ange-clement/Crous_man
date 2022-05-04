@@ -73,17 +73,15 @@ CameraSystem::~CameraSystem() {
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     Camera* c = getCamera(i);
 
-    DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
+    /*DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
     depthEShader->use();
     depthEShader->setFromPos(glm::vec3(0.0, 0.0, 0.0));
-    depthEShader->setMaxDistance(c->maxRange*0.1);
+    depthEShader->setMaxDistance(c->maxRange*0.1);*/
 
 
     ShadowQuadEShader* shadowEShader = ShadowQuadEShader::instance;
-    shadowEShader->use();
-    shadowEShader->setLightSpaceMatrix(glm::mat4(1.0));
 
-    c->meshEShadersinstances.push_back(depthEShader);
+    //c->meshEShadersinstances.push_back(depthEShader);
     c->quadEShadersinstances.push_back(shadowEShader);
     c->lShaderInstance = BlinnPhongShadowLShader::instance;
     c->peShaderInstance = SingleTextureQuadShader::instance;
