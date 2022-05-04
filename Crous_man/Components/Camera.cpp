@@ -21,6 +21,7 @@
 #include "../Transform.hpp"
 
 #include "../Shaders/EShaders/DepthMeshEShader.hpp"
+#include "../Shaders/EShaders/ShadowQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
@@ -47,12 +48,15 @@ void Camera::updateWidthHeight(unsigned int width, unsigned int height) {
     this->fov = width /(float) height;
     this->gBuffer.update(width, height);
     this->textureFramebuffer.update(width, height);
+
+    /*
     for (unsigned int i = 0, size = this->quadEShadersinstances.size(); i < size; i++) {
         this->quadEShadersinstances[i]->updateBufferWidthHeight(width, height);
     }
     for (unsigned int i = 0, size = this->meshEShadersinstances.size(); i < size; i++) {
         this->meshEShadersinstances[i]->updateBufferWidthHeight(width, height);
     }
+    */
 }
 
 CameraSystem::CameraSystem() : ComponentSystem(){
@@ -72,9 +76,15 @@ void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
     depthEShader->use();
     depthEShader->setFromPos(glm::vec3(0.0, 0.0, 0.0));
-    depthEShader->setMaxDistance(c->maxRange);
+    depthEShader->setMaxDistance(c->maxRange*0.1);
+
+
+    ShadowQuadEShader* shadowEShader = ShadowQuadEShader::instance;
+    shadowEShader->use();
+    shadowEShader->setLightSpaceMatrix(glm::mat4(1.0));
 
     c->meshEShadersinstances.push_back(depthEShader);
+    c->quadEShadersinstances.push_back(shadowEShader);
     c->lShaderInstance = BlinnPhongShadowLShader::instance;
     c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
@@ -89,7 +99,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
         e->worldTransform->translation,
         e->worldTransform->applyToPoint(glm::vec3(0.0, 0.0, 1.0)),
         glm::vec3(0.0, 1.0, 0.0)
-    );  
+    );
     //glm::mat4 view = e->worldTransform->inverse()->toMat4();
 
     glm::mat4 projection = glm::perspective(
@@ -112,23 +122,32 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     //glDisable(GL_DEPTH_TEST);
     //glEnable(GL_DEPTH_TEST);
     //glClear(GL_DEPTH_BUFFER_BIT);
+    //TODO map des différent buffers avec leurs nom (afin de ne pas se préocuper de l'ordre)
+    //     On peut faire ça avec un id par buffer (de la même manière que pour les systèmes)
+    std::vector<GLuint> buffers; // List of buffers
+    buffers.push_back(c->gBuffer.gPosition);
+    buffers.push_back(c->gBuffer.gNormal);
+    buffers.push_back(c->gBuffer.gAlbedoSpec);
+
     for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
+        // Render the meshes
         rendererInstance->renderUsingShader(c->meshEShadersinstances[i], view, projection);
-    }
-    //  2.2 quad effect pass : render a quad and use previous buffers to generate
-    //  ----------------------------------------------
-    for (unsigned int i = 0, size = c->quadEShadersinstances.size(); i < size; i++) {
-        //TODO
-    }
-    // Then recover all the buffers into a list
-    std::vector<GLuint> buffers;
-    for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
+
+        // Add the buffers to the list
         FrameBuffer* fb = c->meshEShadersinstances[i]->fBuffer;
         for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
             buffers.push_back(fb->buffers[b]);
         }
     }
+    //  2.2 quad effect pass : render a quad and use previous buffers to generate
+    //  -------------------------------------------------------------------------
     for (unsigned int i = 0, size = c->quadEShadersinstances.size(); i < size; i++) {
+        // Render a quad
+        c->quadEShadersinstances[i]->use();
+        c->quadEShadersinstances[i]->useBuffers(buffers);
+        BasicShapeRender::instance->renderQuad();
+
+        // Add the buffers to the list
         FrameBuffer* fb = c->quadEShadersinstances[i]->fBuffer;
         for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
             buffers.push_back(fb->buffers[b]);
@@ -144,7 +163,6 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     ls->use();
     ls->setViewPos(e->worldTransform->translation);
-    ls->setBuffers(c->gBuffer.gPosition, c->gBuffer.gNormal, c->gBuffer.gAlbedoSpec);
     ls->useBuffers(buffers);
 
     // send light relevant uniforms

@@ -114,6 +114,8 @@ add_executable(
 
 	Crous_man/Shaders/EShaders/DepthMeshEShader.cpp
 	Crous_man/Shaders/EShaders/DepthMeshEShader.hpp
+	Crous_man/Shaders/EShaders/ShadowQuadEShader.cpp
+	Crous_man/Shaders/EShaders/ShadowQuadEShader.hpp
 
 	Crous_man/Shaders/LShaders/BlinnPhongLShader.cpp
 	Crous_man/Shaders/LShaders/BlinnPhongLShader.hpp

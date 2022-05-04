@@ -28,3 +28,9 @@ void QuadEShader::updateBufferWidthHeight(unsigned int width, unsigned int heigh
 void QuadEShader::useBuffers(std::vector<GLuint> buffers) {
 
 }
+
+void QuadEShader::use() {
+	QuadShader::use();
+	this->fBuffer->use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}

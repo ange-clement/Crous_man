@@ -15,6 +15,7 @@
 #include "../Shaders/GShaders/BasicGShader.hpp"
 #include "../Shaders/GShaders/TextureGShader.hpp"
 #include "../Shaders/EShaders/DepthMeshEShader.hpp"
+#include "../Shaders/EShaders/ShadowQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
@@ -73,6 +74,7 @@ void EntityManager::initShaders() {
     new BasicGShader();
     new TextureGShader();
     new DepthMeshEShader();
+    new ShadowQuadEShader();
     new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
