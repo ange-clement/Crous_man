@@ -20,10 +20,10 @@
 #include "../ECS/Entity.hpp"
 #include "../Transform.hpp"
 
-#include "../Shaders/DepthMeshEShader.hpp"
-#include "../Shaders/BlinnPhongLShader.hpp"
-#include "../Shaders/BlinnPhongShadowLShader.hpp"
-#include "../Shaders/SingleTextureQuadShader.hpp"
+#include "../Shaders/EShaders/DepthMeshEShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongLShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
+#include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
 
 #include "Camera.hpp"
 

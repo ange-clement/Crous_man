@@ -1,7 +1,7 @@
 #ifndef BLINN_PHONG_SHADER_HPP
 #define BLINN_PHONG_SHADER_HPP
 
-#include "LShader.hpp"
+#include "../LShader.hpp"
 
 class BlinnPhongLShader : public LShader {
 public:

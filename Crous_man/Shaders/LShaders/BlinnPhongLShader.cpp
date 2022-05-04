@@ -13,7 +13,7 @@
 
 BlinnPhongLShader* BlinnPhongLShader::instance = NULL;
 
-BlinnPhongLShader::BlinnPhongLShader() : LShader("Shaders/BlinnPhongLShader.glsl") {
+BlinnPhongLShader::BlinnPhongLShader() : LShader("Shaders/LShaders/BlinnPhongLShader.glsl") {
     if (BlinnPhongLShader::instance == NULL) {
         BlinnPhongLShader::instance = this;
     } else {

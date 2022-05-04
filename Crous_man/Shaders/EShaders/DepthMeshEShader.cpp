@@ -14,7 +14,7 @@
 DepthMeshEShader* DepthMeshEShader::instance = NULL;
 
 DepthMeshEShader::DepthMeshEShader() : MeshEShader(
-    "Shaders/DepthMeshEShader.glsl",
+    "Shaders/EShaders/DepthMeshEShader.glsl",
     800, 600, 1,
     [](Renderer* r) { return true; } )
 {

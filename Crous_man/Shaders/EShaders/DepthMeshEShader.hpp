@@ -1,7 +1,7 @@
 #ifndef DEPTH_MESH_E_SHADER_HPP
 #define DEPTH_MESH_E_SHADER_HPP
 
-#include "MeshEShader.hpp"
+#include "../MeshEShader.hpp"
 
 class DepthMeshEShader : public MeshEShader {
 public:

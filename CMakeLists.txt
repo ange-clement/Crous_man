@@ -107,18 +107,22 @@ add_executable(
 	Crous_man/Shaders/PEShader.cpp
 	Crous_man/Shaders/PEShader.hpp
 
-	Crous_man/Shaders/BasicGShader.cpp
-	Crous_man/Shaders/BasicGShader.hpp
-	Crous_man/Shaders/DepthMeshEShader.cpp
-	Crous_man/Shaders/DepthMeshEShader.hpp
-	Crous_man/Shaders/BlinnPhongLShader.cpp
-	Crous_man/Shaders/BlinnPhongLShader.hpp
-	Crous_man/Shaders/BlinnPhongShadowLShader.cpp
-	Crous_man/Shaders/BlinnPhongShadowLShader.hpp
-	Crous_man/Shaders/SingleTextureQuadShader.cpp
-	Crous_man/Shaders/SingleTextureQuadShader.hpp
-	Crous_man/Shaders/TextureGShader.cpp
-	Crous_man/Shaders/TextureGShader.hpp
+	Crous_man/Shaders/GShaders/BasicGShader.cpp
+	Crous_man/Shaders/GShaders/BasicGShader.hpp
+	Crous_man/Shaders/GShaders/TextureGShader.cpp
+	Crous_man/Shaders/GShaders/TextureGShader.hpp
+
+	Crous_man/Shaders/EShaders/DepthMeshEShader.cpp
+	Crous_man/Shaders/EShaders/DepthMeshEShader.hpp
+
+	Crous_man/Shaders/LShaders/BlinnPhongLShader.cpp
+	Crous_man/Shaders/LShaders/BlinnPhongLShader.hpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.cpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.hpp
+
+	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.cpp
+	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.hpp
+
 	Crous_man/Shaders/ColliderShader.cpp
 	Crous_man/Shaders/ColliderShader.hpp
 

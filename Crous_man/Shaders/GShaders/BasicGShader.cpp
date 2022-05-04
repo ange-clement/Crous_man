@@ -13,7 +13,7 @@
 
 BasicGShader* BasicGShader::instance = NULL;
 
-BasicGShader::BasicGShader() : GShader("Shaders/BasicGShader.glsl") {
+BasicGShader::BasicGShader() : GShader("Shaders/GShaders/BasicGShader.glsl") {
     if (BasicGShader::instance == NULL) {
         BasicGShader::instance = this;
     } else {

@@ -13,7 +13,7 @@
 
 SingleTextureQuadShader* SingleTextureQuadShader::instance = NULL;
 
-SingleTextureQuadShader::SingleTextureQuadShader() : PEShader("Shaders/SingleTextureQuadShader.glsl") {
+SingleTextureQuadShader::SingleTextureQuadShader() : PEShader("Shaders/PEShaders/SingleTextureQuadShader.glsl") {
     if (SingleTextureQuadShader::instance == NULL) {
         SingleTextureQuadShader::instance = this;
     } else {

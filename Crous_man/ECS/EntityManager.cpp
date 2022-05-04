@@ -12,12 +12,12 @@
 #include "SystemIDs.hpp"
 #include "Bitmap.hpp"
 
-#include "../Shaders/BasicGShader.hpp"
-#include "../Shaders/DepthMeshEShader.hpp"
-#include "../Shaders/BlinnPhongLShader.hpp"
-#include "../Shaders/BlinnPhongShadowLShader.hpp"
-#include "../Shaders/SingleTextureQuadShader.hpp"
-#include "../Shaders/TextureGShader.hpp"
+#include "../Shaders/GShaders/BasicGShader.hpp"
+#include "../Shaders/GShaders/TextureGShader.hpp"
+#include "../Shaders/EShaders/DepthMeshEShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongLShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
+#include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
 
 #include "../InputManager.hpp"
 #include "../SoundManager.hpp"
@@ -71,11 +71,11 @@ void EntityManager::initUtil() {
 
 void EntityManager::initShaders() {
     new BasicGShader();
+    new TextureGShader();
     new DepthMeshEShader();
     new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
-    new TextureGShader();
 }
 
 void EntityManager::initSystems() {
