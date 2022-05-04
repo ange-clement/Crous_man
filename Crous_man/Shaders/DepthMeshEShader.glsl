@@ -7,10 +7,9 @@ in vec3 FragPos;
 in vec3 Normal;
 
 uniform vec3 uFromPos;
+uniform float uMaxDistance;
 
 void main()
 {
-    //texBuffer0.r = length(FragPos - uFromPos);
-    //texBuffer0.rgba = vec4(0.5, 0.5, 0.5, 1.0);
-    texBuffer0.rgba = vec4(vec3(length(FragPos - uFromPos)), 1.0);
+    texBuffer0.rgba = vec4(vec3(length(FragPos - uFromPos)) / uMaxDistance, 1.0);
 }

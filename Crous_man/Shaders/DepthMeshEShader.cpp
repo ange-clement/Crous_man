@@ -22,8 +22,7 @@ DepthMeshEShader::DepthMeshEShader() : MeshEShader(
         DepthMeshEShader::instance = this;
 
         this->uFromPosLocation = glGetUniformLocation(this->programID, "uFromPos");
-
-        glUniform1i(this->uFromPosLocation, 0);
+        this->uMaxDistanceLocation = glGetUniformLocation(this->programID, "uMaxDistance");
     }
     else {
         std::cerr << "Error : cannot instanciate two DepthMeshEShader" << std::endl;
@@ -36,4 +35,8 @@ DepthMeshEShader::~DepthMeshEShader() {
 
 void DepthMeshEShader::setFromPos(glm::vec3 fromPos) {
     glUniform3fv(this->uFromPosLocation, 1, &fromPos[0]);
+}
+
+void DepthMeshEShader::setMaxDistance(float maxDistance) {
+    glUniform1f(this->uMaxDistanceLocation, maxDistance);
 }

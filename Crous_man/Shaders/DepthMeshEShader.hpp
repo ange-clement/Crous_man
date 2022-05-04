@@ -8,12 +8,14 @@ public:
     static DepthMeshEShader* instance;
 
     GLuint uFromPosLocation;
+    GLuint uMaxDistanceLocation;
 
 public:
     DepthMeshEShader();
     ~DepthMeshEShader();
 
     void setFromPos(glm::vec3 fromPos);
+    void setMaxDistance(float maxDistance);
 };
 
 #endif

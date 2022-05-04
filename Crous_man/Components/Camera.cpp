@@ -68,9 +68,12 @@ CameraSystem::~CameraSystem() {
 
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     Camera* c = getCamera(i);
+
     DepthMeshEShader* depthEShader = DepthMeshEShader::instance;
     depthEShader->use();
     depthEShader->setFromPos(glm::vec3(0.0, 0.0, 0.0));
+    depthEShader->setMaxDistance(c->maxRange);
+
     c->meshEShadersinstances.push_back(depthEShader);
     c->lShaderInstance = BlinnPhongShadowLShader::instance;
     c->peShaderInstance = SingleTextureQuadShader::instance;
@@ -86,7 +89,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
         e->worldTransform->translation,
         e->worldTransform->applyToPoint(glm::vec3(0.0, 0.0, 1.0)),
         glm::vec3(0.0, 1.0, 0.0)
-    );
+    );  
     //glm::mat4 view = e->worldTransform->inverse()->toMat4();
 
     glm::mat4 projection = glm::perspective(
@@ -134,6 +137,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
 
 
     c->textureFramebuffer.use();
+    glViewport(0, 0, c->SCR_WIDTH, c->SCR_HEIGHT);
     // 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
     // -----------------------------------------------------------------------------------------------------------------------
     LShader* ls = c->lShaderInstance;
