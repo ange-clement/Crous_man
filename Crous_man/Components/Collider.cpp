@@ -943,3 +943,11 @@ ColliderResult* ColliderSystem::intersect(Collider c1, Collider c2) {
     std::cout << "NO COLLISION TEST FOUND !" << std::endl;
     return res;
 }
+
+
+std::vector<ColliderResult*> ColliderSystem::getResultOf(unsigned int entityID) {
+    std::map<unsigned short, std::vector<ColliderResult*>>::iterator it = collisionResultMap.find(entityID);
+    if (it == collisionResultMap.end())
+        return std::vector<ColliderResult*>();
+    return it->second;
+}

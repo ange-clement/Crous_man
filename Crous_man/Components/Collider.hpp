@@ -49,6 +49,7 @@ public :
     glm::vec3 pointCollision;
 };
 
+// Map : clef = entityID
 typedef std::map<unsigned short, std::vector<ColliderResult*>> CollisionResultMap;
 
 class ColliderSystem : public ComponentSystem {
@@ -83,6 +84,8 @@ public :
     void renderAll(glm::mat4 view, glm::mat4 projection);
     void drawCollider(unsigned short i);
     bool isInContactWithSomething(unsigned short i);
+
+    std::vector<ColliderResult*> getResultOf(unsigned int entityID);
 };
 
 

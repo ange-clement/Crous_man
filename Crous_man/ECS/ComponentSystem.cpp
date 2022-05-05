@@ -11,12 +11,14 @@
 
 #include "EntityManager.hpp"
 
+#include "../Components/Collider.hpp"
+
 #include "ComponentSystem.hpp"
 
 #include "Bitmap.hpp"
 
 ComponentSystem::ComponentSystem() {
-    
+    colliderSystemInstance = NULL;
 }
 
 ComponentSystem::~ComponentSystem() {
@@ -39,11 +41,17 @@ void ComponentSystem::updateCollisionAll() {
     }
 }
 void ComponentSystem::updateOnCollideAll() {
+    if (colliderSystemInstance == NULL)
+        colliderSystemInstance = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         if (entityIDs[i] == (unsigned short)-1)
             continue;
-        //TODO add colision data and call only if object is in collision
-        this->updateOnCollide(i, entityIDs[i]);
+        if (!EntityManager::instance->hasComponent(SystemIDs::ColliderID, entityIDs[i]))
+            continue;
+        std::vector<ColliderResult*> collisionResults = colliderSystemInstance->getResultOf(entityIDs[i]);
+        if (collisionResults.size() == 0)
+            continue;
+        this->updateOnCollide(i, entityIDs[i], collisionResults);
     }
 }
 void ComponentSystem::updatePhysicsAll() {
@@ -83,7 +91,7 @@ void ComponentSystem::update(unsigned short i, unsigned short entityID) {
 void ComponentSystem::updateCollision(unsigned short i, unsigned short entityID) {
 
 }
-void ComponentSystem::updateOnCollide(unsigned short i, unsigned short entityID) {
+void ComponentSystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*> & collisionResults) {
 
 }
 void ComponentSystem::updatePhysics(unsigned short i, unsigned short entityID) {

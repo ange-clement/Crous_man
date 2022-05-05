@@ -2,8 +2,12 @@
 #define COMPONENT_SYSTEM_HPP
 
 class Bitmap;
+class ColliderSystem;
+class ColliderResult;
 
 class ComponentSystem {
+private:
+    ColliderSystem* colliderSystemInstance;
 public:
     std::vector<unsigned short> entityIDs;
 
@@ -31,7 +35,7 @@ public:
 
     virtual void update(unsigned short i, unsigned short entityID);
     virtual void updateCollision(unsigned short i, unsigned short entityID);
-    virtual void updateOnCollide(unsigned short i, unsigned short entityID);
+    virtual void updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*> & collisionResults);
     virtual void updatePhysics(unsigned short i, unsigned short entityID);
     virtual void updateAfterPhysics(unsigned short i, unsigned short entityID);
     virtual void render(unsigned short i, unsigned short entityID);
