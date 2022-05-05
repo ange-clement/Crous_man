@@ -74,10 +74,17 @@ void ShadowQuadEShader::use() {
         shadowLightSourceTarget,
         glm::vec3(0.0f, 1.0f, 0.0f) );
     glm::mat4 lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
+    /*glm::mat4 lightProjection = glm::perspective(
+        45.0f,
+        4.0f/3.0f,
+        near_plane, far_plane
+    );*/
     depthInstance->use();
     depthInstance->setFromPos(shadowLightSourcePos);
     depthInstance->setMaxDistance(far_plane);
+    //glCullFace(GL_FRONT);
     rendererInstance->renderUsingShader(depthInstance, lightView, lightProjection);
+    //glCullFace(GL_BACK);
     
     QuadEShader::use();
 
