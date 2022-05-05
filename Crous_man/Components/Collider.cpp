@@ -129,8 +129,6 @@ Collider* ColliderSystem::getColliderEntityID(unsigned short entityID) {
 
 /* =============== Methods for collision detection and resolution =============== */
 void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) {
-    std::cout << "UPDATE COLLISONS" << std::endl;
-
     unsigned short entityIDJ;
     Collider* c_i = getCollider(i);
 
