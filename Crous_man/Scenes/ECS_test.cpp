@@ -111,7 +111,7 @@ void createSceneECS() {
 
 void createSceneCollider() {
    
-    Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+    Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
         ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
         ->updateRenderer()

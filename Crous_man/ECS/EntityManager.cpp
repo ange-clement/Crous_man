@@ -27,11 +27,12 @@
 
 #include "../Components/Mesh.hpp"
 #include "../Components/Renderer.hpp"
-#include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
+#include "../Components/Collider.hpp"
+#include "../Components/RigidBody.hpp"
+#include "../Components/PointLight.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Destructible.hpp"
-#include "../Components/Collider.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 #include "../Components/Controllers/SimpleMovementPlayer.hpp"
 
@@ -95,6 +96,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::RendererID] =                new RendererSystem();
     systems[SystemIDs::PointLightID] =              new PointLightSystem();
     systems[SystemIDs::ColliderID] =                new ColliderSystem();
+    systems[SystemIDs::RigidBodyID] =               new RigidBodySystem();
     systems[SystemIDs::CameraID] =                  new CameraSystem();
     systems[SystemIDs::SpinID] =                    new SpinSystem();
     systems[SystemIDs::DestructibleID] =            new DestructibleSystem();

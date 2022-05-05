@@ -7,10 +7,11 @@ struct Mesh;
 struct Renderer;
 struct Camera;
 struct PointLight;
-struct Spin;
-struct Destructible;
-struct FlyingController;
 struct Collider;
+struct RigidBody;
+struct Destructible;
+struct Spin;
+struct FlyingController;
 struct SimpleMovementPlayer;
 
 class Entity;
@@ -25,12 +26,13 @@ public:
 
     std::vector<Mesh> meshComponents;
     std::vector<Renderer> rendererComponents;
-    std::vector<PointLight> pointLightComponents;
     std::vector<Camera> cameraComponents;
+    std::vector<PointLight> pointLightComponents;
+    std::vector<Collider> colliderComponents;
+    std::vector<RigidBody> rigidBodyComponents;
     std::vector<Spin> spinComponents;
     std::vector<Destructible> destructibleComponents;
     std::vector<FlyingController> flyingControllerComponents;
-    std::vector<Collider> colliderComponents;
     std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;
 public:
 

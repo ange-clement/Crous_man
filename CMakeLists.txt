@@ -162,6 +162,8 @@ add_executable(
 	Crous_man/Components/Destructible.hpp
 	Crous_man/Components/Collider.cpp
 	Crous_man/Components/Collider.hpp
+	Crous_man/Components/RigidBody.cpp
+	Crous_man/Components/RigidBody.hpp
 
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
