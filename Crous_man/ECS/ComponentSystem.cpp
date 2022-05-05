@@ -48,7 +48,13 @@ void ComponentSystem::updateOnCollideAll() {
             continue;
         if (!EntityManager::instance->hasComponent(SystemIDs::ColliderID, entityIDs[i]))
             continue;
-        std::vector<ColliderResult*> collisionResults = colliderSystemInstance->getResultOf(entityIDs[i]);
+        std::vector<ColliderResult*> collisionResults;
+        std::vector<ColliderResult*> collisionMapResult = colliderSystemInstance->getResultOf(entityIDs[i]);
+        for (unsigned int c = 0, size = collisionMapResult.size(); c < size; c++) {
+            if (collisionMapResult[c] != NULL && collisionMapResult[c]->isInCollision) {
+                collisionResults.push_back(collisionMapResult[c]);
+            }
+        }
         if (collisionResults.size() == 0)
             continue;
         this->updateOnCollide(i, entityIDs[i], collisionResults);
