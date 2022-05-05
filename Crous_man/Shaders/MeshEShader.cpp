@@ -29,6 +29,10 @@ void MeshEShader::updateBufferWidthHeight(unsigned int width, unsigned int heigh
 	fBuffer->update(width, height);
 }
 
+void MeshEShader::setOutputShaders(GLuint* buffers) {
+
+}
+
 void MeshEShader::use() {
 	MeshShader::use();
 	this->fBuffer->use();

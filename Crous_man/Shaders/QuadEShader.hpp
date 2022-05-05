@@ -14,7 +14,8 @@ public:
 
     void updateBufferWidthHeight(unsigned int width, unsigned int height);
 
-    virtual void useBuffers(std::vector<GLuint> buffers);
+    virtual void useBuffers(const GLuint* buffers);
+    virtual void setOutputShaders(GLuint* buffers);
 
     virtual void use();
 };

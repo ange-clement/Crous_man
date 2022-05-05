@@ -50,7 +50,7 @@ void LShader::setBuffers(GLuint gPosition, GLuint gNormal, GLuint gAlbedo) {
     glBindTexture(GL_TEXTURE_2D, gAlbedo);
 }
 
-void LShader::useBuffers(std::vector<GLuint> buffers) {
+void LShader::useBuffers(const GLuint* buffers) {
     this->setBuffers(buffers[0], buffers[1], buffers[2]);
 }
 

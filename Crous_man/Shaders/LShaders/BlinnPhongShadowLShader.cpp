@@ -9,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "../../Components/Camera.hpp"
+
 #include "BlinnPhongShadowLShader.hpp"
 
 BlinnPhongShadowLShader* BlinnPhongShadowLShader::instance = NULL;
@@ -30,10 +32,10 @@ BlinnPhongShadowLShader::~BlinnPhongShadowLShader() {
 
 }
 
-void BlinnPhongShadowLShader::useBuffers(std::vector<GLuint> buffers) {
+void BlinnPhongShadowLShader::useBuffers(const GLuint* buffers) {
     LShader::useBuffers(buffers);
 
     glUniform1i(this->gShadow, 3);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, buffers[3]);
+    glBindTexture(GL_TEXTURE_2D, buffers[RenderBufferID::Shadow]);
 }

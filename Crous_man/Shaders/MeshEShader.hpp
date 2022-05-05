@@ -22,6 +22,8 @@ public:
 
     void updateBufferWidthHeight(unsigned int width, unsigned int height);
 
+    virtual void setOutputShaders(GLuint* buffers);
+
     virtual void use();
 };
 

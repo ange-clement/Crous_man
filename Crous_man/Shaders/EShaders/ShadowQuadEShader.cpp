@@ -13,6 +13,8 @@
 
 #include "../../ECS/EntityManager.hpp"
 
+#include "../../Components/Camera.hpp"
+
 #include "ShadowQuadEShader.hpp"
 
 #include "DepthMeshEShader.hpp"
@@ -91,7 +93,11 @@ void ShadowQuadEShader::use() {
     setLightSpaceMatrix(lightProjection * lightView);
 }
 
-void ShadowQuadEShader::useBuffers(std::vector<GLuint> buffers) {
-    this->setPosition(buffers[0]);
+void ShadowQuadEShader::useBuffers(const GLuint* buffers) {
+    this->setPosition(buffers[RenderBufferID::Position]);
     this->setShadowMap(depthInstance->fBuffer->buffers[0]);
+}
+
+void ShadowQuadEShader::setOutputShaders(GLuint* buffers) {
+    buffers[RenderBufferID::Shadow] = fBuffer->buffers[0];
 }
