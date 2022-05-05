@@ -85,6 +85,8 @@ add_executable(
 	common/ray.cpp
 	common/octree.hpp
 	common/octree.cpp
+	common/frustrum.cpp
+	common/frustrum.hpp
 	
 	external/image_ppm.cpp
 	external/image_ppm.h
