@@ -22,6 +22,7 @@
 
 #include "../Shaders/EShaders/DepthMeshEShader.hpp"
 #include "../Shaders/EShaders/ShadowQuadEShader.hpp"
+#include "../Shaders/EShaders/BlurQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"

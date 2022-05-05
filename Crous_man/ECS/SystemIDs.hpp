@@ -8,8 +8,9 @@ enum SystemIDs {
     CameraID,
     SpinID,
     DestructibleID,
-    FlyingControllerID,
     ColliderID,
+    RigidBodyID,
+    FlyingControllerID,
     SimplePlayerControllerID,
     NUMBER
 };
