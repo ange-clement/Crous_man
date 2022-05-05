@@ -300,24 +300,20 @@ std::vector<unsigned short> queryOnAABB(OctreeNode* node, const Collider& aabb) 
 	return result;
 }
 
-/*
-bool accelerate(const glm::vec3& position, float size) {
-	if (octree != 0) {
-		return false;
-	}
-
-	vec3 min(position.x - size, position.y - size, position.z - size);
-	vec3 max(position.x + size, position.y + size, position.z + size);
+OctreeNode* constructOctree(std::vector<unsigned short> objects,const glm::vec3& position, float size, int depth) {
+	glm::vec3 min(position.x - size, position.y - size, position.z - size);
+	glm::vec3 max(position.x + size, position.y + size, position.z + size);
 
 	// Construct tree root
-	octree = new OctreeNode();
-	octree->bounds = FromMinMax(min, max);
+	OctreeNode * octree = new OctreeNode();
+	AABBfromMinMax(octree->aabb,min, max);
 	octree->children = 0;
 	for (int i = 0, size = objects.size(); i < size; ++i) {
-		octree->models.push_back(objects[i]);
+		octree->entitiesID.push_back(objects[i]);
 	}
 
 	// Create tree
-	SplitTree(octree, 5);
-	return true;
-}*/
+	splitTree(*octree, 5);
+	return octree;
+}
+
