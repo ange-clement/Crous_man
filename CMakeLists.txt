@@ -171,7 +171,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
-)
+ "common/frustrum.hpp" "common/frustrum.cpp")
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

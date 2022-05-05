@@ -21,6 +21,14 @@
 ColliderResult::ColliderResult() {
 
 }
+
+ColliderResult::ColliderResult(unsigned short id, ColliderResult* c) {
+    this->entityCollidID = id;
+    this->isInCollision = c->isInCollision;
+    this->penetrationDistance = c->penetrationDistance;
+    this->pointCollision = c->pointCollision;
+}
+
 ColliderResult::~ColliderResult() {
 
 }
@@ -141,9 +149,10 @@ void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) 
             Collider* c_j = getCollider(j);
 
             ColliderResult* resC = intersect(*c_i, *c_j);
+            resC->entityCollidID = entityIDJ;
             //std::cout << "result of collision : " << ((resC->isInCollision) ? "TRUE" : "FALSE") << " => (" << i << "," << j << ")" << std::endl;
             collisionResultMap.at(entityID)[j] = resC;
-            collisionResultMap.at(entityIDJ)[i] = resC;
+            collisionResultMap.at(entityIDJ)[i] = new ColliderResult(entityID,resC);
         //}
     }
     //std::cout << " === END UPDATE COLLISION === " << std::endl;

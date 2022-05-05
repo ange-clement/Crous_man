@@ -37,8 +37,10 @@ struct Collider{
 class ColliderResult {
 public :
     ColliderResult();
+    ColliderResult(unsigned short id, ColliderResult *c);
     ~ColliderResult();
 
+    unsigned short entityCollidID;
     bool isInCollision;
     float penetrationDistance;
     glm::vec3 pointCollision;

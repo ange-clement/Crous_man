@@ -30,6 +30,7 @@ typedef struct RaycastResult {
 	glm::vec3 point;
 	glm::vec3 normal;
 	float t;
+
 	bool hit;
 } RaycastResult;
 
