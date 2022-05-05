@@ -14,6 +14,13 @@ class ColliderSystem;
 class RendererSystem;
 class PointLightSystem;
 
+enum RenderBufferID {
+    Position = 0,
+    Normal,
+    AlbedoSpec,
+    Shadow,
+    NUMBER_OF_BUFFERS
+};
 
 struct Camera {
     unsigned int SCR_WIDTH = 1024;
@@ -32,6 +39,7 @@ struct Camera {
     LShader* lShaderInstance;
     PEShader* peShaderInstance;
 
+
     Camera();
     void updateWidthHeight(unsigned int width, unsigned int height);
 };
@@ -43,6 +51,7 @@ public:
     ColliderSystem* colliderRenderInstance;
     Camera* screenCamera;
     
+    GLuint* buffers;
 public:
     CameraSystem();
 

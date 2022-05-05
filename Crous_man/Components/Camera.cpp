@@ -39,7 +39,7 @@
 #include "../Shaders/PEShader.hpp"
 
 Camera::Camera() {
-    
+
 }
 
 void Camera::updateWidthHeight(unsigned int width, unsigned int height) {
@@ -64,6 +64,8 @@ CameraSystem::CameraSystem() : ComponentSystem(){
     rendererInstance =          dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
     pointLightInstance =        dynamic_cast<PointLightSystem*>(EntityManager::instance->systems[SystemIDs::PointLightID]);
     colliderRenderInstance =    dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
+
+    buffers = new GLuint[RenderBufferID::NUMBER_OF_BUFFERS];
 }
 
 CameraSystem::~CameraSystem() {
@@ -117,25 +119,15 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     //  2.1 mesh effect pass : render the scene meshes
     //  ----------------------------------------------
     
-    //glDisable(GL_DEPTH_TEST);
-    //glEnable(GL_DEPTH_TEST);
-    //glClear(GL_DEPTH_BUFFER_BIT);
-    //TODO map des différent buffers avec leurs nom (afin de ne pas se préocuper de l'ordre)
-    //     On peut faire ça avec un id par buffer (de la même manière que pour les systèmes)
-    std::vector<GLuint> buffers; // List of buffers
-    buffers.push_back(c->gBuffer.gPosition);
-    buffers.push_back(c->gBuffer.gNormal);
-    buffers.push_back(c->gBuffer.gAlbedoSpec);
+    buffers[RenderBufferID::Position] = c->gBuffer.gPosition;
+    buffers[RenderBufferID::Normal] = c->gBuffer.gNormal;
+    buffers[RenderBufferID::AlbedoSpec] = c->gBuffer.gAlbedoSpec;
 
     for (unsigned int i = 0, size = c->meshEShadersinstances.size(); i < size; i++) {
         // Render the meshes
         rendererInstance->renderUsingShader(c->meshEShadersinstances[i], view, projection);
-
         // Add the buffers to the list
-        FrameBuffer* fb = c->meshEShadersinstances[i]->fBuffer;
-        for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
-            buffers.push_back(fb->buffers[b]);
-        }
+        c->meshEShadersinstances[i]->setOutputShaders(buffers);
     }
     //  2.2 quad effect pass : render a quad and use previous buffers to generate
     //  -------------------------------------------------------------------------
@@ -144,14 +136,9 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
         c->quadEShadersinstances[i]->use();
         c->quadEShadersinstances[i]->useBuffers(buffers);
         BasicShapeRender::instance->renderQuad();
-
         // Add the buffers to the list
-        FrameBuffer* fb = c->quadEShadersinstances[i]->fBuffer;
-        for (unsigned int b = 0; b < fb->numberOfBuffer; b++) {
-            buffers.push_back(fb->buffers[b]);
-        }
+        c->quadEShadersinstances[i]->setOutputShaders(buffers);
     }
-
 
     c->textureFramebuffer.use();
     glViewport(0, 0, c->SCR_WIDTH, c->SCR_HEIGHT);

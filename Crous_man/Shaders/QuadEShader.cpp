@@ -25,7 +25,11 @@ void QuadEShader::updateBufferWidthHeight(unsigned int width, unsigned int heigh
 	fBuffer->update(width, height);
 }
 
-void QuadEShader::useBuffers(std::vector<GLuint> buffers) {
+void QuadEShader::useBuffers(const GLuint* buffers) {
+
+}
+
+void QuadEShader::setOutputShaders(GLuint* buffers) {
 
 }
 

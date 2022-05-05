@@ -13,7 +13,7 @@ public:
     BlinnPhongShadowLShader();
     ~BlinnPhongShadowLShader();
 
-    void useBuffers(std::vector<GLuint> buffers);
+    virtual void useBuffers(const GLuint* buffers);
 };
 
 #endif

@@ -30,8 +30,10 @@ public:
     void setPosition(GLuint gPosition);
     void setLightSpaceMatrix(glm::mat4 lightSpaceMatrix);
 
+    virtual void useBuffers(const GLuint* buffers);
+    virtual void setOutputShaders(GLuint* buffers);
+
     virtual void use();
-    virtual void useBuffers(std::vector<GLuint> buffers);
 };
 
 #endif
