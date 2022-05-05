@@ -111,6 +111,41 @@ void createSceneECS() {
 
 void createSceneCollider() {
    
+    Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+        ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
+        ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->updateRenderer()
+        ->fitOBBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
+    Entity* monke2 = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
+        ->setTranslation(glm::vec3(10.0, 2.0, 2.0))
+        ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->updateRenderer()
+        ->fitSphereColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
+    Entity* monke3 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(10.0, 2.0, 10.0))
+        ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->setRotation(-3.141592653 * 0.5, glm::vec3(0.0, 1.0, 0.0))
+        ->updateRenderer()
+        ->fitAABBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+    
+    Entity* monke4 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(10.0, 20.0, 2.0))
+        ->setScale(glm::vec3(10.0, 10.0, 10.0))
+        ->setRotation(-3.141592653* .1f, glm::vec3(1.0, 0.0, 0.0))
+        ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->updateRenderer()
+        ->fitOBBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
     Entity* plane = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
         ->setScale(glm::vec3(100.0, 100.0, 1.0))
@@ -118,18 +153,10 @@ void createSceneCollider() {
         ->setMeshAsQuad()
         ->updateRenderer()
         ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
-        ->fitAABBColliderToMesh()
+        ->fitOBBColliderToMesh()
         ->setRenderingCollider()
         ->build();
-
    
-   Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
-       ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
-       ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-       ->updateRenderer()
-       ->fitSphereColliderToMesh()
-       ->setRenderingCollider()
-       ->build();
 
     Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))

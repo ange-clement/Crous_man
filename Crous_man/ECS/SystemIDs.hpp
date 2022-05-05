@@ -10,6 +10,7 @@ enum SystemIDs {
     DestructibleID,
     FlyingControllerID,
     ColliderID,
+    SimplePlayerControllerID,
     NUMBER
 };
 

@@ -64,3 +64,15 @@ void maxVec3(glm::vec3 v1, glm::vec3 v2, glm::vec3& res) {
 bool compareWithEpsilon(float f1, float f2) {
     return (std::abs(f1 - f2) <= FLT_EPSILON * std::max(1.0f, std::max(std::abs(f1), std::abs(f2))));
 }
+
+glm::vec2 Project(const glm::vec2& length, const glm::vec2& direction) {
+    float dot = glm::dot(length, direction);
+    float magSq = glm::dot(direction,direction);
+    return direction * (dot / magSq);
+}
+
+glm::vec3 Project(const glm::vec3& length, const glm::vec3& direction) {
+    float dot = glm::dot(length, direction);
+    float magSq = glm::dot(direction,direction);
+    return direction * (dot / magSq);
+}

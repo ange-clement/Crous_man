@@ -22,7 +22,7 @@ Bitmap::~Bitmap() {
 
 }
 
-Bitmap::Bitmap(unsigned short bitmap) {
+Bitmap::Bitmap(unsigned int bitmap) {
     this->bitmap = bitmap;
 }
 

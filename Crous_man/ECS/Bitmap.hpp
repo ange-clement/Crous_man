@@ -11,7 +11,7 @@ public:
     Bitmap();
     ~Bitmap();
 
-    Bitmap(unsigned short bitmap);
+    Bitmap(unsigned int bitmap);
 
     Bitmap(std::initializer_list<SystemIDs> systems);
 

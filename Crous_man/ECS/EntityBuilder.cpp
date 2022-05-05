@@ -179,17 +179,17 @@ EntityBuilder* EntityBuilder::setColliderOrientation(glm::mat3 orientation) {
 
 void computeSphere(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, float& radius) {
 	position = glm::vec3(0.0);
-	radius = 0.f;
+	radius = 1.f;
 
 	std::vector<glm::vec3> list_bis;
 	for (size_t i = 0; i < in_vertices.size(); i++) {
-		list_bis.push_back(in_vertices[i] * t->scaling);
+		list_bis.push_back(t->applyToVector(in_vertices[i]));
 	}
 
-	for (const auto& p : list_bis) {
+	for (const auto& p : in_vertices) {
 		position += p;
 	}
-	position /= list_bis.size();
+	position /= in_vertices.size();
 
 	for (const auto& p : list_bis) {
 		radius = std::max(radius, glm::distance(position, p));
@@ -197,7 +197,8 @@ void computeSphere(Transform* t, const std::vector<glm::vec3> in_vertices, glm::
 }
 void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, glm::vec3& size) {
 	glm::vec3 cur_pt;
-	cur_pt = in_vertices[0] * t->scaling;
+	cur_pt = in_vertices[0];
+	float min_dim = 1;
 
 	float min_x = cur_pt.x;
 	float max_x = cur_pt.x;
@@ -207,9 +208,9 @@ void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec
 	float max_z = cur_pt.z;
 
 	for (size_t i = 0; i < in_vertices.size(); i++) {
-		glm::vec3 cur_pt;
+		glm::vec3 cur_pt = in_vertices[i];
 
-		cur_pt = in_vertices[i] * t->scaling;
+		//cur_pt = t->applyToVector(cur_pt);
 
 		if (cur_pt.x < min_x) {
 			min_x = cur_pt.x;
@@ -231,131 +232,74 @@ void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec
 		}
 	}
 
+	float dim_x = max_x - min_x;
+	float dim_y = max_y - min_y;
+	float dim_z = max_z - min_z;
+	
+	dim_x *= t->scaling.x;
+	dim_y *= t->scaling.y;
+	dim_z *= t->scaling.z;
+
+
+	dim_x = (dim_x < min_dim) ? min_dim : dim_x;
+	dim_y = (dim_y < min_dim) ? min_dim : dim_y;
+	dim_z = (dim_z < min_dim) ? min_dim : dim_z;
+
+
 	position = glm::vec3((max_x + min_x) / 2.0f, (max_y + min_y) / 2.0f, (max_z + min_z) / 2.0f);
-	size = glm::vec3(max_x - min_x, max_y - min_y, max_z - min_z);
+	size = glm::vec3(dim_x / 2.0f, dim_y / 2.0f, dim_z / 2.0f);
 }
-
-void computeSphereDrawElem(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices ,const glm::vec3 position, const float radius) {
-	vertices.clear();
-	int num_segments = 100;
-
-	for (int ii = 0; ii < num_segments; ii++) {
-		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);
-		float x = radius * cosf(theta);
-		float y = radius * sinf(theta);
-		vertices.push_back(glm::vec3(x, y, 0));
+void initShaderCollider(Collider* c) {
+	if (!c->shader) {
+		if (c->type == colliderType::Sphere) {
+			c->shader = SphereColliderShader::instance;
+		}else {
+			c->shader = BoxColliderShader::instance;
+		}
 	}
-	for (int ii = 0; ii < num_segments; ii++) {
-		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);
-		float z = radius * cosf(theta);
-		float x = radius * sinf(theta);
-		vertices.push_back(glm::vec3(x, 0, z));
-	}
-
-	indices.clear();
-	indices.push_back(0);
-	for (size_t i = 0; i < num_segments; i++) {
-		indices.push_back(i);
-		indices.push_back(i);
-	}
-	indices.push_back(0);
-
-
-	indices.push_back(num_segments);
-	for (size_t i = num_segments; i < num_segments * 2; i++) {
-		indices.push_back(i);
-		indices.push_back(i);
-	}
-	indices.push_back(num_segments);
-}
-void computeBoxDrawElem(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices, const glm::vec3& position, const glm::vec3& size) {
-	vertices.resize(8);
-	vertices[0] = glm::vec3(position.x - size.x, position.y - size.y, position.z + size.z);
-	vertices[1] = glm::vec3(position.x + size.x, position.y - size.y, position.z + size.z);
-	vertices[2] = glm::vec3(position.x + size.x, position.y + size.y, position.z + size.z);
-	vertices[3] = glm::vec3(position.x - size.x, position.y + size.y, position.z + size.z);
-
-	vertices[4] = glm::vec3(position.x - size.x, position.y - size.y, position.z - size.z);
-	vertices[5] = glm::vec3(position.x + size.x, position.y - size.y, position.z - size.z);
-	vertices[6] = glm::vec3(position.x + size.x, position.y + size.y, position.z - size.z);
-	vertices[7] = glm::vec3(position.x - size.x, position.y + size.y, position.z - size.z);
-
-	indices.resize(24);
-	indices = {
-		0, 1, 1, 2, 2, 3, 3, 0,
-		4, 5, 5, 6, 6, 7, 7, 4,
-		0, 4, 1, 5, 2, 6, 3, 7
-	};
-}
-void initBuffersCollider(Collider* c) {
-	if (!c->shader) c->shader = new ColliderShader();
 	c->shader->use();
-
-	glGenVertexArrays(1, &c->VertexArrayID);
-	glBindVertexArray(c->VertexArrayID);
-
-	glGenBuffers(1, &c->vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, c->vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, c->vertices.size() * sizeof(glm::vec3), &c->vertices[0], GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, c->vertexbuffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	glGenBuffers(1, &c->elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, c->elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, c->indices.size() * sizeof(unsigned short), &c->indices[0], GL_STATIC_DRAW);
-
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glUseProgram(0);
+	c->shader->init();
 }
+
 
 EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::Sphere;
-
 	computeSphere(this->buildEntity->transform,mesh->indexed_vertices, collider->center, collider->radius);
-
-	std::cout << "position : " << collider->center.x << "," << collider->center.y << "," << collider->center.z << std::endl;
-	std::cout << "radius : " << collider->radius << std::endl;
+	
+	print(collider->center);
+	std::cout << "radius : " << collider->radius;
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
+	std::cout << "AABB" << std::endl;
+
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::AABB;
-
 	computeBox(this->buildEntity->transform, mesh->indexed_vertices, collider->center, collider->size);
 
-	std::cout << "position : " << collider->center.x << "," << collider->center.y << "," << collider->center.z << std::endl;
-	std::cout << "size : " << collider->size.x << "," << collider->size.y << "," << collider->size.z << std::endl;
+	print(collider->center);
+	print(collider->size);
+
 	return this;
 }
 EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
-
 	computeBox(this->buildEntity->transform, mesh->indexed_vertices, collider->center, collider->size);
-	std::cout << "position : " << collider->center.x << "," << collider->center.y << "," << collider->center.z << std::endl;
-	std::cout << "size : " << collider->size.x << "," << collider->size.y << "," << collider->size.z << std::endl;
+	
+	print(collider->center);
+	print(collider->size); 
 	return this;
 }
 EntityBuilder* EntityBuilder::setRenderingCollider() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
-	if (collider->type == colliderType::Sphere) {
-		computeSphereDrawElem(collider->vertices, collider->indices, collider->center, collider->radius);
-	}
-	else {
-		computeBoxDrawElem(collider->vertices, collider->indices, collider->position, collider->size);
-	}
-	initBuffersCollider(collider);
+	initShaderCollider(collider);
 	collider->drawable = true;
-
 	return this;
 }
 
@@ -382,7 +326,6 @@ EntityBuilder* EntityBuilder::setLightQuadratic(float quadratic) {
 	PL->quadratic = quadratic;
 	return this;
 }
-
 
 
 EntityBuilder* EntityBuilder::setAsScreenCamera() {

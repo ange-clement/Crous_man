@@ -31,7 +31,6 @@ public:
     glm::vec3 translation;
     glm::vec3 scaling;
     Rotation rotation;
-
 public:
     Transform();
     Transform(Transform* other);
@@ -50,6 +49,10 @@ public:
     Transform* mixWith(const Transform* t, float k);
 
     glm::mat4 toMat4();
+
+    glm::mat4 toMat4NoScaling();
+
+    glm::mat4 toMat4NoScalingNoRotation();
 
     glm::mat4 toNormal();
 
