@@ -31,7 +31,6 @@ public:
     glm::vec3 translation;
     glm::vec3 scaling;
     Rotation rotation;
-
 public:
     Transform();
     Transform(Transform* other);

@@ -197,8 +197,7 @@ void computeSphere(Transform* t, const std::vector<glm::vec3> in_vertices, glm::
 }
 void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, glm::vec3& size) {
 	glm::vec3 cur_pt;
-	cur_pt = t->applyToVector(in_vertices[0]);
-	//cur_pt = in_vertices[0];
+	cur_pt = in_vertices[0];
 	float min_dim = 1;
 
 	float min_x = cur_pt.x;
@@ -211,7 +210,7 @@ void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec
 	for (size_t i = 0; i < in_vertices.size(); i++) {
 		glm::vec3 cur_pt = in_vertices[i];
 
-		cur_pt = t->applyToVector(cur_pt);
+		//cur_pt = t->applyToVector(cur_pt);
 
 		if (cur_pt.x < min_x) {
 			min_x = cur_pt.x;
@@ -237,92 +236,40 @@ void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec
 	float dim_y = max_y - min_y;
 	float dim_z = max_z - min_z;
 	
+	dim_x *= t->scaling.x;
+	dim_y *= t->scaling.y;
+	dim_z *= t->scaling.z;
+
+
 	dim_x = (dim_x < min_dim) ? min_dim : dim_x;
 	dim_y = (dim_y < min_dim) ? min_dim : dim_y;
 	dim_z = (dim_z < min_dim) ? min_dim : dim_z;
 
+
 	position = glm::vec3((max_x + min_x) / 2.0f, (max_y + min_y) / 2.0f, (max_z + min_z) / 2.0f);
-	size = glm::vec3(dim_x/2.0f, dim_y / 2.0f, dim_z / 2.0f);
+	size = glm::vec3(dim_x / 2.0f, dim_y / 2.0f, dim_z / 2.0f);
 }
-
-void computeSphereDrawElem(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices ,const glm::vec3 position, const float radius) {
-	vertices.clear();
-	int num_segments = 100;
-
-	for (int ii = 0; ii < num_segments; ii++) {
-		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);
-		float x = radius * cosf(theta);
-		float y = radius * sinf(theta);
-		vertices.push_back(glm::vec3(x, y, 0));
+void initShaderCollider(Collider* c) {
+	if (!c->shader) {
+		if (c->type == colliderType::Sphere) {
+			c->shader = SphereColliderShader::instance;
+		}else {
+			c->shader = BoxColliderShader::instance;
+		}
 	}
-	for (int ii = 0; ii < num_segments; ii++) {
-		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);
-		float z = radius * cosf(theta);
-		float x = radius * sinf(theta);
-		vertices.push_back(glm::vec3(x, 0, z));
-	}
-
-	for (int ii = 0; ii < num_segments; ii++) {
-		float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);
-		float z = radius * cosf(theta);
-		float y = radius * sinf(theta);
-		vertices.push_back(glm::vec3(0, y, z));
-	}
-
-	indices.clear();
-	indices.push_back(0);
-	for (size_t i = 0; i < num_segments; i++) {
-		indices.push_back(i);
-		indices.push_back(i);
-	}
-	indices.push_back(0);
-
-	indices.push_back(num_segments);
-	for (size_t i = num_segments; i < num_segments * 2; i++) {
-		indices.push_back(i);
-		indices.push_back(i);
-	}
-	indices.push_back(num_segments);
-
-	indices.push_back(2*num_segments);
-	for (size_t i = 2*num_segments; i < num_segments * 3; i++) {
-		indices.push_back(i);
-		indices.push_back(i);
-	}
-	indices.push_back(2*num_segments);
-}
-void computeBoxDrawElem(std::vector<glm::vec3>& vertices, std::vector<unsigned short>& indices, const glm::vec3& position, const glm::vec3& size) {
-	vertices.resize(8);
-	glm::vec3 sized = size;
-	vertices[0] = glm::vec3(position.x - sized.x, position.y - sized.y, position.z + sized.z);
-	vertices[1] = glm::vec3(position.x + sized.x, position.y - sized.y, position.z + sized.z);
-	vertices[2] = glm::vec3(position.x + sized.x, position.y + sized.y, position.z + sized.z);
-	vertices[3] = glm::vec3(position.x - sized.x, position.y + sized.y, position.z + sized.z);
-
-	vertices[5] = glm::vec3(position.x + sized.x, position.y - sized.y, position.z - sized.z);
-	vertices[6] = glm::vec3(position.x + sized.x, position.y + sized.y, position.z - sized.z);
-	vertices[7] = glm::vec3(position.x - sized.x, position.y + sized.y, position.z - sized.z);
-	vertices[4] = glm::vec3(position.x - sized.x, position.y - sized.y, position.z - sized.z);
-
-	indices.resize(24);
-	indices = {
-		0, 1, 1, 2, 2, 3, 3, 0,
-		4, 5, 5, 6, 6, 7, 7, 4,
-		0, 4, 1, 5, 2, 6, 3, 7
-	};
-}
-
-void initBuffersCollider(Collider* c) {
-	if (!c->shader) c->shader = ColliderShader::instance;
 	c->shader->use();
-	c->shader->init(c);
+	c->shader->init();
 }
+
 
 EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::Sphere;
 	computeSphere(this->buildEntity->transform,mesh->indexed_vertices, collider->center, collider->radius);
+	
+	print(collider->center);
+	std::cout << "radius : " << collider->radius;
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
@@ -343,20 +290,16 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
 	computeBox(this->buildEntity->transform, mesh->indexed_vertices, collider->center, collider->size);
+	
+	print(collider->center);
+	print(collider->size); 
 	return this;
 }
 EntityBuilder* EntityBuilder::setRenderingCollider() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
-	if (collider->type == colliderType::Sphere) {
-		computeSphereDrawElem(collider->vertices, collider->indices, collider->center, collider->radius);
-	}
-	else {
-		computeBoxDrawElem(collider->vertices, collider->indices, collider->position, collider->size);
-	}
-	initBuffersCollider(collider);
+	initShaderCollider(collider);
 	collider->drawable = true;
-
 	return this;
 }
 

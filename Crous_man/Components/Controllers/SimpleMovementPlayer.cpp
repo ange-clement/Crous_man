@@ -20,6 +20,8 @@
 
 SimpleMovementPlayerSystem::SimpleMovementPlayerSystem() : ComponentSystem() {
     requiredComponentsBitmap = new Bitmap({ SystemIDs::SimplePlayerControllerID });
+
+
 }
 
 SimpleMovementPlayerSystem::~SimpleMovementPlayerSystem() {}
@@ -36,11 +38,9 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
 
     float translationAmount = sp->speed * InputManager::instance->deltaTime;
 
-    glm::vec3 r = tr->getRight();
-    glm::vec3 rdirection = glm::normalize(glm::vec3(r.x, 0.0, r.z));
+    glm::vec3 rdirection = glm::vec3(1, 0, 0);
     glm::vec3 udirection = glm::vec3(0.0, 1.0, 0.0);
-    glm::vec3 f = tr->getForward();
-    glm::vec3 fdirection = glm::normalize(glm::vec3(f.x, 0.0, f.z));
+    glm::vec3 fdirection = glm::vec3(0, 0.0, 1);
 
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         translationAmount *= 4;
@@ -70,6 +70,13 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
     }
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         tr->translation += translationAmount * udirection;
+    }
+
+    if (glfwGetKey(InputManager::instance->window, GLFW_KEY_K) == GLFW_PRESS) {
+        tr->rotation.combineRotation(.01, glm::vec3(1, 0, 0));
+    }
+    if (glfwGetKey(InputManager::instance->window, GLFW_KEY_L) == GLFW_PRESS) {
+        tr->rotation.combineRotation(.01, glm::vec3(0, 1, 0));
     }
 }
 

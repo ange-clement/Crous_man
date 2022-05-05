@@ -49,7 +49,8 @@ void main()
         specular *= attenuation;
         lighting += diffuse + specular;
     }
-    FragColor = vec4(shadow + lighting, 1.0);
+    //FragColor = vec4(shadow + lighting, 1.0);
+    FragColor = vec4(lighting, 1.0);
 
     //FragColor = vec4(vec3(shadow), 1.0);
 }
