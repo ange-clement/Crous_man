@@ -51,7 +51,7 @@ void LShader::setBuffers(GLuint gPosition, GLuint gNormal, GLuint gAlbedo) {
 }
 
 void LShader::useBuffers(std::vector<GLuint> buffers) {
-
+    this->setBuffers(buffers[0], buffers[1], buffers[2]);
 }
 
 void LShader::setLight(unsigned int index, glm::vec3 position, glm::vec3 color, float linear, float quadratic) {

@@ -12,10 +12,15 @@
 #include "frameBuffer.hpp"
 
 
-FrameBuffer::FrameBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, unsigned int numberOfBuffer) {
+FrameBuffer::FrameBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, unsigned int numberOfBuffer) 
+: FrameBuffer(SCR_WIDTH, SCR_HEIGHT, numberOfBuffer, GL_NEAREST) {
+
+}
+FrameBuffer::FrameBuffer(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, unsigned int numberOfBuffer, GLint interpolationType) {
     this->numberOfBuffer = numberOfBuffer;
     this->buffers = new GLuint[numberOfBuffer];
-    init(SCR_WIDTH, SCR_HEIGHT);
+    this->interpolationType = interpolationType;
+    init(SCR_WIDTH, SCR_HEIGHT, interpolationType);
 }
 
 FrameBuffer::~FrameBuffer() {
@@ -31,10 +36,10 @@ void FrameBuffer::update(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
         glDeleteTextures(1, &buffers[i]);
     }
     glDeleteFramebuffers(1, &frameBufferObject);
-    init(SCR_WIDTH, SCR_HEIGHT);
+    init(SCR_WIDTH, SCR_HEIGHT, this->interpolationType);
 }
 
-void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
+void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, GLint interpolationType) {
     this->width = SCR_WIDTH;
     this->height = SCR_HEIGHT;
     glGenFramebuffers(1, &frameBufferObject);
@@ -47,8 +52,10 @@ void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
         glGenTextures(1, &buffers[i]);
         glBindTexture(GL_TEXTURE_2D, buffers[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolationType);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolationType);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, buffers[i], 0);
         attachments[i] = GL_COLOR_ATTACHMENT0 + i;
     }
@@ -68,6 +75,6 @@ void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
 }
 
 void FrameBuffer::use() {
-    //glViewport(0, 0, this->width, this->height);
+    glViewport(0, 0, this->width, this->height);
     glBindFramebuffer(GL_FRAMEBUFFER, this->frameBufferObject);
 }

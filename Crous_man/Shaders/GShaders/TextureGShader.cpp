@@ -10,11 +10,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "TextureGShader.hpp"
-#include "../Components/Renderer.hpp"
+#include "../../Components/Renderer.hpp"
 
 TextureGShader* TextureGShader::instance = NULL;
 
-TextureGShader::TextureGShader() : GShader("Shaders/TextureGShader.glsl") {
+TextureGShader::TextureGShader() : GShader("Shaders/GShaders/TextureGShader.glsl") {
     if (TextureGShader::instance == NULL) {
         TextureGShader::instance = this;
 

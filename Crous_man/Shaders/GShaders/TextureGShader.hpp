@@ -1,7 +1,7 @@
 #ifndef TEXTURE_G_SHADER_HPP
 #define TEXTURE_G_SHADER_HPP
 
-#include "GShader.hpp"
+#include "../GShader.hpp"
 
 struct Renderer;
 

@@ -13,7 +13,7 @@
 
 BlinnPhongShadowLShader* BlinnPhongShadowLShader::instance = NULL;
 
-BlinnPhongShadowLShader::BlinnPhongShadowLShader() : LShader("Shaders/BlinnPhongShadowLShader.glsl") {
+BlinnPhongShadowLShader::BlinnPhongShadowLShader() : LShader("Shaders/LShaders/BlinnPhongShadowLShader.glsl") {
     if (BlinnPhongShadowLShader::instance == NULL) {
         BlinnPhongShadowLShader::instance = this;
 
@@ -31,7 +31,9 @@ BlinnPhongShadowLShader::~BlinnPhongShadowLShader() {
 }
 
 void BlinnPhongShadowLShader::useBuffers(std::vector<GLuint> buffers) {
+    LShader::useBuffers(buffers);
+
     glUniform1i(this->gShadow, 3);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, buffers[0]);
+    glBindTexture(GL_TEXTURE_2D, buffers[3]);
 }

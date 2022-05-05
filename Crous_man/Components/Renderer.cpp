@@ -15,7 +15,7 @@
 #include "../ECS/Bitmap.hpp"
 #include "../Transform.hpp"
 #include "../ECS/Entity.hpp"
-#include "../Shaders/TextureGShader.hpp"
+#include "../Shaders/GShaders/TextureGShader.hpp"
 
 #include "../Util.hpp"
 

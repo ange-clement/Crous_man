@@ -32,4 +32,5 @@ void MeshEShader::updateBufferWidthHeight(unsigned int width, unsigned int heigh
 void MeshEShader::use() {
 	MeshShader::use();
 	this->fBuffer->use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
