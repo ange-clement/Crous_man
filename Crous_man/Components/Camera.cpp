@@ -37,6 +37,8 @@
 #include "../Shaders/QuadEShader.hpp"
 #include "../Shaders/LShader.hpp"
 #include "../Shaders/PEShader.hpp"
+#include <common/ray.hpp>
+#include <Crous_man/InputManager.hpp>
 
 Camera::Camera() {
 
@@ -192,4 +194,23 @@ void CameraSystem::setScreenCamera(unsigned short entityID) {
 
 Camera* CameraSystem::getCamera(unsigned short i) {
     return &EntityManager::instance->cameraComponents[i];
+}
+
+
+void intersectElements(Camera* c, glm::mat4 view, glm::mat4 projection) {
+    //Perform LEFT clik behavior
+
+    Ray ray = getPickRay(
+        glm::vec2(InputManager::instance->lastMouseX, InputManager::instance->lastMouseY),
+        glm::vec2(0),
+        glm::vec2(c->SCR_WIDTH, c->SCR_HEIGHT),
+        view, 
+        projection
+    );
+
+    //Now we can perform interactions with all colliders on a scene
+    for (size_t i = 0; i < 0; i++){
+
+    }
+
 }

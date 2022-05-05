@@ -456,3 +456,58 @@ bool RayCastCollider(const Collider& collider, const Ray& ray, RaycastResult* ou
 	if (collider.type == colliderType::OBB)		return OBBRaycast(collider, ray, outResult);
 	return false;
 }
+
+
+glm::vec3 unproject(const glm::vec3& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection) {
+	// Step 1, Normalize the input vector to the view port
+	float normalized[4] = {
+		(viewportPoint.x - viewportOrigin.x) / viewportSize.x,
+		(viewportPoint.y - viewportOrigin.y) / viewportSize.y,
+		viewportPoint.z,
+		1.0f
+	};
+
+	// Step 2, Translate into NDC space
+	glm::vec4 ndcSpace = glm::vec4(
+		normalized[0], normalized[1],
+		normalized[2], normalized[3]
+	);
+
+	// X Range: -1 to 1
+	ndcSpace.x = ndcSpace.x * 2.0f - 1.0f;
+	// Y Range: -1 to 1, our Y axis is flipped!
+	ndcSpace.y = 1.0f - ndcSpace.y * 2.0f;
+	ndcSpace.z = ndcSpace.z * 2.0f - 1.0f;
+
+
+	// Step 3, NDC to Eye Space
+	glm::mat4 invProjection = glm::inverse(projection);
+	glm::vec4 eyeSpace = ndcSpace * invProjection;
+
+	// Step 4, Eye Space to World Space
+	glm::mat4 invView = glm::inverse(view);
+	glm::vec4 worldSpace = eyeSpace * invView;
+
+	// Step 5, Undo perspective divide!
+	if (!compareWithEpsilon(worldSpace.w, 0.0f)) {
+		worldSpace.x /= worldSpace.w;
+		worldSpace.y /= worldSpace.w;
+		worldSpace.z /= worldSpace.w;
+	}
+
+	// Return the resulting world space point
+	return glm::vec3(worldSpace.x, worldSpace.y, worldSpace.z);
+}
+
+Ray getPickRay(const glm::vec2& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection) {
+	glm::vec3 nearPoint(viewportPoint.x, viewportPoint.y, 0.0f);
+	glm::vec3 farPoint(viewportPoint.x, viewportPoint.y, 1.0f);
+
+	glm::vec3 pNear = unproject(nearPoint, viewportOrigin, viewportSize, view, projection);
+	glm::vec3 pFar = unproject(farPoint, viewportOrigin, viewportSize, view, projection);
+
+	glm::vec3 normal = glm::normalize(pFar - pNear);
+	glm::vec3 origin = pNear;
+
+	return Ray(origin, normal);
+}

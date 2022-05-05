@@ -29,4 +29,7 @@ glm::vec2 Project(const glm::vec2& length, const glm::vec2& direction);
 
 glm::vec3 Project(const glm::vec3& length, const glm::vec3& direction);
 
+glm::vec3 multiplyVector(const glm::vec3& vec, const glm::mat4& mat);
+
+glm::vec3 projectV3OnM3(const glm::vec3& vec, const glm::mat3& mat);
 #endif

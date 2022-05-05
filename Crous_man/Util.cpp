@@ -76,3 +76,20 @@ glm::vec3 Project(const glm::vec3& length, const glm::vec3& direction) {
     float magSq = glm::dot(direction,direction);
     return direction * (dot / magSq);
 }
+
+
+glm::vec3 multiplyVector(const glm::vec3& vec, const glm::mat4& mat) {
+    glm::vec3 result;
+    result.x = vec.x * mat[0].x + vec.y * mat[0].y + vec.z * mat[0].z;
+    result.y = vec.x * mat[1].x + vec.y * mat[1].y + vec.z * mat[1].z;
+    result.z = vec.x * mat[2].x + vec.y * mat[2].y + vec.z * mat[2].z;
+    return result;
+}
+
+glm::vec3 projectV3OnM3(const glm::vec3& vec, const glm::mat3& mat) {
+    glm::vec3 result;
+    result.x = glm::dot(vec, mat[0]);
+    result.y = glm::dot(vec, mat[1]);
+    result.z = glm::dot(vec, mat[2]);
+    return result;
+}

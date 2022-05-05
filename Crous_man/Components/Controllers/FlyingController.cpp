@@ -13,6 +13,8 @@
 #include <Crous_man/ECS/EntityManager.hpp>
 #include <Crous_man/ECS/Bitmap.hpp>
 #include <Crous_man/ECS/Entity.hpp>
+#include <common/ray.hpp>
+
 
 #include <Crous_man/Transform.hpp>
 
@@ -94,3 +96,5 @@ void FlyingControllerSystem::addEntityComponent() {
 FlyingController* FlyingControllerSystem::getFlyingController(unsigned short i) {
     return &EntityManager::instance->flyingControllerComponents[i];
 }
+
+

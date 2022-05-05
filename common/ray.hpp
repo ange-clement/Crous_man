@@ -76,4 +76,7 @@ bool TriangleRaycast(const Triangle& triangle, const Ray& ray, RaycastResult* ou
 
 bool RayCastCollider(const Collider& collider, const Ray& ray, RaycastResult* outResult);
 
+glm::vec3 unproject(const glm::vec3& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection);
+Ray getPickRay(const glm::vec2& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection);
+
 #endif

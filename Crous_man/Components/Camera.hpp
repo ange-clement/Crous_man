@@ -64,6 +64,9 @@ public:
     void setScreenCamera(unsigned short entityID);
 
     Camera* getCamera(unsigned short i);
+
 };
+
+void intersectElements(Camera* c);
 
 #endif
