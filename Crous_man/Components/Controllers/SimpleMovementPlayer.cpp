@@ -16,6 +16,8 @@
 
 #include <Crous_man/Transform.hpp>
 
+#include "../Collider.hpp"
+
 #include "SimpleMovementPlayer.hpp"
 
 SimpleMovementPlayerSystem::SimpleMovementPlayerSystem() : ComponentSystem() {
@@ -77,6 +79,17 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
     }
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_L) == GLFW_PRESS) {
         tr->rotation.combineRotation(.01, glm::vec3(0, 1, 0));
+    }
+}
+
+
+void SimpleMovementPlayerSystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults) {
+    std::cout << "COLISION with " << collisionResults.size() << " elements : " << std::endl;
+    for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+        std::cout << c << std::endl;
+        std::cout << collisionResults[c]->isInCollision << std::endl;
+        std::cout << collisionResults[c]->penetrationDistance << std::endl;
+        std::cout << collisionResults[c]->pointCollision[0] << " " << collisionResults[c]->pointCollision[1] << " " << collisionResults[c]->pointCollision[2] << std::endl;
     }
 }
 
