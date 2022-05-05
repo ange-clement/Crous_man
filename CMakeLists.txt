@@ -81,6 +81,11 @@ add_executable(
 	common/textureFramebuffer.cpp
 	common/textureFramebuffer.hpp
 
+	common/ray.hpp
+	common/ray.cpp
+	common/octree.hpp
+	common/octree.cpp
+	
 	external/image_ppm.cpp
 	external/image_ppm.h
 
@@ -166,7 +171,7 @@ add_executable(
 
 	Crous_man/Scenes/ECS_test.cpp
 	Crous_man/Scenes/ECS_test.hpp
-	 "common/ray.cpp" "common/ray.hpp" "common/octree.hpp" "common/octree.cpp")
+)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

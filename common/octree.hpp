@@ -11,9 +11,9 @@ typedef struct OctreeNode {
 	OctreeNode* children;
 	std::vector<unsigned short> entitiesID;
 
-	void destroy() {
+	inline OctreeNode() : children(0) { }
+	inline ~OctreeNode() {
 		if (children != 0) {
-			children->destroy();
 			delete[] children;
 		}
 	}
@@ -33,4 +33,5 @@ unsigned short raycastOnANode(OctreeNode* node, const Ray& ray);
 std::vector<unsigned short> queryOnSphere(OctreeNode* node, const Collider& collider);
 std::vector<unsigned short> queryOnAABB(OctreeNode* node, const Collider& collider);
 
+OctreeNode* constructOctree(std::vector<unsigned short> objects, const glm::vec3& position, float size, int depth = 5);
 #endif
