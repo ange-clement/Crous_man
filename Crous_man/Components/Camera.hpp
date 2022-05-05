@@ -14,7 +14,7 @@ class ColliderSystem;
 class RendererSystem;
 class PointLightSystem;
 
-enum RenderBufferID {
+enum RenderBufferID : unsigned short{
     Position = 0,
     Normal,
     AlbedoSpec,
