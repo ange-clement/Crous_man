@@ -12,6 +12,8 @@ struct Destructible;
 
 struct PointLight;
 
+struct RigidBody;
+
 class Entity;
 enum colliderType;
 
@@ -28,6 +30,8 @@ private:
 	Destructible* destructible;
 
 	PointLight* pointLight;
+
+	RigidBody* rigidBody;
 public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
@@ -59,6 +63,9 @@ public:
 	EntityBuilder* fitAABBColliderToMesh();
 	EntityBuilder* fitOBBColliderToMesh();
 	EntityBuilder* setRenderingCollider();
+
+	RigidBody* getRigidBody();
+	EntityBuilder* setRigidBodyMass(float mass);
 
 
 	PointLight* getPointLight();
