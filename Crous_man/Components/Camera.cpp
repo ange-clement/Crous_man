@@ -209,9 +209,11 @@ void intersectElements(Camera* c, glm::mat4 view, glm::mat4 projection) {
         projection
     );
 
-    //Now we can perform interactions with all colliders on a scene
-    for (size_t i = 0; i < 0; i++){
 
-    }
+    ColliderSystem* CS = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
+    //Now we can perform interactions with all colliders on a scene
+    /*for (size_t i = 0, int size = EntityManager::instance->entities.size(); i < size; i++) {
+        Collider* c = 0;
+    }*/
 
 }

@@ -13,7 +13,7 @@
 #include <Crous_man/Components/Collider.hpp>
 #include <Crous_man/ECS/Bitmap.hpp>
 
-#include <Crous_man/ECS/EntityManager.hpp>
+#include "../Crous_man/ECS/EntityManager.hpp"
 #include <common/ray.hpp>
 #include "octree.hpp"
 
