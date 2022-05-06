@@ -3,6 +3,8 @@
 
 #include <Crous_man/ECS/ComponentSystem.hpp>
 
+class ColliderSystem;
+
 struct FlyingController {
     float speed;
     float sensitivity;
@@ -12,6 +14,8 @@ struct FlyingController {
 };
 
 class FlyingControllerSystem : public virtual ComponentSystem {
+public:
+    ColliderSystem* colliderSystem = NULL;
 public:
     FlyingControllerSystem();
 

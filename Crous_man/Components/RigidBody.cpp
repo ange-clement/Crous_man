@@ -151,7 +151,8 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
         rb->combinedStaticFriction  += tangent * combinedStaticFriction;
         rb->combinedCineticFriction += tangent * combinedCineticFriction;
 
-        //rb->acceleration += rb->inverseOfMass * collisionResults[c]->normal * collisionResults[c]->penetrationDistance;
+        // Colision resolution
+
     }
 }
 

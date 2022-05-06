@@ -9,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <common/ray.hpp>
+
 #include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Bitmap.hpp"
@@ -1007,6 +1009,21 @@ ColliderResult* intersect(Collider c1, Collider c2) {
     return res;
 }
 
+std::vector<RaycastResult*> ColliderSystem::rayCastAll(const Ray& ray) {
+    std::vector<RaycastResult*> results;
+    results.reserve(entityIDs.size());
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+
+        Collider* c = getCollider(i);
+        RaycastResult* result = new RaycastResult();
+        if (RayCastCollider(*c, ray, result)) {
+            results.push_back(result);
+        }
+    }
+    return results;
+}
 
 std::vector<ColliderResult*> ColliderSystem::getResultOf(unsigned int entityID) {
     std::map<unsigned short, std::vector<ColliderResult*>>::iterator it = collisionResultMap.find(entityID);
