@@ -21,6 +21,7 @@
 #include "../Components/PointLight.hpp"
 #include "../Components/Camera.hpp"
 #include "../Components/Collider.hpp"
+#include "../Components/RigidBody.hpp"
 #include "../Transform.hpp"
 
 #include "Bitmap.hpp"
@@ -42,6 +43,8 @@ EntityBuilder::EntityBuilder(std::initializer_list<SystemIDs> systems) {
 	this->destructible = NULL;
 
 	this->pointLight = NULL;
+
+	this->rigidBody = NULL;
 }
 
 
@@ -302,6 +305,21 @@ EntityBuilder* EntityBuilder::setRenderingCollider() {
 	collider->drawable = true;
 	return this;
 }
+
+
+
+RigidBody* EntityBuilder::getRigidBody() {
+	if (this->rigidBody == NULL) {
+		unsigned short rigidBodyID = EntityManager::instance->getComponentId(SystemIDs::RigidBodyID, this->buildEntity->id);
+		this->rigidBody = &EntityManager::instance->rigidBodyComponents[rigidBodyID];
+	}
+	return this->rigidBody;
+}
+EntityBuilder* EntityBuilder::setRigidBodyMass(float mass) {
+	getRigidBody()->setMass(mass);
+	return this;
+}
+
 
 
 PointLight* EntityBuilder::getPointLight() {

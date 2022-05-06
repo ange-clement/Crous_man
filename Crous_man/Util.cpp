@@ -65,6 +65,10 @@ bool compareWithEpsilon(float f1, float f2) {
     return (std::abs(f1 - f2) <= FLT_EPSILON * std::max(1.0f, std::max(std::abs(f1), std::abs(f2))));
 }
 
+float squareLength(glm::vec3 v) {
+    return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+}
+
 glm::vec2 Project(const glm::vec2& length, const glm::vec2& direction) {
     float dot = glm::dot(length, direction);
     float magSq = glm::dot(direction,direction);

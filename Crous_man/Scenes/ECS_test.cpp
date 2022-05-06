@@ -114,12 +114,13 @@ void createSceneCollider() {
     Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
         ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+        ->setRigidBodyMass(2.0f)
         ->updateRenderer()
         ->fitOBBColliderToMesh()
         ->setRenderingCollider()
         ->build();
 
-    Entity* monke2 = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
+    Entity* monke2 = (new EntityBuilder({SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
         ->setTranslation(glm::vec3(10.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
         ->updateRenderer()
@@ -127,7 +128,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
-    Entity* monke3 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+    Entity* monke3 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(10.0, 2.0, 10.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
         ->setRotation(-3.141592653 * 0.5, glm::vec3(0.0, 1.0, 0.0))

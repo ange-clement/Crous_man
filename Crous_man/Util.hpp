@@ -24,6 +24,8 @@ void maxVec3(glm::vec3 v1, glm::vec3 v2, glm::vec3& res);
 //Compare two float with epsilon bias
 bool compareWithEpsilon(float f1, float f2);
 
+//Return the square length of the vector
+float squareLength(glm::vec3 v);
 
 glm::vec2 Project(const glm::vec2& length, const glm::vec2& direction);
 
