@@ -40,10 +40,18 @@ public :
     ColliderResult(unsigned short id, ColliderResult *c);
     ~ColliderResult();
 
+    void print();
+
     unsigned short entityCollidID;
+    
+
     bool isInCollision;
+
+    //Half of the total penetration length
     float penetrationDistance;
-    glm::vec3 pointCollision;
+    glm::vec3 point;
+    //Movement direction to avoid collision
+    glm::vec3 normal;
 };
 
 // Map : clef = entityID
@@ -90,6 +98,8 @@ public :
     bool isInContactWithSomething(unsigned short i);
 
     std::vector<ColliderResult*> getResultOf(unsigned int entityID);
+
+    friend class RigidBody;
 };
 
 
@@ -116,7 +126,6 @@ void computeMinMaxAABB(const Collider& c, glm::vec3& min, glm::vec3& max);
 ColliderResult* AABBAABBCollision(const Collider& aabb1, const Collider& aabb2);
 ColliderResult* SphereSphereCollision(Collider sp1, Collider sp2);
 ColliderResult* SphereAABBCollision(const Collider& aabb, const Collider& sphere);
-ColliderResult* SphereAABBCollision_bis(const Collider& aabb, const Collider& sphere);
 ColliderResult* SphereOBBCollision(const Collider& sphere, const Collider& obb);
 ColliderResult* SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin);
 ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb);
@@ -124,7 +133,29 @@ ColliderResult* AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_
 ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2);
 ColliderResult* OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin);
 
+//For OBB Special treatment
+void getVertices(const Collider& obb, std::vector<glm::vec3>& vertex);
+void getEdges(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines);
+void getPlanes(const Collider& obb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin);
+bool clipToPlane(const glm::vec3& normal_plane,const float distance_to_origin_plane, const glm::vec3& start_line, const glm::vec3& end_line, glm::vec3* outPoint);
+std::vector<glm::vec3> clipEdgesToOBB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& obb);
+float penetrationDepthOBB(const Collider& o1, const Collider& o2, const glm::vec3& axis, bool* outShouldFlip);
+
+
+//Have collision result and other datas
 ColliderResult* intersect(Collider c1, Collider c2);
+//Just to see if there is an intersection
+bool isInintersection(Collider c1, Collider c2);
+
+bool isAABBAABBCollision(const Collider& aabb1, const Collider& aabb2);
+bool isSphereSphereCollision(Collider sp1, Collider sp2);
+bool isSphereAABBCollision(const Collider& aabb, const Collider& sphere);
+bool isSphereOBBCollision(const Collider& sphere, const Collider& obb);
+bool isSpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin);
+bool isAABBOBBCollision(const Collider& aabb, const Collider& obb);
+bool isAABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin);
+bool isOBBOBBCollision(const Collider& obb1, const Collider& obb2);
+bool isOBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin);
 
 bool PlanePlaneIntersection(const glm::vec3 normal_plan_1, float distance_to_origin_1, const glm::vec3 normal_plan_2, float distance_to_origin_2);
 #endif
