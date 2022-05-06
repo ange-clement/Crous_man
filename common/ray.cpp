@@ -244,36 +244,6 @@ bool OBBRaycast(const Collider& obb, const Ray& ray, RaycastResult* outResult) {
 	float tmin = fmaxf(fmaxf(fminf(t[0], t[1]), fminf(t[2], t[3])), fminf(t[4], t[5]));
 	float tmax = fminf(fminf(fmaxf(t[0], t[1]), fmaxf(t[2], t[3])), fmaxf(t[4], t[5]));
 
-	/*
-	// The above loop simplifies the below if statements
-	// this is done to make sure the sample fits into the book
-	if (CMP(f.x, 0)) {
-		if (-e.x - obb.size.x > 0 || -e.x + obb.size.x < 0) {
-			return -1;
-		}
-		f.x = 0.00001f; // Avoid div by 0!
-	}
-	else if (CMP(f.y, 0)) {
-		if (-e.y - obb.size.y > 0 || -e.y + obb.size.y < 0) {
-			return -1;
-		}
-		f.y = 0.00001f; // Avoid div by 0!
-	}
-	else if (CMP(f.z, 0)) {
-		if (-e.z - obb.size.z > 0 || -e.z + obb.size.z < 0) {
-			return -1;
-		}
-		f.z = 0.00001f; // Avoid div by 0!
-	}
-	float t1 = (e.x + obb.size.x) / f.x;
-	float t2 = (e.x - obb.size.x) / f.x;
-	float t3 = (e.y + obb.size.y) / f.y;
-	float t4 = (e.y - obb.size.y) / f.y;
-	float t5 = (e.z + obb.size.z) / f.z;
-	float t6 = (e.z - obb.size.z) / f.z;
-	float tmin = fmaxf(fmaxf(fminf(t1, t2), fminf(t3, t4)), fminf(t5, t6));
-	float tmax = fminf(fminf(fmaxf(t1, t2), fmaxf(t3, t4)), fmaxf(t5, t6));
-	*/
 
 	// if tmax < 0, ray is intersecting AABB
 	// but entire AABB is behing it's origin

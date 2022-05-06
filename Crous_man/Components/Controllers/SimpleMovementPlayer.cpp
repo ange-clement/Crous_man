@@ -196,7 +196,7 @@ void SimpleMovementPlayerSystem::updateOnCollide(unsigned short i, unsigned shor
         std::cout << collisionResults[c]->isInCollision << std::endl;
         std::cout << collisionResults[c]->entityCollidID << std::endl;
         std::cout << collisionResults[c]->penetrationDistance << std::endl;
-        std::cout << collisionResults[c]->pointCollision[0] << " " << collisionResults[c]->pointCollision[1] << " " << collisionResults[c]->pointCollision[2] << std::endl;
+        //std::cout << collisionResults[c]->pointCollision[0] << " " << collisionResults[c]->pointCollision[1] << " " << collisionResults[c]->pointCollision[2] << std::endl;
     }
 }
 
