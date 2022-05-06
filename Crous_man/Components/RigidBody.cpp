@@ -75,12 +75,18 @@ void RigidBody::addForceAtPosition(glm::vec3 force, glm::vec3 pos) {
     */
     float forceAngle = forceLength;
 
+    //Rotation axis vector
     glm::vec3 forceAxis = glm::cross(force, centerToPosVector);
+    
+    //Apply a force 
     float forceAxisLength = glm::length(forceAxis);
+    //If vector are non aligned
     if (forceAxisLength > 0.0f) {
         forceAxis = forceAxis / forceAxisLength;
+        //We add angular force
         this->addAngularForce(forceAxis * forceAngle);
     }
+    //By default, we add normal force
     this->addForce(force / ((posDistance < 1.0) ? 1.0f : posDistance));
 }
 
@@ -88,6 +94,8 @@ void RigidBody::addAccelerationAtPosition(glm::vec3 acc, glm::vec3 pos) {
     this->addForceAtPosition(acc * this->mass, pos);
 }
 
+
+//Velocity mechanism
 void RigidBody::addVelocityAtPosition(glm::vec3 vel, glm::vec3 pos) {
     glm::vec3 centerOfMass = glm::vec3(0.0f);
 
@@ -137,20 +145,24 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     //TODO appliquer les forces de collision rigides
     RigidBody* rb = getRigidBody(i);
     RigidBody* otherRb;
+
     for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
         otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
+        
         if (otherRb == NULL) {
             continue;
         }
+
+
         // Friction calculation
         //      Maybe only compute if velocity toward colision is big enough
         float combinedStaticFriction  = 0.5 * (rb->staticFriction  + otherRb->staticFriction);
         float combinedCineticFriction = 0.5 * (rb->cineticFriction + otherRb->cineticFriction);
+
         glm::vec3 normal  = glm::vec3(0.0, 1.0, 0.0); // TODO
         glm::vec3 tangent = glm::cross(normal, glm::cross(normal, gravityDirection)); // A tester
         rb->combinedStaticFriction  += tangent * combinedStaticFriction;
         rb->combinedCineticFriction += tangent * combinedCineticFriction;
-
         //rb->acceleration += rb->inverseOfMass * collisionResults[c]->normal * collisionResults[c]->penetrationDistance;
     }
 }
@@ -160,6 +172,8 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     float deltaTime = InputManager::instance->deltaTime;
 
     float frictionLength = squareLength(rb->combinedStaticFriction);
+
+    //If forces are to small, we simply dont MAJ velocity of the object
     if (frictionLength > 0.0f && glm::dot(rb->combinedStaticFriction, rb->combinedForces) / frictionLength < 1.0) {
         // forces inferior of friction forces : no mouvement
         rb->velocity = glm::vec3(0.0f);
@@ -187,11 +201,13 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     }
 
     // Reinitialise forces (free fall object)
-    rb->combinedForces = gravity * rb->mass; // initialised by weight
-    rb->combinedAngularForces = glm::vec3(0.0f);
+    rb->combinedForces = gravity * rb->mass;        // initialised by weight
+    rb->combinedAngularForces   = glm::vec3(0.0f);
     rb->combinedStaticFriction  = glm::vec3(0.0f);
     rb->combinedCineticFriction = glm::vec3(0.0f);
 }
+
+
 
 void RigidBodySystem::addEntityComponent() {
     EntityManager::instance->rigidBodyComponents.push_back(RigidBody());
@@ -203,6 +219,7 @@ RigidBody* RigidBodySystem::getRigidBody(unsigned short i) {
 
 
 
+/*
 //Particle RB type functions behavior
 void RigidBodySystem::applyForcesParticlesRB(RigidBody* rb) {
     rb->forces = gravity;
@@ -235,24 +252,27 @@ glm::vec3 RigidBodySystem::updateParticlesRB_VerletIntegration(RigidBody* rb, co
 
 glm::vec3 resolveConstraintParticles(ColliderResult* res, RigidBody* rb, const glm::vec3& currentPos) {
     return glm::vec3(0);
-}
-}
+}*/
+
 
 RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
     if (!EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
         // If entity doesn't have a RigidBody, return NULL
         return NULL;
     }
+    
     if (entityIDsToIndex.size() < entityID) {
         // If entityIDsToIndex is too small, extend it
         entityIDsToIndex.resize(entityID+1, (unsigned short)-1);
     }
+
     unsigned short id = entityIDsToIndex[entityID];
     if (id == (unsigned short)-1) {
         // If first time we called getRigidBodyFromEntityId with this entity, get it's ID and update the list
         id = getComponentId(entityID);
         entityIDsToIndex[entityID] = id;
     }
+
     if (id == (unsigned short)-1) {
         // If we could get it's ID, return NULL
         return NULL;

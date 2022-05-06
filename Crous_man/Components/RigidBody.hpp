@@ -22,11 +22,12 @@ struct RigidBody {
     float staticFriction = 1.0f;
     float cineticFriction = .5f;
 
-    glm::vec3 combinedForces = glm::vec3(0.0, 0.0, 0.0);
-    glm::vec3 combinedAngularForces = glm::vec3(0.0, 0.0, 0.0);
+    glm::vec3 combinedForces =          glm::vec3(0.0, 0.0, 0.0);
+    glm::vec3 combinedAngularForces =   glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 combinedStaticFriction  = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 combinedCineticFriction = glm::vec3(0.0, 0.0, 0.0);
 
+    //résistance
     float drag = 0.5f;
     float angularDrag = 0.2f;
 
@@ -48,12 +49,7 @@ struct RigidBody {
     void addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos);
     RBType type;
 
-    glm::vec3 speed         = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 acceleration  = glm::vec3(0.0f, 0.0f, 0.0f);
-    float mass              = 1.0f;
 
-
-    glm::vec3 forces;
     //More for partciles type of RB
     //Coefficient of Restitution
     float bounce            = .7f;       //represents how much energy is kept when a smt bounces off a surface
@@ -83,12 +79,14 @@ public:
     RigidBody* getRigidBodyFromEntityId(unsigned short entityID);
 
 
+
+
     //Particles treatment
+    /*
     void applyForcesParticlesRB(RigidBody* rb);
     glm::vec3 updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
     glm::vec3 updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 resolveConstraintParticles(ColliderResult* res, RigidBody* rb, const glm::vec3& currentPos);
-
+    glm::vec3 resolveConstraintParticles(ColliderResult* res, RigidBody* rb, const glm::vec3& currentPos);*/
 };
 
 

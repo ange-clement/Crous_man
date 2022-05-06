@@ -846,8 +846,205 @@ ColliderResult* SpherePlaneCollision(const Collider& sphere, const glm::vec3 nor
     return res;
 }*/
 
+void getVerticesAABB(const Collider& aabb, std::vector<glm::vec3>& vertex) {
+    vertex.resize(8);
+
+    vertex.push_back(glm::vec3(-1, -1, 1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(1, -1, 1) *aabb.dimensions);
+    vertex.push_back(glm::vec3(-1, 1, 1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(1, 1, 1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(-1, -1, -1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(1, -1, -1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(-1, 1, -1) * aabb.dimensions);
+    vertex.push_back(glm::vec3(1, 1, -1) * aabb.dimensions);
+}
+
+void getEdgesAABB(const Collider& aabb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines) {
+    start_lines.reserve(12);
+    end_lines.reserve(12);
+
+    std::vector<glm::vec3> v;
+    getVerticesOBB(aabb, v);
+
+    int index[][2] = { // Indices of edges
+        { 0, 1 },{ 2, 3 },{ 0, 2 },{ 1, 3 },{ 3, 7 },{ 1, 5 },
+        { 4, 5 },{ 4, 6 },{ 6, 7 },{ 7, 5 },{ 6, 2 },{ 4, 0 }
+    };
+    for (int j = 0; j < 12; ++j) {
+        start_lines.push_back(v[index[j][0]]);
+        end_lines.push_back(v[index[j][1]]);
+    }
+}
+
+void getPlanesAABB(const Collider& aabb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin) {
+    glm::vec3 c = aabb.position;	
+    glm::vec3 e = aabb.dimensions;
+
+    glm::vec3 a[] = {			
+        glm::vec3(1,0,0),
+        glm::vec3(0,1,0),
+        glm::vec3(0,0,1),
+    };
+
+    normals_plane.resize(6);
+    distances_to_origin.resize(6);
+
+    normals_plane[0] = a[0];
+    normals_plane[1] = a[0] * -1.0f;
+    normals_plane[2] = a[1];
+    normals_plane[3] = a[1] * -1.0f;
+    normals_plane[4] = a[2];
+    normals_plane[5] = a[2] * -1.0f;
+
+    distances_to_origin[0] = glm::dot(a[0], (c + a[0] * e.x));
+    distances_to_origin[1] = -glm::dot(a[0], (c - a[0] * e.x));
+    distances_to_origin[2] = glm::dot(a[1], (c + a[1] * e.y));
+    distances_to_origin[3] = -glm::dot(a[1], (c - a[1] * e.y));
+    distances_to_origin[4] = glm::dot(a[2], (c + a[2] * e.z));
+    distances_to_origin[5] = -glm::dot(a[2], (c - a[2] * e.z));
+}
+
+std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& aabb) {
+    std::vector<glm::vec3> result;
+    result.reserve(start_edges.size() * 3);
+
+    glm::vec3 intersection;
+
+    std::vector<glm::vec3> normals_plane;
+    std::vector<float> distances_to_origin;
+    getPlanesAABB(aabb, normals_plane, distances_to_origin);
+
+    for (int i = 0; i < normals_plane.size(); ++i) {
+        for (int j = 0; j < start_edges.size(); ++j) {
+            if (clipToPlane(normals_plane[i], distances_to_origin[i], start_edges[j], end_edges[j], &intersection)) {
+                if (pointInAABB(intersection, aabb)) {
+                    result.push_back(intersection);
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+float penetrationDepthAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool* outShouldFlip) {
+    glm::vec3 axisn = glm::normalize(axis);
+    Interval i1 = GetIntervalOBB(aabb, axisn);
+    Interval i2 = GetIntervalOBB(obb, axisn);
+
+    if (!((i2.min <= i1.max) && (i1.min <= i2.max))) {
+        return 0.0f; // No penerattion
+    }
+
+    float len1 = i1.max - i1.min;
+    float len2 = i2.max - i2.min;
+
+    float min = std::min(i1.min, i2.min);
+    float max = std::max(i1.max, i2.max);
+    float length = max - min;
+
+    if (outShouldFlip != 0) {
+        *outShouldFlip = (i2.min < i1.min);
+    }
+    return (len1 + len2) - length;
+}
+
+
 ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb) {
-    return 0;
+    assert(aabb.type == colliderType::AABB);
+    assert(obb.type == colliderType::OBB);
+
+    ColliderResult* res = new ColliderResult();
+
+    //SAT basic treatment
+    glm::vec3 test[15] = {
+        glm::vec3(1, 0, 0), // AABB axis 1
+        glm::vec3(0, 1, 0), // AABB axis 2
+        glm::vec3(0, 0, 1), // AABB axis 3
+        obb.orientation[0],
+        obb.orientation[1],
+        obb.orientation[2],
+    };
+
+    // Fill out rest of axis
+    for (int i = 0; i < 3; ++i) {
+        test[6 + i * 3 + 0] = glm::cross(test[i], test[3]);
+        test[6 + i * 3 + 1] = glm::cross(test[i], test[4]);
+        test[6 + i * 3 + 2] = glm::cross(test[i], test[5]);
+    }
+
+
+    glm::vec3* hitNormal = 0;
+    bool shouldFlip;
+
+    for (int i = 0; i < 15; ++i) {
+        //No need to treat zero sized vectors
+        if (glm::dot(test[i], test[i]) < 0.001f) {
+            continue;
+        }
+
+        float depth = penetrationDepthAABBOBB(aabb, obb, test[i], &shouldFlip);
+        if (depth <= 0.0f) {
+            //We found a separation axis
+            return res;
+        }
+
+        else if (depth < res->penetrationDistance) {
+            if (shouldFlip) {
+                test[i] = test[i] * -1.0f;
+            }
+            res->penetrationDistance = depth;
+            hitNormal = &test[i];
+        }
+    }
+
+
+    if (hitNormal == 0) {
+        //No axis found 
+        return res;
+    }
+    glm::vec3 axis = glm::normalize(*hitNormal);
+
+    std::vector<glm::vec3> start_edges_2;
+    std::vector<glm::vec3> end_edges_2;
+
+    std::vector<glm::vec3> start_edges_1;
+    std::vector<glm::vec3> end_edges_1;
+
+    getEdgesAABB(aabb, start_edges_1, end_edges_1);
+    getEdgesOBB(obb, start_edges_2, end_edges_2);
+
+    std::vector<glm::vec3> c1 = clipEdgesToAABB(start_edges_2, end_edges_2, aabb);
+    std::vector<glm::vec3> c2 = clipEdgesToOBB(start_edges_1, end_edges_1, obb);
+
+    std::vector<glm::vec3> pContacts;
+
+    pContacts.reserve(c1.size() + c2.size());
+    pContacts.insert(pContacts.end(), c1.begin(), c1.end());
+    pContacts.insert(pContacts.end(), c2.begin(), c2.end());
+
+    Interval i = GetIntervalOBB(obb, axis);
+
+    float distance = (i.max - i.min) * 0.5f - res->penetrationDistance * 0.5f;
+    glm::vec3 pointOnPlane = obb.position + axis * distance;
+
+    for (int i = pContacts.size() - 1; i >= 0; --i) {
+        glm::vec3 contact = pContacts[i];
+        pContacts[i] = contact + (axis * glm::dot(axis, pointOnPlane - contact));
+
+        // This bit is in the "There is more" section of the book
+        for (int j = pContacts.size() - 1; j > i; --j) {
+            glm::vec3 dif = pContacts[j] - pContacts[i];
+            if (glm::dot(dif, dif) < 0.0001f) {
+                pContacts.erase(pContacts.begin() + j);
+                break;
+            }
+        }
+    }
+
+    res->isInCollision = true;
+    res->normal = axis;
+    return res;
 }
 
 //Collision between an AABB and a Plane
@@ -944,7 +1141,7 @@ ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2) {
 }*/
 
 //Get all the vertices of an OBB
-void getVertices(const Collider& obb, std::vector<glm::vec3>& vertex) {
+void getVerticesOBB(const Collider& obb, std::vector<glm::vec3>& vertex) {
     assert(obb.type == colliderType::OBB);
     vertex.resize(8);
     glm::vec3 C = obb.position;	// OBB Center
@@ -962,12 +1159,12 @@ void getVertices(const Collider& obb, std::vector<glm::vec3>& vertex) {
 }
 
 //Get all the edges of an OBB
-void getEdges(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines){
+void getEdgesOBB(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines){
     start_lines.reserve(12);
     end_lines.reserve(12);
 
     std::vector<glm::vec3> v;
-    getVertices(obb, v);
+    getVerticesOBB(obb, v);
 
     int index[][2] = { // Indices of edges
         { 6, 1 },{ 6, 3 },{ 6, 4 },{ 2, 7 },{ 2, 5 },{ 2, 0 },
@@ -980,7 +1177,7 @@ void getEdges(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vec
 }
 
 //Get all the planes of an OBB
-void getPlanes(const Collider& obb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin) {
+void getPlanesOBB(const Collider& obb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin) {
     glm::vec3 c = obb.position;	// OBB Center
     glm::vec3 e = obb.size;		// OBB Extents
 
@@ -1040,7 +1237,7 @@ std::vector<glm::vec3> clipEdgesToOBB(const std::vector<glm::vec3>& start_edges,
 
     std::vector<glm::vec3> normals_plane;
     std::vector<float> distances_to_origin;
-    getPlanes(obb, normals_plane,distances_to_origin);
+    getPlanesOBB(obb, normals_plane,distances_to_origin);
 
     for (int i = 0; i < normals_plane.size(); ++i) {
         for (int j = 0; j < start_edges.size(); ++j) {
@@ -1140,8 +1337,8 @@ ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2) {
     std::vector<glm::vec3> start_edges_1;
     std::vector<glm::vec3> end_edges_1;
     
-    getEdges(obb1, start_edges_1, end_edges_1);
-    getEdges(obb2, start_edges_2, end_edges_2);
+    getEdgesOBB(obb1, start_edges_1, end_edges_1);
+    getEdgesOBB(obb2, start_edges_2, end_edges_2);
     std::vector<glm::vec3> c1 = clipEdgesToOBB(start_edges_2,end_edges_2, obb1);
     std::vector<glm::vec3> c2 = clipEdgesToOBB(start_edges_1, end_edges_1, obb2);
 

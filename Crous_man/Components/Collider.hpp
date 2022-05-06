@@ -134,12 +134,20 @@ ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2);
 ColliderResult* OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin);
 
 //For OBB Special treatment
-void getVertices(const Collider& obb, std::vector<glm::vec3>& vertex);
-void getEdges(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines);
-void getPlanes(const Collider& obb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin);
+void getVerticesOBB(const Collider& obb, std::vector<glm::vec3>& vertex);
+void getEdgesOBB(const Collider& obb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines);
+void getPlanesOBB(const Collider& obb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin);
 bool clipToPlane(const glm::vec3& normal_plane,const float distance_to_origin_plane, const glm::vec3& start_line, const glm::vec3& end_line, glm::vec3* outPoint);
 std::vector<glm::vec3> clipEdgesToOBB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& obb);
 float penetrationDepthOBB(const Collider& o1, const Collider& o2, const glm::vec3& axis, bool* outShouldFlip);
+
+void getVerticesAABB(const Collider& aabb, std::vector<glm::vec3>& vertex);
+void getEdgesAABB(const Collider& aabb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines);
+void getPlanesAABB(const Collider& aabb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin);
+std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& aabb);
+float penetrationDepthAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool* outShouldFlip);
+
+
 
 
 //Have collision result and other datas
