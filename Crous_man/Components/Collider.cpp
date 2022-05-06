@@ -239,7 +239,6 @@ void ColliderSystem::OcTreeCollisionResolution() {
 
 }
 
-
 /* =================== =================== COLLISION DETECTION FUNCTIONS =================== ===================*/
 //create AABB form a min and a max position only
 void AABBfromMinMax(Collider& aabb, const glm::vec3 min, const glm::vec3 max) {
@@ -847,6 +846,7 @@ ColliderResult* SpherePlaneCollision(const Collider& sphere, const glm::vec3 nor
 }*/
 
 void getVerticesAABB(const Collider& aabb, std::vector<glm::vec3>& vertex) {
+    assert(aabb.type == colliderType::AABB);
     vertex.resize(8);
 
     vertex.push_back(glm::vec3(-1, -1, 1) * aabb.dimensions);
@@ -860,11 +860,13 @@ void getVerticesAABB(const Collider& aabb, std::vector<glm::vec3>& vertex) {
 }
 
 void getEdgesAABB(const Collider& aabb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines) {
+    assert(aabb.type == colliderType::AABB);
+    
     start_lines.reserve(12);
     end_lines.reserve(12);
 
     std::vector<glm::vec3> v;
-    getVerticesOBB(aabb, v);
+    getVerticesAABB(aabb, v);
 
     int index[][2] = { // Indices of edges
         { 0, 1 },{ 2, 3 },{ 0, 2 },{ 1, 3 },{ 3, 7 },{ 1, 5 },
@@ -877,6 +879,8 @@ void getEdgesAABB(const Collider& aabb, std::vector<glm::vec3>& start_lines, std
 }
 
 void getPlanesAABB(const Collider& aabb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin) {
+    assert(aabb.type == colliderType::AABB);
+
     glm::vec3 c = aabb.position;	
     glm::vec3 e = aabb.dimensions;
 
@@ -905,6 +909,8 @@ void getPlanesAABB(const Collider& aabb, std::vector<glm::vec3>& normals_plane, 
 }
 
 std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& aabb) {
+    assert(aabb.type == colliderType::AABB);
+
     std::vector<glm::vec3> result;
     result.reserve(start_edges.size() * 3);
 
@@ -929,7 +935,8 @@ std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges
 
 float penetrationDepthAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool* outShouldFlip) {
     glm::vec3 axisn = glm::normalize(axis);
-    Interval i1 = GetIntervalOBB(aabb, axisn);
+
+    Interval i1 = GetIntervalAABB(aabb, axisn);
     Interval i2 = GetIntervalOBB(obb, axisn);
 
     if (!((i2.min <= i1.max) && (i1.min <= i2.max))) {
@@ -951,6 +958,8 @@ float penetrationDepthAABBOBB(const Collider& aabb, const Collider& obb, const g
 
 
 ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb) {
+    std::cout << "AABB OBB Collision" << std::endl;
+
     assert(aabb.type == colliderType::AABB);
     assert(obb.type == colliderType::OBB);
 
@@ -1044,6 +1053,8 @@ ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb) {
 
     res->isInCollision = true;
     res->normal = axis;
+
+    std::cout << "AABB OBB END Collision" << std::endl;
     return res;
 }
 
@@ -1143,6 +1154,7 @@ ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2) {
 //Get all the vertices of an OBB
 void getVerticesOBB(const Collider& obb, std::vector<glm::vec3>& vertex) {
     assert(obb.type == colliderType::OBB);
+
     vertex.resize(8);
     glm::vec3 C = obb.position;	// OBB Center
     glm::vec3 E = obb.size;     // OBB Extents
@@ -1276,6 +1288,8 @@ float penetrationDepthOBB(const Collider& o1, const Collider& o2, const glm::vec
 }
 
 ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2) {
+    std::cout << "OBB OBB Collision" << std::endl;
+
     assert(obb1.type == colliderType::OBB);
     assert(obb2.type == colliderType::OBB);
     ColliderResult* res = new ColliderResult();
@@ -1369,6 +1383,7 @@ ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2) {
 
     res->isInCollision = true;
     res->normal = axis;
+    std::cout << "OBB OBB END Collision" << std::endl;
     return res;
 }
 
@@ -1607,8 +1622,6 @@ bool isInintersection(Collider c1, Collider c2) {
     std::cout << "NO COLLISION TEST FOUND !" << std::endl;
     return false;
 }
-
-
 
 
 
