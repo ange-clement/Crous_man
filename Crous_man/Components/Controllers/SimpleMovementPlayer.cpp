@@ -102,7 +102,7 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
         translationAmount *= 4;
     }
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-        translationAmount /= 8;
+        translationAmount /= 32;
     }
 
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_UP) == GLFW_PRESS) {
@@ -195,7 +195,7 @@ void SimpleMovementPlayerSystem::updateOnCollide(unsigned short i, unsigned shor
         std::cout << c << std::endl;
         std::cout << collisionResults[c]->isInCollision << std::endl;
         std::cout << collisionResults[c]->entityCollidID << std::endl;
-        std::cout << collisionResults[c]->penetrationDistance << std::endl;
+        //std::cout << collisionResults[c]->penetrationDistance << std::endl;
         //std::cout << collisionResults[c]->pointCollision[0] << " " << collisionResults[c]->pointCollision[1] << " " << collisionResults[c]->pointCollision[2] << std::endl;
     }
 }

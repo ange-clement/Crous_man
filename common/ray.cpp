@@ -104,6 +104,7 @@ glm::vec3 Ray::ClosestPoint(const glm::vec3& point) {
 /*LINE TEST RAY BASED FUNCTIONS*/
 glm::vec3 closestPointLine(const glm::vec3& point, const glm::vec3& start_line, const glm::vec3& end_line) {
 	glm::vec3 lVec = end_line - start_line;
+	//t : how far long the line the projected pointes point is
 	float t = glm::dot(point - start_line, lVec) / glm::dot(lVec, lVec);
 	// Clamp t to the 0 to 1 range
 	t = ((t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t));
@@ -160,6 +161,7 @@ bool LinetestOBB(const Collider& obb, const glm::vec3& start_line, const glm::ve
 	if (length_sq < 0.0000001f) {
 		return pointInOBB(start_line, obb);
 	}
+
 	Ray ray = Ray(start_line, glm::normalize(end_line- start_line));
 
 	RaycastResult result;
@@ -167,6 +169,7 @@ bool LinetestOBB(const Collider& obb, const glm::vec3& start_line, const glm::ve
 		return false;
 	}
 	float t = result.t;
+	// Comparing the squared value of t against the squared length of the line segment is more efficient than normalizing t to the length of the line
 	return t >= 0 && t * t <= length_sq;
 }
 
@@ -180,7 +183,7 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 	float rSq = sphere.radius * sphere.radius;
 
 	float eSq = glm::dot(e,e);
-	float a = glm::dot(e, ray.direction); // ray.direction is assumed to be normalized
+	float a = glm::dot(e, ray.direction); 
 	float bSq = eSq - (a * a);
 	float f = std::sqrt(fabsf((rSq)- bSq));
 
@@ -205,6 +208,7 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 	return true;
 }
 
+//Same mechenism as AABB, but we find tmin and tmax in a different way
 bool OBBRaycast(const Collider& obb, const Ray& ray, RaycastResult* outResult) {
 	assert(obb.type == colliderType::OBB);
 	ResetRaycastResult(outResult);
@@ -295,6 +299,8 @@ void ResetRaycastResult(RaycastResult* outResult) {
 	}
 }
 
+
+//Cyrus-Beck clipping : clip the ray against each of the six planes that make up the AABB
 bool AABBRaycast(const Collider& aabb, const Ray& ray, RaycastResult* outResult) {
 	assert(aabb.type == colliderType::AABB);
 	ResetRaycastResult(outResult);
@@ -302,6 +308,8 @@ bool AABBRaycast(const Collider& aabb, const Ray& ray, RaycastResult* outResult)
 	glm::vec3 min;
 	glm::vec3 max;
 	computeMinMaxAABB(aabb, min, max);
+	min += aabb.position;
+	max += aabb.position;
 
 	// Any component of direction could be 0!
 	// Address this by using a small number, close to
@@ -313,6 +321,9 @@ bool AABBRaycast(const Collider& aabb, const Ray& ray, RaycastResult* outResult)
 	float t5 = (min.z - ray.origin.z) / (compareWithEpsilon(ray.direction.z, 0.0f) ? 0.00001f : ray.direction.z);
 	float t6 = (max.z - ray.origin.z) / (compareWithEpsilon(ray.direction.z, 0.0f) ? 0.00001f : ray.direction.z);
 
+
+	//To find the point of entry, we need to find the largest minimum value. 
+	//To find the point of exit, we need to find the smallest minimum value :
 	float tmin = fmaxf(fmaxf(fminf(t1, t2), fminf(t3, t4)), fminf(t5, t6));
 	float tmax = fminf(fminf(fmaxf(t1, t2), fmaxf(t3, t4)), fmaxf(t5, t6));
 
@@ -361,7 +372,8 @@ bool AABBRaycast(const Collider& aabb, const Ray& ray, RaycastResult* outResult)
 
 bool PlaneRaycast(const glm::vec3 normal_plan, float distance_to_origin, const Ray& ray, RaycastResult* outResult) {
 	ResetRaycastResult(outResult);
-
+	//Based on plan equation : glm::dot(point, normal_plan) - distance_to_origin = 0
+	//So it gave us this : glm::dot((ray.origin + ray.direction * t), normal_plan) - distance_to_origin = 0;
 	float nd = glm::dot(ray.direction, normal_plan);
 	float pn = glm::dot(ray.origin, normal_plan);
 
@@ -421,6 +433,8 @@ bool TriangleRaycast(const Triangle& triangle, const Ray& ray, RaycastResult* ou
 }
 
 bool RayCastCollider(const Collider& collider, const Ray& ray, RaycastResult* outResult){
+	assert(outResult != 0);
+	outResult->entityIDCollid = collider.entityID;
 	if (collider.type == colliderType::Sphere)	return SphereRaycast(collider, ray, outResult);
 	if (collider.type == colliderType::AABB)	return AABBRaycast(collider, ray, outResult);
 	if (collider.type == colliderType::OBB)		return OBBRaycast(collider, ray, outResult);

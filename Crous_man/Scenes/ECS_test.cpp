@@ -120,7 +120,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
-    Entity* monke2 = (new EntityBuilder({SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+    Entity* monke2 = (new EntityBuilder({SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID}))
         ->setTranslation(glm::vec3(10.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
         ->updateRenderer()
@@ -131,13 +131,13 @@ void createSceneCollider() {
     Entity* monke3 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(10.0, 2.0, 10.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-        ->setRotation(-3.141592653 * 0.5, glm::vec3(0.0, 1.0, 0.0))
+        ->setRotation(-3.141592653 * 0.3, glm::vec3(0.0, 1.0, 0.0))
         ->updateRenderer()
         ->fitAABBColliderToMesh()
         ->setRenderingCollider()
         ->build();
     
-    Entity* monke4 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+    Entity* monke4 = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(10.0, 20.0, 2.0))
         ->setScale(glm::vec3(10.0, 10.0, 10.0))
         ->setRotation(-3.141592653* .1f, glm::vec3(1.0, 0.0, 0.0))
@@ -147,14 +147,14 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
-    Entity* plane = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+    Entity* plane = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
         ->setScale(glm::vec3(100.0, 100.0, 1.0))
         ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
         ->setMeshAsQuad()
         ->updateRenderer()
         ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
-        ->fitOBBColliderToMesh()
+        ->fitAABBColliderToMesh()
         ->setRenderingCollider()
         ->build();
    

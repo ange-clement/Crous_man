@@ -75,7 +75,7 @@ void splitTree(OctreeNode& node, int depth){
 				for (int j = 0, size = node.entitiesID.size(); j < size; ++j) {
 					Collider* col = CS->getColliderEntityID(node.entitiesID[j]);
 					if (col) {
-						if (intersect(node.children[i].aabb, *col)) {
+						if (isInIntersection(node.children[i].aabb, *col)) {
 							node.children[i].entitiesID.push_back(node.entitiesID[j]);
 						}
 					}
@@ -104,7 +104,7 @@ void insertInTheTree(OctreeNode& node, unsigned short id) {
 	if (CS) {
 		Collider* col = CS->getColliderEntityID(id);	
 		if (col) {
-			if (intersect(node.aabb, *col)) {
+			if (isInIntersection(node.aabb, *col)) {
 				if (node.children == 0) {
 					node.entitiesID.push_back(id);
 				}
@@ -216,18 +216,18 @@ std::vector<unsigned short> queryOnSphere(OctreeNode* node, const Collider& sphe
 	std::vector<unsigned short> result;
 	RaycastResult resRay;
 
-	ColliderResult* res = SphereAABBCollision(node->aabb, sphere);
+	bool res = isSphereAABBCollision(node->aabb, sphere);
 
 	ColliderSystem* CS = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
 	if (CS) {
-		if (res->isInCollision) {
+		if (res) {
 
 			if (node->children == 0) {
 				for (int i = 0, size = node->entitiesID.size(); i < size; ++i) {
 
 					Collider* col = CS->getColliderEntityID(node->entitiesID[i]);
 					if (col) {
-						if (intersect(sphere, *col)) {
+						if (isInIntersection(sphere, *col)) {
 							result.push_back(node->entitiesID[i]);
 						}
 					}
@@ -261,18 +261,18 @@ std::vector<unsigned short> queryOnAABB(OctreeNode* node, const Collider& aabb) 
 	std::vector<unsigned short> result;
 	RaycastResult resRay;
 
-	ColliderResult* res = AABBAABBCollision(node->aabb, aabb);
+	bool res = isAABBAABBCollision(node->aabb, aabb);
 
 	ColliderSystem* CS = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
 	if (CS) {
-		if (res->isInCollision) {
+		if (res) {
 
 			if (node->children == 0) {
 				for (int i = 0, size = node->entitiesID.size(); i < size; ++i) {
 
 					Collider* col = CS->getColliderEntityID(node->entitiesID[i]);
 					if (col) {
-						if (intersect(aabb, *col)) {
+						if (isInIntersection(aabb, *col)) {
 							result.push_back(node->entitiesID[i]);
 						}
 					}

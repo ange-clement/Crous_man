@@ -34,18 +34,11 @@ struct Collider{
     ColliderShader* shader;
 };
 
-class ColliderResult {
-public :
-    ColliderResult();
-    ColliderResult(unsigned short id, ColliderResult *c);
-    ~ColliderResult();
+struct ContactPoint {
+    ContactPoint();
+    ~ContactPoint();
 
     void print();
-
-    unsigned short entityCollidID;
-    
-
-    bool isInCollision;
 
     //Half of the total penetration length
     float penetrationDistance;
@@ -54,13 +47,32 @@ public :
     glm::vec3 normal;
 };
 
+class ColliderResult {
+public :
+    ColliderResult();
+    ColliderResult(unsigned short id, ColliderResult *c);
+    ~ColliderResult();
+
+    void print();
+    void inverseNormals();
+
+    unsigned short entityCollidID;
+    
+
+    bool isInCollision;
+
+    std::vector<ContactPoint*> contactsPts;
+};
+
 // Map : clef = entityID
 typedef std::map<unsigned short, std::vector<ColliderResult*>> CollisionResultMap;
+typedef std::map<unsigned short, std::vector<bool>> SimpleCollisionResultMap;
 
 class ColliderSystem : public ComponentSystem {
 private :
-
     CollisionResultMap collisionResultMap;
+    SimpleCollisionResultMap simpleCollisionResultMap;
+
     std::vector<glm::vec3> verticesCube;
 
     //Collision treatment
@@ -72,7 +84,6 @@ private :
     
     //AABB
     void computeAABBDimensions(Collider* c);
-
 public :
 
     ColliderSystem();
@@ -99,8 +110,15 @@ public :
 
     std::vector<ColliderResult*> getResultOf(unsigned int entityID);
 
+
+    //Intersection main function
+    void computeIntersection(unsigned short i, unsigned short entityIID, unsigned short j, unsigned short entityJID);
+
     friend class RigidBody;
 };
+
+//To check if the collider provided is a computed collider
+bool isSupportedCollider(Collider c);
 
 
 //Find closest point to special data structure
@@ -123,15 +141,15 @@ void computeMinMaxAABB(const Collider& c, glm::vec3& min, glm::vec3& max);
 
 
 //INtersection between collider structure data
-ColliderResult* AABBAABBCollision(const Collider& aabb1, const Collider& aabb2);
-ColliderResult* SphereSphereCollision(Collider sp1, Collider sp2);
-ColliderResult* SphereAABBCollision(const Collider& aabb, const Collider& sphere);
-ColliderResult* SphereOBBCollision(const Collider& sphere, const Collider& obb);
-ColliderResult* SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin);
-ColliderResult* AABBOBBCollision(const Collider& aabb, const Collider& obb);
-ColliderResult* AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin);
-ColliderResult* OBBOBBCollision(const Collider& obb1, const Collider& obb2);
-ColliderResult* OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin);
+void AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, ColliderResult* res);
+void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res);
+void SphereAABBCollision(const Collider& aabb, const Collider& sphere, ColliderResult* res);
+void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderResult* res);
+void SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin, ColliderResult* res);
+void AABBOBBCollision(const Collider& aabb, const Collider& obb, ColliderResult* res);
+void AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin, ColliderResult* res);
+void OBBOBBCollision(const Collider& obb1, const Collider& obb2, ColliderResult* res);
+void OBBPlaneCollision(const Collider& obb, const glm::vec3 normal_plan, float distance_to_origin, ColliderResult* res);
 
 //For OBB Special treatment
 void getVerticesOBB(const Collider& obb, std::vector<glm::vec3>& vertex);
@@ -141,19 +159,17 @@ bool clipToPlane(const glm::vec3& normal_plane,const float distance_to_origin_pl
 std::vector<glm::vec3> clipEdgesToOBB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& obb);
 float penetrationDepthOBB(const Collider& o1, const Collider& o2, const glm::vec3& axis, bool* outShouldFlip);
 
+//For AABB Special treatment
 void getVerticesAABB(const Collider& aabb, std::vector<glm::vec3>& vertex);
 void getEdgesAABB(const Collider& aabb, std::vector<glm::vec3>& start_lines, std::vector<glm::vec3>& end_lines);
 void getPlanesAABB(const Collider& aabb, std::vector<glm::vec3>& normals_plane, std::vector<float>& distances_to_origin);
 std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges, const std::vector<glm::vec3>& end_edges, const Collider& aabb);
 float penetrationDepthAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis, bool* outShouldFlip);
+//Have collision result and resolution data
+void intersect(Collider c1, Collider c2, ColliderResult* res);
 
-
-
-
-//Have collision result and other datas
-ColliderResult* intersect(Collider c1, Collider c2);
 //Just to see if there is an intersection
-bool isInintersection(Collider c1, Collider c2);
+bool isInIntersection(Collider c1, Collider c2);
 
 bool isAABBAABBCollision(const Collider& aabb1, const Collider& aabb2);
 bool isSphereSphereCollision(Collider sp1, Collider sp2);
