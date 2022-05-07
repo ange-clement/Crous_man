@@ -106,6 +106,7 @@ void EntityManager::initSystems() {
 
 void EntityManager::initializeAllSystems() {
     for (size_t i = 0, size = systems.size(); i < size; i++) {
+        std::cout << "initialize ALL "<< i << std::endl;
         systems[i]->initializeAll();
     }
 }

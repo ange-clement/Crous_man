@@ -46,6 +46,7 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     unsigned int nbInPool = 10;
     std::vector<Entity*> entitiesForPool;
     for (unsigned int i = 0; i < nbInPool; i++) {
+        /*
         entitiesForPool.push_back((new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
             ->setActive(false)
             ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
@@ -54,8 +55,21 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
             ->updateRenderer()
             ->fitSphereColliderToMesh()
             ->setRenderingCollider()
+            ->initializeComponents()
             ->build()
         );
+        */
+        
+        entitiesForPool.push_back((new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SpinID}))
+            ->setActive(false)
+            ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
+            ->setScale(glm::vec3(0.2, 0.2, 0.2))
+            ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+            ->updateRenderer()
+            ->initializeComponents()
+            ->build()
+        );
+        
     }
     fc->pool = new EntityPool(entitiesForPool);
 
@@ -128,6 +142,10 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
 
         Entity* instance = fc->pool->addEntity();
         instance->transform->translation = closest->point;
+    }
+    if (!fc->rayCastCooldown->inCooldown() && glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {
+        fc->rayCastCooldown->start();
+        fc->pool->deleteEntity();
     }
 
     

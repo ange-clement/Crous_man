@@ -36,6 +36,7 @@ public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
 	EntityBuilder* setActive(bool activeStatus);
+	EntityBuilder* initializeComponents();
 
 	Mesh* getMesh();
 	EntityBuilder* setMeshAsQuad();
