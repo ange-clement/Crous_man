@@ -46,7 +46,7 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     unsigned int nbInPool = 10;
     std::vector<Entity*> entitiesForPool;
     for (unsigned int i = 0; i < nbInPool; i++) {
-        /*
+        
         entitiesForPool.push_back((new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
             ->setActive(false)
             ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
@@ -58,7 +58,8 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
             ->initializeComponents()
             ->build()
         );
-        */
+        
+        /*
         
         entitiesForPool.push_back((new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SpinID}))
             ->setActive(false)
@@ -68,7 +69,7 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
             ->updateRenderer()
             ->initializeComponents()
             ->build()
-        );
+        );*/
         
     }
     fc->pool = new EntityPool(entitiesForPool);

@@ -181,15 +181,19 @@ void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
     //Resize older components (for perform add in game)
     for (auto const& x : collisionResultMap) {
         if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
+
             std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
+        
         }
     }
 
     for (auto const& x : simpleCollisionResultMap) {
         if (simpleCollisionResultMap.at(x.first).size() < entityIDs.size()) {
+
             std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             simpleCollisionResultMap.at(x.first).resize(entityIDs.size(), false);
+
         }
     }
 
