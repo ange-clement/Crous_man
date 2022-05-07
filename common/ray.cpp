@@ -173,6 +173,12 @@ bool LinetestOBB(const Collider& obb, const glm::vec3& start_line, const glm::ve
 	return t >= 0 && t * t <= length_sq;
 }
 
+bool LinetestCollider(const Collider& collider, const glm::vec3& start_line, const glm::vec3& end_line) {
+	if (collider.type == colliderType::Sphere)	return LinetestSphere(collider, start_line, end_line);
+	if (collider.type == colliderType::AABB)	return LinetestAABB(collider, start_line, end_line);
+	if (collider.type == colliderType::OBB)		return LinetestOBB(collider, start_line, end_line);
+	return false;
+}
 
 /*============ =============== COLLIDERS-RAY INTERSECTION FUNCTIONS =============== ============*/
 bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outResult) {

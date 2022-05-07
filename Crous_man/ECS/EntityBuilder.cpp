@@ -272,7 +272,7 @@ EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	computeSphere(this->buildEntity->transform,mesh->indexed_vertices, collider->center, collider->radius);
 	
 	print(collider->center);
-	std::cout << "radius : " << collider->radius;
+	std::cout << "radius : " << collider->radius << std::endl;
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {

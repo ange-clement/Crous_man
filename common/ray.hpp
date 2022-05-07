@@ -64,6 +64,8 @@ bool LinetestPlan(const glm::vec3 normal_plan, float distance_to_origin, const g
 bool LinetestAABB(const Collider& aabb, const glm::vec3& start_line, const glm::vec3& end_line);
 bool LinetestOBB(const Collider& obb, const glm::vec3& start_line, const glm::vec3& end_line);
 bool LinetestTriangle(const Triangle& triangle, const glm::vec3& start_line, const glm::vec3& end_line);
+bool LinetestCollider(const Collider& aabb, const glm::vec3& start_line, const glm::vec3& end_line);
+
 
 glm::vec3 Barycentric(const glm::vec3& p, const Triangle& t);
 

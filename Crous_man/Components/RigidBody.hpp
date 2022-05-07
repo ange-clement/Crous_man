@@ -80,14 +80,14 @@ public:
 
 
 
-
     //Particles treatment
-    /*
-    void applyForcesParticlesRB(RigidBody* rb);
+    void initForcesParticlesRB(RigidBody* rb);
     glm::vec3 updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 resolveConstraintParticles(ColliderResult* res, RigidBody* rb, const glm::vec3& currentPos);*/
+    glm::vec3 updateParticlesRB_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 resolveConstraintParticles(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
 };
+
+
 
 
 
