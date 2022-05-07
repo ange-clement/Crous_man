@@ -103,14 +103,7 @@ void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
         getCollider(i)->orientation = glm::mat3(1);
     }
 
-    //Init collider datas
-    std::vector<ColliderResult*> res;
-    res.resize(entityIDs.size(), 0);
-    collisionResultMap.insert(CollisionResultMap::value_type(entityID, res));
-
-    std::vector<bool> res_simple;
-    res_simple.resize(entityIDs.size(), false);
-    simpleCollisionResultMap.insert(SimpleCollisionResultMap::value_type(entityID, res_simple));
+    addNewColliderEntry(entityID);
 }
 
 void ColliderSystem::update(unsigned short i, unsigned short entityID) {
@@ -182,6 +175,37 @@ Collider* ColliderSystem::getColliderEntityID(unsigned short entityID) {
 
 bool isSupportedCollider(Collider c) {
     return c.type == colliderType::Sphere || c.type == colliderType::AABB || c.type == colliderType::OBB;
+}
+
+void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
+    std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
+    //Resize older components (for perform add in game)
+    for (auto const& x : collisionResultMap) {
+        if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
+
+            std::cout << "NEED TO RESIZE : " << x.first << std::endl;
+            collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
+        
+        }
+    }
+
+    for (auto const& x : simpleCollisionResultMap) {
+        if (simpleCollisionResultMap.at(x.first).size() < entityIDs.size()) {
+
+            std::cout << "NEED TO RESIZE : " << x.first << std::endl;
+            simpleCollisionResultMap.at(x.first).resize(entityIDs.size(), false);
+
+        }
+    }
+
+    //Init collider datas
+    std::vector<ColliderResult*> res;
+    res.resize(entityIDs.size(), 0);
+    collisionResultMap.insert(CollisionResultMap::value_type(entityID, res));
+
+    std::vector<bool> res_simple;
+    res_simple.resize(entityIDs.size(), false);
+    simpleCollisionResultMap.insert(SimpleCollisionResultMap::value_type(entityID, res_simple));
 }
 
 
