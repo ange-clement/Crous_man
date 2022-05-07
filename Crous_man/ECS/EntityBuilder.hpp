@@ -69,6 +69,7 @@ public:
 
 	RigidBody* getRigidBody();
 	EntityBuilder* setRigidBodyMass(float mass);
+	EntityBuilder* setRigidBodyStatic(bool staticStatus);
 
 
 	PointLight* getPointLight();

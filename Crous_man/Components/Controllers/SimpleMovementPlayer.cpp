@@ -89,6 +89,7 @@ void SimpleMovementPlayerSystem::initialize(unsigned short i, unsigned short ent
 }
 
 void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityID) {
+    Entity* e = EntityManager::instance->entities[entityID];
     SimpleMovementPlayer* sp = getSimpleMovementController(i);
     Transform* tr = EntityManager::instance->entities[entityID]->transform;
 
@@ -145,16 +146,12 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
             sp->rbMovementType %= 12;
             std::cout << sp->rbMovementType << std::endl;
         }
+
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_Z) == GLFW_RELEASE) {
             sp->movedRbMovementType = false;
         }
 
-        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_PRESS) {
-            rbSystem->setGravity(glm::vec3(0.0, -0.1f, 0.0));
-        }
-        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_RELEASE) {
-            rbSystem->setGravity(glm::vec3(0.0, 0.0f, 0.0));
-        }
+
 
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
             forceAmount *= 4;
@@ -162,6 +159,17 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
             forceAmount /= 8;
         }
+
+        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_PRESS) {
+            rbSystem->setGravity(glm::vec3(0.0, -0.1f, 0.0) * forceAmount);
+        }
+        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_RELEASE) {
+            rbSystem->setGravity(glm::vec3(0.0, 0.0f, 0.0) * forceAmount);
+        }
+        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_V) == GLFW_PRESS) {
+            sp->rb->addForce(-glm::normalize(e->transform->translation) * forceAmount);
+        }
+
 
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_T) == GLFW_PRESS) {
             sp->applyRbMovement(forceAmount * fdirection);

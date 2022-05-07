@@ -47,6 +47,7 @@ void RigidBody::addVelocity(glm::vec3 vel) {
 }
 
 void RigidBody::addImpulse(glm::vec3 impulse) {
+    //this->velocity += impulse;
     this->velocity += impulse * this->inverseOfMass;
 }
 
@@ -77,21 +78,23 @@ void RigidBody::addForceAtPosition(glm::vec3 force, glm::vec3 pos) {
     float forceStrength = forceLength * posDistance;
     float forceAngle = forceStrength / posDistance;
     */
-    float forceAngle = forceLength;
+    //float forceAngle = forceLength;
+    //float forceAngle = acos(forceLength / posDistance);
+    //float forceAngle = forceLength / posDistance;
 
     //Rotation axis vector
-    glm::vec3 forceAxis = glm::cross(force, centerToPosVector);
+    glm::vec3 forceAxis = glm::cross(force, centerToPosVector); // force axis = couple = F * r = m * r^2 * a --> il fautdiviser par r pour avoir la force!
     
     //Apply a force 
     float forceAxisLength = glm::length(forceAxis);
     //If vector are non aligned
     if (forceAxisLength > 0.0f) {
-        forceAxis = forceAxis / forceAxisLength;
+        //forceAxis = forceAxis / forceAxisLength;
         //We add angular force
-        this->addAngularForce(forceAxis * forceAngle);
+        //this->addAngularForce(forceAxis * forceAngle);
+        this->addAngularForce(forceAxis / posDistance);
     }
-    //By default, we add normal force
-    this->addForce(force / ((posDistance < 1.0) ? 1.0f : posDistance));
+    this->addForce(force / (posDistance + 1.0f));
 }
 
 void RigidBody::addAccelerationAtPosition(glm::vec3 acc, glm::vec3 pos) {
@@ -107,7 +110,7 @@ void RigidBody::addVelocityAtPosition(glm::vec3 vel, glm::vec3 pos) {
     float posDistance = glm::length(centerToPosVector);
 
     float velLength = glm::length(vel);
-    float velAngle = velLength;
+    float velAngle = acos(velLength / posDistance);
 
     glm::vec3 velAxis = glm::normalize(glm::cross(vel, centerToPosVector));
     float velAxisLength = glm::length(velAxis);
@@ -115,11 +118,22 @@ void RigidBody::addVelocityAtPosition(glm::vec3 vel, glm::vec3 pos) {
         velAxis = velAxis / velAxisLength;
         this->addAngularVelocity(velAxis * velAngle);
     }
-    this->addVelocity(vel / ((posDistance < 1.0) ? 1.0f : posDistance));
+    this->addVelocity(vel / (posDistance + 1.0f));
 }
 
 void RigidBody::addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos) {
-    this->addVelocityAtPosition(impulse * this->inverseOfMass, pos);
+    glm::vec3 centerOfMass = glm::vec3(0.0f);
+    glm::vec3 centerToPosVector = pos - centerOfMass;
+
+
+    float Iinv = 1.0f / (this->mass * glm::dot(centerToPosVector, centerToPosVector));
+    glm::vec3 angularVelocityDiff = Iinv * glm::cross(centerToPosVector, impulse);
+
+    glm::vec3 velocityDiff = impulse * this->inverseOfMass;
+
+
+    this->addAngularVelocity(angularVelocityDiff);
+    this->addVelocity(velocityDiff);
 }
 
 
@@ -146,45 +160,54 @@ void RigidBodySystem::initialize(unsigned short i, unsigned short entityID) {
 }
 
 void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults) {
+    // 1- Get all contacts
+    // 2- Accumulate forces acting on the rigidbodies
+    // 3 - Apply impulses to resolve collisions (except if static)
+
     RigidBody* rb = getRigidBody(i);
     RigidBody* otherRb;
 
     Entity* e = EntityManager::instance->entities[entityID];
+    Entity* otherE;
+    
     for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+        //First get the RB of the other member of the collision
+        otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
         otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
-        
-        /*
-        if (otherRb == NULL) {
-            continue;
-        }
 
-
-        // Friction calculation
-        //      Maybe only compute if velocity toward colision is big enough
-        float combinedStaticFriction  = 0.5 * (rb->staticFriction  + otherRb->staticFriction);
-        float combinedCineticFriction = 0.5 * (rb->cineticFriction + otherRb->cineticFriction);
-
-        glm::vec3 normal  = glm::vec3(0.0, 1.0, 0.0); // TODO
-        glm::vec3 tangent = glm::cross(normal, glm::cross(normal, gravityDirection)); // A tester
-        rb->combinedStaticFriction  += tangent * combinedStaticFriction;
-        rb->combinedCineticFriction += tangent * combinedCineticFriction;
-
-        */
-
-        // Colision resolution
+        //Apply impulse for collision resolution
         unsigned int sizeContact = collisionResults[c]->contactsPts.size();
         if (sizeContact > 0) {
             float invSize = 1.0f / (float)sizeContact;
             for (unsigned int p = 0; p < sizeContact; p++) {
+                
+                //DEBUG
                 std::cout << "collision rigid" << std::endl;
                 std::cout << "point : ";
                 print(collisionResults[c]->contactsPts[p]->point);
                 std::cout << "normal : ";
                 print(collisionResults[c]->contactsPts[p]->normal);
                 std::cout << "point in local space : ";
-                glm::vec3 point = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                print(point);
-                rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * 0.01f / invSize, point);
+                glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                print(pointA);
+                glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                print(pointB);
+
+                //For particles, we dont make bounces
+                
+                /*if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
+                    resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
+                }*/
+                
+                //old fnc
+                if (!rb->static_RB) {
+                    glm::vec3 centerOfMass = glm::vec3(0.0f);
+                    glm::vec3 rA = pointA - centerOfMass;
+                    glm::vec3 rB = pointB - centerOfMass;
+                    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
+                    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
+                }
+          
                 /*
                 (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
                     ->setTranslation(collisionResults[c]->contactsPts[p]->point)
@@ -205,6 +228,11 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 }
 
 void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
+    //2 - Update position of every rb 
+    //3 - Correct sinking using Linear Projection
+    //4 - Solve contraint if applicable
+
+
     RigidBody* rb = getRigidBody(i);
     float deltaTime = InputManager::instance->deltaTime;
 
@@ -225,15 +253,19 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
         glm::vec3 angularAcceleration = totalAngularForces * rb->inverseOfMass;
 
         rb->velocity += acceleration * deltaTime;
-        rb->angularSpeed+= angularAcceleration * deltaTime;
+        rb->angularSpeed += angularAcceleration * deltaTime;
         Entity* e = EntityManager::instance->entities[entityID];
+        
 
-        e->transform->translate(rb->velocity);
-        e->worldTransform->translate(rb->velocity);
+        if (!rb->static_RB) {
+            // Apply on object
+            e->transform->translate(rb->velocity);
+            e->worldTransform->translate(rb->velocity);
 
-        float rotationAngle = glm::length(rb->angularSpeed);
-        if (rotationAngle != 0.0f) {
-            e->transform->rotation.combineRotation(rotationAngle, rb->angularSpeed);
+            float rotationAngle = glm::length(rb->angularSpeed);
+            if (rotationAngle != 0.0f) {
+                e->transform->rotation.combineRotation(rotationAngle, rb->angularSpeed);
+            }
         }
     }
 
@@ -282,36 +314,74 @@ RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
 
 
 
-void RigidBodySystem::initForcesParticlesRB(RigidBody* rb) {
+void RigidBodySystem::initForcesRB(RigidBody* rb) {
     rb->combinedForces              = gravity * rb->mass;
     rb->combinedAngularForces       = glm::vec3(0.0f);
     rb->combinedStaticFriction      = glm::vec3(0.0f);
     rb->combinedCineticFriction     = glm::vec3(0.0f);
 }
 
-glm::vec3 RigidBodySystem::updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+glm::vec3 RigidBodySystem::update_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
     rb->oldPosition = currentPos;
     glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
     rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
+    
+    //Nullify small velocities
+    if (fabsf(rb->velocity.x) < 0.001f) {
+		rb->velocity.x = 0.0f;
+	}
+	if (fabsf(rb->velocity.y) < 0.001f) {
+		rb->velocity.y = 0.0f;
+	}
+	if (fabsf(rb->velocity.z) < 0.001f) {
+		rb->velocity.z = 0.0f;
+	}
+
     return currentPos + rb->velocity * deltaTime;
 }
 
-glm::vec3 RigidBodySystem::updateParticlesRB_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+glm::vec3 RigidBodySystem::update_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
     rb->oldPosition = currentPos;
     glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
     glm::vec3 oldVelocity = rb->velocity;
     rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
+
+    //Nullify small velocities
+    if (fabsf(rb->velocity.x) < 0.001f) {
+		rb->velocity.x = 0.0f;
+	}
+	if (fabsf(rb->velocity.y) < 0.001f) {
+		rb->velocity.y = 0.0f;
+	}
+	if (fabsf(rb->velocity.z) < 0.001f) {
+		rb->velocity.z = 0.0f;
+	}
+
     return currentPos + (oldVelocity + rb->velocity) * 0.5f * deltaTime;
 }
 
-glm::vec3 RigidBodySystem::updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+glm::vec3 RigidBodySystem::update_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
     //Find the implicit velocity of the particle
     glm::vec3 velocity = currentPos - rb->oldPosition;
+    
+    //Nullify small velocities
+    if (fabsf(velocity.x) < 0.001f) {
+		velocity.x = 0.0f;
+	}
+	if (fabsf(velocity.y) < 0.001f) {
+		velocity.y = 0.0f;
+	}
+	if (fabsf(velocity.z) < 0.001f) {
+		velocity.z = 0.0f;
+	}
+
     rb->oldPosition = currentPos;
     float deltaSquare = deltaTime * deltaTime;
     return currentPos +(velocity * rb->cineticFriction + rb->combinedForces * deltaSquare);
 }
 
+
+//Resolves constraints : PARTICLES
 glm::vec3 RigidBodySystem::resolveConstraintParticles_Verlet(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
     glm::vec3 position = currentPos;
     if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
@@ -334,7 +404,6 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Verlet(Collider& collider,
     }
     return position;
 }
-
 glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
     glm::vec3 position = currentPos;
     if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
@@ -357,15 +426,141 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, 
     return position;
 }
 
+//Resolves constraints : VOLUMES (Colliders objects)
+void RigidBodySystem::resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC){
+    //We will apply an impulse reaction to perform ejections of both elem
+    if(!rb_1->static_RB || !rb_2->static_RB){
 
-//Volumic RB (basic colider implementation)
-/*
-glm::vec3 RigidBodySystem::updateVolumeRB_(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
-    //Find the implicit velocity of the particle
-    glm::vec3 velocity = currentPos - rb->oldPosition;
-    rb->oldPosition = currentPos;
-    float deltaSquare = deltaTime * deltaTime;
-    return currentPos + (velocity * rb->cineticFriction + rb->combinedForces * deltaSquare);
-}*/
+        float invMassSum = rb_1->inverseOfMass + rb_2->inverseOfMass;
+    
+        
+        glm::vec3 relative_vel = rb_2->velocity - rb_1->velocity;
+        glm::vec3 relative_n = glm::normalize(p_res->normal);
+
+        //Magnitude of the relative velocity in the direction of the collision normal
+        float d_vn = glm::dot(relative_vel, relative_n);
+        //Moving away from each other
+        if (d_vn > 0.0f) return;
+        
+        float e = fminf(rb_1->bounce, rb_2->bounce);
+        float numerator = (-(1.0f + e) * d_vn);
+
+        //Magnitude of our impulse
+        float j = numerator / invMassSum;
+
+        if (nbC > 0 && j != 0.0f) {
+            j /= (float)nbC;
+        }
+
+        glm::vec3 impulse = relative_n * j;
+        if(!rb_1->static_RB) rb_1->velocity = rb_1->velocity - impulse * rb_1->inverseOfMass;
+        if(!rb_2->static_RB) rb_2->velocity = rb_2->velocity + impulse * rb_2->inverseOfMass;
+
+        //Applying friction now
+        //t : tangential vector to the collision normal
+        glm::vec3 t = relative_vel - (relative_n * d_vn);
+        
+        if (compareWithEpsilon(glm::dot(t,t), 0.0f)) {
+            return;
+        }
+        t = glm::normalize(t);
+
+        //Find magnitude of friction to apply
+        numerator = -glm::dot(relative_vel, t);
+        float jt = numerator / invMassSum;
+
+        if (nbC > 0 && jt != 0.0f) {
+            jt /= (float)nbC;
+        }
+
+        if (compareWithEpsilon(jt, 0.0f)) { 
+            return; 
+        }
+
+        //Coulomb's law for friction :
+        //The magnitude of friction can never be greater than or smaller than j scaled by the Coefficient of Friction, which is the square root of the product of the Coefficient of friction for both the objects
+        float friction = sqrtf(rb_1->cineticFriction * rb_2->cineticFriction);
+        if (jt > j * friction) {
+            jt = j * friction;
+        } 
+        else if (jt < -j * friction) {
+            jt = -j * friction;
+        }
+
+        //Finally add tangent impulse friction to the velocity of components
+        glm::vec3 tangentImpuse = t * jt;
+        if(!rb_1->static_RB) rb_1->velocity = rb_1->velocity - tangentImpuse * rb_1->inverseOfMass;
+        if(!rb_2->static_RB) rb_2->velocity = rb_1->velocity + tangentImpuse * rb_2->inverseOfMass;
+    }
+}
+
+//Correct new RB position
+void RigidBodySystem::positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2, RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res){
+    float totalMass = rb_1->inverseOfMass + rb_2->inverseOfMass;
+    if (totalMass == 0.0f) { 
+        return; 
+    }
+    float depth = fmaxf(p_res->penetrationDistance - penetrationSlack, 0.0f);
+    float scalar = depth / totalMass;
+    glm::vec3 correction = p_res->normal * scalar * linearProjectionPercent;
+
+    newPos1 = newPos1 - correction * rb_1->inverseOfMass;
+    newPos2 = newPos2 - correction * rb_2->inverseOfMass;
+}
 
 
+glm::mat4 RigidBodySystem::inverseTensor(Collider c, RigidBody* rb){
+	if (rb->mass == 0) {
+		return glm::mat4(0);
+	}
+
+	float ix = 0.0f;
+	float iy = 0.0f;
+	float iz = 0.0f;
+	float iw = 0.0f;
+
+	if (c.type == colliderType::Sphere) {
+		float r2 = c.radius * c.radius;
+		float fraction = (2.0f / 5.0f);
+
+		ix = r2 * rb->mass * fraction;
+		iy = r2 * rb->mass * fraction;
+		iz = r2 * rb->mass * fraction;
+		iw = 1.0f;
+	}
+	else if (c.type == colliderType::AABB || c.type == colliderType::OBB) {
+		glm::vec3 size = c.dimensions * 2.0f;
+		float fraction = (1.0f / 12.0f);
+
+		float x2 = size.x * size.x;
+		float y2 = size.y * size.y;
+		float z2 = size.z * size.z;
+
+		ix = (y2 + z2) * rb->mass * fraction;
+		iy = (x2 + z2) * rb->mass * fraction;
+		iz = (x2 + y2) * rb->mass * fraction;
+		iw = 1.0f;
+	}
+
+	return glm::mat4(
+		1.0f/ix, 0, 0, 0,
+		0, 1.0f/iy, 0, 0,
+		0, 0, 1.0f/iz, 0,
+		0, 0, 0, 1.0f/iw);
+}
+
+
+
+
+float computeVelocityFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal) {
+    return glm::dot(-(1 + rbA->bounce) * (rbA->velocity - rbB->velocity), normal) / (rbA->inverseOfMass + rbB->inverseOfMass);
+}
+
+float computeAngularFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal, glm::vec3 rA, glm::vec3 rB) {
+    // couple = I * a = m * r^2 * a
+    // I = m * r^2
+    float IAinv = 1.0f / (rbA->mass * glm::dot(rA, rA));
+    float IBinv = 1.0f / (rbB->mass * glm::dot(rB, rB));
+    return glm::dot(-(1 + rbA->bounce) * (rbA->velocity - rbB->velocity), normal)
+        / (rbA->inverseOfMass + rbB->inverseOfMass + glm::dot(glm::cross(IAinv * glm::cross(rA, normal), rA) + glm::cross(IBinv * glm::cross(rB, normal), rB), normal));
+}

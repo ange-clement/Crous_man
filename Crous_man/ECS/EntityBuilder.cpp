@@ -325,6 +325,10 @@ EntityBuilder* EntityBuilder::setRigidBodyMass(float mass) {
 	getRigidBody()->setMass(mass);
 	return this;
 }
+EntityBuilder* EntityBuilder::setRigidBodyStatic(bool staticStatus) {
+	getRigidBody()->static_RB = staticStatus;
+	return this;
+}
 
 
 

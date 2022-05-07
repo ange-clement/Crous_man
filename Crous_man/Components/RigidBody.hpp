@@ -4,6 +4,9 @@
 #include "../ECS/ComponentSystem.hpp"
 
 
+#define STATIC_OBJECT_MASS 0.0f
+
+
 enum RBType {
     //A particles has a mass but no volume (no rotation forces)
     PARTICLES,
@@ -13,6 +16,9 @@ enum RBType {
 //A rigid body type of element is an element that cant be streachable during time
 //got the same shape over time, and also same volume
 struct RigidBody {
+    bool static_RB = false;
+    RBType type = VOLUME;
+
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 angularSpeed = glm::vec3(0.0f, 0.0f, 0.0f);
 
@@ -31,7 +37,13 @@ struct RigidBody {
     float drag = 0.5f;
     float angularDrag = 0.2f;
 
+    //Coefficient of Restitution
+    float bounce            = .7f;       //represents how much energy is kept when a smt bounces off a surface
+    glm::vec3 oldPosition;
+
+
     void setMass(float mass);
+    
 
     void addForce(glm::vec3 force);
     void addAcceleration(glm::vec3 acc);
@@ -47,13 +59,6 @@ struct RigidBody {
     void addAccelerationAtPosition(glm::vec3 acc, glm::vec3 pos);
     void addVelocityAtPosition(glm::vec3 cel, glm::vec3 pos);
     void addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos);
-    RBType type;
-
-
-    //More for partciles type of RB
-    //Coefficient of Restitution
-    float bounce            = .7f;       //represents how much energy is kept when a smt bounces off a surface
-    glm::vec3 oldPosition;
 };
 
 
@@ -63,6 +68,16 @@ public:
     glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
 
     std::vector<unsigned short> entityIDsToIndex;
+
+    //  The linear projection value indicates how much positional correction to apply. A 
+    //  smaller value will allow objects to penetrate more. 
+    //      VAL : between 0.2 and 0.8
+    float linearProjectionPercent = .45f;
+    // determines how much to allow objects to penetrate. This 
+    // helps avoid jitter. The larger this number, the less jitter we have in the system. 
+    //      VAL : between 0.01 and 0.1
+    float penetrationSlack = .01f;
+
 public:
     RigidBodySystem();
 
@@ -78,20 +93,26 @@ public:
     RigidBody* getRigidBody(unsigned short i);
     RigidBody* getRigidBodyFromEntityId(unsigned short entityID);
 
-
-
+    //init foces on RB
+    void initForcesRB(RigidBody* rb);
+    //Update rb positions
+    glm::vec3 update_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    
     //Particles treatment
-    void initForcesParticlesRB(RigidBody* rb);
-    glm::vec3 updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 updateParticlesRB_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
     glm::vec3 resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
-
-    glm::vec3 updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
     glm::vec3 resolveConstraintParticles_Verlet(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
+
+    void positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2, RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res);
+
+    void resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
+
+    glm::mat4 inverseTensor(Collider c, RigidBody* rb);
 };
 
-
-
+float computeVelocityFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal);
+float computeAngularFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal, glm::vec3 rA, glm::vec3 rB);
 
 
 #endif

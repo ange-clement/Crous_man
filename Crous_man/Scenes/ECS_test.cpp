@@ -147,10 +147,11 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
-    Entity* plane = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
+    Entity* plane = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
         ->setScale(glm::vec3(100.0, 100.0, 1.0))
         ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
+        ->setRigidBodyStatic(true)
         ->setMeshAsQuad()
         //->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
         ->updateRenderer()
