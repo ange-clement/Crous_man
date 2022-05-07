@@ -82,6 +82,9 @@ private :
     void QuadTreeCollisionResolution();
     void OcTreeCollisionResolution();
 
+
+    void addNewColliderEntry(unsigned short entityID);
+
     void clearAllCollision(unsigned short i);
     
     //AABB

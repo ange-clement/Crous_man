@@ -84,7 +84,7 @@ public:
     void initForcesParticlesRB(RigidBody* rb);
     glm::vec3 updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
     glm::vec3 updateParticlesRB_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 resolveConstraintParticles(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
+    glm::vec3 resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
 };
 
 
