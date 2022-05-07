@@ -152,6 +152,7 @@ void createSceneCollider() {
         ->setScale(glm::vec3(100.0, 100.0, 1.0))
         ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
         ->setMeshAsQuad()
+        //->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
         ->updateRenderer()
         ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
         ->fitAABBColliderToMesh()
