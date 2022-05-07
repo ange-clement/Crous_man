@@ -17,6 +17,7 @@
 #include "../ECS/Entity.hpp"
 
 #include "Collider.hpp"
+#include <common/ray.hpp>
 
 #include "../Transform.hpp"
 
@@ -243,3 +244,49 @@ RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
     }
     return getRigidBody(id);
 }
+
+
+
+
+void RigidBodySystem::initForcesParticlesRB(RigidBody* rb) {
+    rb->combinedForces              = gravity * rb->mass;
+    rb->combinedAngularForces       = glm::vec3(0.0f);
+    rb->combinedStaticFriction      = glm::vec3(0.0f);
+    rb->combinedCineticFriction     = glm::vec3(0.0f);
+}
+
+glm::vec3 RigidBodySystem::updateParticlesRB_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+    rb->oldPosition = currentPos;
+    glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
+    rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
+    return currentPos + rb->velocity * deltaTime;
+}
+
+glm::vec3 RigidBodySystem::updateParticlesRB_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+    rb->oldPosition = currentPos;
+    glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
+    glm::vec3 oldVelocity = rb->velocity;
+
+    rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
+    return currentPos + (oldVelocity + rb->velocity) * 0.5f * deltaTime;
+}
+
+/*glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
+        if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
+
+            glm::vec3 velocity = position - oldPosition;
+            glm::vec3 direction = Normalized(velocity);
+            Ray* ray = new Ray(oldPosition, direction);
+            RaycastResult result;
+
+
+
+
+        }
+    
+    int size = constraints.size();
+    for (int i = 0; i < size; ++i) {
+
+    }
+}*/
+

@@ -130,6 +130,7 @@ void ColliderSystem::update(unsigned short i, unsigned short entityID) {
         drawCollider(i);
     }
 }
+
 void ColliderSystem::drawCollider(unsigned short i) {
     Collider* c = getCollider(i);
     c->draw = true;
@@ -144,7 +145,7 @@ void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         entityID = entityIDs[i];
 
-        if (entityID == (unsigned short)-1) {
+        if (!EntityManager::instance->shouldUpdate(entityID)) {
             continue;
         }
 
@@ -152,6 +153,7 @@ void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         if (!c->drawable || !c->draw) {
             continue;
         }
+
         Entity* e = EntityManager::instance->entities[entityID];
         c->shader->use();
 
@@ -229,20 +231,32 @@ void ColliderSystem::updateOnCollideAll() {
 }
 
 bool ColliderSystem::isInContactWithSomething(unsigned short entityID) {
-    //std::cout << "IS IN CONTACT WITH SMT : " << entityID << std::endl;
+    //std::cout << "ISINCONTACT START : " << entityID << std::endl;
+
+    //logSimpleCollisionResultMap(simpleCollisionResultMap);
+    //std::cout << entityIDs.size() << std::endl;
+
     for (size_t j = 0; j < entityIDs.size(); j++){
+        //std::cout << "J elem : " << j << std::endl;
+
+        //if (!EntityManager::instance->shouldUpdate(entityID)) {
+        //    //std::cout << "DONT CHECK !" << std::endl;
+        //    continue;
+        //}
+
         if (simpleCollisionResultMap.at(entityID)[j]) return true;
         ColliderResult* r = collisionResultMap.at(entityID)[j];
 
         if (r) {
             if(r->isInCollision) return true;
-            //std::cout << "IIC no : " << entityID << "," << j << std::endl;
         }
     }
+    //std::cout << "ISINCONTACT END" << std::endl;
     return false;
 }
 
 void logCollisionResultMap(CollisionResultMap m) {
+    std::cout << "LENGTH ELEM : " << m.size() << std::endl;
     for (auto const& x : m) {
         std::cout << x.first << " : [" << std::endl;
         for (auto const& el : x.second) {
@@ -256,10 +270,22 @@ void logCollisionResultMap(CollisionResultMap m) {
         std::cout << "]" << std::endl;
     }
 }
+void logSimpleCollisionResultMap(SimpleCollisionResultMap m) {
+    std::cout << "LENGTH ELEM : " << m.size() << std::endl;
+    for (auto const& x : m) {
+        std::cout << x.first << " : [" << std::endl;
+        for (auto const& el : x.second) {
+            std::cout << el  << "," << std::endl;
+        }
+        std::cout << "]" << std::endl;
+    }
+}
+
 
 void ColliderSystem::clearAllCollision(unsigned short i) {
     for (size_t j = 0, size = entityIDs.size(); j < size; j++) {
         collisionResultMap.at(i)[j] = 0;
+        simpleCollisionResultMap.at(i)[j] = false;
     }
 }
 
