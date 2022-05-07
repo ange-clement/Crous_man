@@ -266,17 +266,15 @@ glm::vec3 RigidBodySystem::updateParticlesRB_AccurateEulerIntegration(RigidBody*
     rb->oldPosition = currentPos;
     glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
     glm::vec3 oldVelocity = rb->velocity;
-
     rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
     return currentPos + (oldVelocity + rb->velocity) * 0.5f * deltaTime;
 }
 
-glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
-    glm::vec3 position;
-    if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
-        glm::vec3 velocity = currentPos - rb_particles->oldPosition;
 
-        glm::vec3 direction = glm::normalize(velocity);
+glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
+    glm::vec3 position = currentPos;
+    if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
+        glm::vec3 direction = glm::normalize(rb_particles->velocity);
         Ray ray = Ray(rb_particles->oldPosition, direction);
         RaycastResult result;
 
@@ -285,16 +283,12 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, 
             position = result.point + result.normal * 0.003f;
 
             //velocity vector into parallel and perpendicular components relative to the collision normal :
-            glm::vec3 vn = result.normal * glm::dot(result.normal, velocity);
-            glm::vec3 vt = velocity - vn;
+            glm::vec3 vn = result.normal * glm::dot(result.normal, rb_particles->velocity);
+            glm::vec3 vt = rb_particles->velocity - vn;
 
             rb_particles->oldPosition = position;
-            velocity = vt - vn * rb_particles->bounce;
-
-
-
+            rb_particles->velocity = vt - vn * rb_particles->bounce;
         }
-
     }
     return position;
 }
