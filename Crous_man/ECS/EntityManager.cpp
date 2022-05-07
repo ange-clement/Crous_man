@@ -162,6 +162,12 @@ bool EntityManager::hasComponent(SystemIDs system, unsigned short entityID) {
     return this->entities[entityID]->componentsBitmap->combine(b)->equals(b);
 }
 
+bool EntityManager::shouldUpdate(unsigned short entityID) {
+    return entityID != (unsigned short)-1 && entities[entityID]->isActive;
+}
+
+
+
 void EntityManager::addEntity(Entity* entity) {
     unsigned short id = entities.size();
 

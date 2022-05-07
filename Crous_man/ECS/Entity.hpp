@@ -11,6 +11,7 @@ public:
     unsigned short id;
     Bitmap* componentsBitmap;
 
+    bool isActive;
 
     Transform* transform;
     Transform* worldTransform;

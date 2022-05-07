@@ -48,6 +48,12 @@ EntityBuilder::EntityBuilder(std::initializer_list<SystemIDs> systems) {
 }
 
 
+EntityBuilder* EntityBuilder::setActive(bool activeStatus) {
+	this->buildEntity->isActive = false;
+	return this;
+}
+
+
 Mesh* EntityBuilder::getMesh() {
 	if (this->mesh == NULL) {
 		unsigned short meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, this->buildEntity->id);
@@ -109,13 +115,13 @@ EntityBuilder* EntityBuilder::updateRenderer() {
 EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile) {
 	Renderer* renderer = this->getRenderer();
 	renderer->diffuseBuffer = loadTextureFromPPM(diffuseFile.c_str());
-	renderer->specularBuffer = loadTextureFromPGM(specularFile.c_str());
+	renderer->setSpecularBuffer(loadTextureFromPGM(specularFile.c_str()));
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
 	Renderer* renderer = this->getRenderer();
-	renderer->diffuseBuffer = loadTextureFromColor(diffuseColor);
+	renderer->setDiffuseBuffer(loadTextureFromColor(diffuseColor));
 	return this;
 }
 

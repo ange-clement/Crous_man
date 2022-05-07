@@ -207,7 +207,9 @@ void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) 
 
     for (size_t j = i + 1, size = entityIDs.size(); j < size; j++) {
         entityIDJ = entityIDs[j];
-        computeIntersection(i, entityID, j, entityIDJ);
+        if (EntityManager::instance->shouldUpdate(entityIDJ)) {
+            computeIntersection(i, entityID, j, entityIDJ);
+        }
     }
 }
 
@@ -1612,7 +1614,7 @@ std::vector<RaycastResult*> ColliderSystem::rayCastAll(const Ray& ray) {
     std::vector<RaycastResult*> results;
     results.reserve(entityIDs.size());
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
 
         Collider* c = getCollider(i);

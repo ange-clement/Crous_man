@@ -327,3 +327,9 @@ GLuint loadTextureFromDDS(const char * imagepath){
 
 
 }
+
+
+
+void deleteTextureBuffer(GLuint buffer) {
+	glDeleteTextures(1, &buffer);
+}

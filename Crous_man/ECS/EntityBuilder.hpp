@@ -35,6 +35,8 @@ private:
 public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
+	EntityBuilder* setActive(bool activeStatus);
+
 	Mesh* getMesh();
 	EntityBuilder* setMeshAsQuad();
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
