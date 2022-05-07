@@ -376,6 +376,20 @@ EntityBuilder* EntityBuilder::setChildOf(Entity* parent) {
 	return this;
 }
 
+EntityBuilder* EntityBuilder::initializeComponents() {
+	Bitmap* entityBitmap;
+    Bitmap* systemBitmap;
+
+    for (ComponentSystem* system : EntityManager::instance->systems) {
+        entityBitmap = this->buildEntity->componentsBitmap;
+        systemBitmap = system->requiredComponentsBitmap;
+        if (entityBitmap->combine(systemBitmap)->equals(systemBitmap)) {
+            system->initialize(system->getComponentId(this->buildEntity->id), this->buildEntity->id);
+        }
+    }
+	return this;
+}
+
 Entity* EntityBuilder::build() {
 	return this->buildEntity;
 }

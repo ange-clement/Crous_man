@@ -42,7 +42,13 @@ void EntityPool::addEntity(unsigned int number) {
 }
 void EntityPool::deleteEntity() {
 	pool[currentInstancedObject]->isActive = false;
-	currentInstancedObject = (currentInstancedObject - 1) % maxNumberOfObjects;
+
+	if (currentInstancedObject == 0) {
+		currentInstancedObject = maxNumberOfObjects-1;
+	}
+	else {
+		currentInstancedObject--;
+	}
 }
 void EntityPool::deleteEntity(unsigned int number) {
 	for (unsigned int i = 0; i < number; i++) {
