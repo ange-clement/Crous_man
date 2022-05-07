@@ -270,7 +270,6 @@ glm::vec3 RigidBodySystem::updateParticlesRB_AccurateEulerIntegration(RigidBody*
     return currentPos + (oldVelocity + rb->velocity) * 0.5f * deltaTime;
 }
 
-
 glm::vec3 RigidBodySystem::updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
     //Find the implicit velocity of the particle
     glm::vec3 velocity = currentPos - rb->oldPosition;
@@ -302,7 +301,6 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Verlet(Collider& collider,
     return position;
 }
 
-
 glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
     glm::vec3 position = currentPos;
     if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
@@ -324,4 +322,16 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, 
     }
     return position;
 }
+
+
+//Volumic RB (basic colider implementation)
+/*
+glm::vec3 RigidBodySystem::updateVolumeRB_(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+    //Find the implicit velocity of the particle
+    glm::vec3 velocity = currentPos - rb->oldPosition;
+    rb->oldPosition = currentPos;
+    float deltaSquare = deltaTime * deltaTime;
+    return currentPos + (velocity * rb->cineticFriction + rb->combinedForces * deltaSquare);
+}*/
+
 
