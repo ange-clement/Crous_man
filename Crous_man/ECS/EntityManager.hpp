@@ -56,6 +56,7 @@ public:
 
     unsigned short getComponentId(SystemIDs system, unsigned short entityID);
     bool hasComponent(SystemIDs system, unsigned short entityID);
+    bool shouldUpdate(unsigned short entityID);
 
     void addEntity(Entity* entity);
     void reevaluateEntity(Entity* entity);

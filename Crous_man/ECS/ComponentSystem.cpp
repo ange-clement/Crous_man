@@ -9,6 +9,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Entity.hpp"
 #include "EntityManager.hpp"
 
 #include "../Components/Collider.hpp"
@@ -28,14 +29,14 @@ ComponentSystem::~ComponentSystem() {
 
 void ComponentSystem::updateAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->update(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateCollisionAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short)-1)
+        if (entityIDs[i] == (unsigned short)-1 || !EntityManager::instance->entities[entityIDs[i]]->isActive)
             continue;
         this->updateCollision(i, entityIDs[i]);
     }
@@ -44,7 +45,7 @@ void ComponentSystem::updateOnCollideAll() {
     if (colliderSystemInstance == NULL)
         colliderSystemInstance = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         if (!EntityManager::instance->hasComponent(SystemIDs::ColliderID, entityIDs[i]))
             continue;
@@ -62,28 +63,28 @@ void ComponentSystem::updateOnCollideAll() {
 }
 void ComponentSystem::updatePhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short) -1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->updatePhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterPhysicsAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short) -1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->updateAfterPhysics(i, entityIDs[i]);
     }
 }
 void ComponentSystem::renderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short) -1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->render(i, entityIDs[i]);
     }
 }
 void ComponentSystem::updateAfterRenderAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short) -1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->updateAfterRender(i, entityIDs[i]);
     }
@@ -116,7 +117,7 @@ void ComponentSystem::updateAfterRender(unsigned short i, unsigned short entityI
 
 void ComponentSystem::initializeAll() {
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (entityIDs[i] == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
         this->initialize(i, entityIDs[i]);
     }

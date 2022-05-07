@@ -33,6 +33,7 @@ GLFWwindow* window;
 #include <common/shader.hpp>
 #include <common/objloader.hpp>
 #include <common/vboindexer.hpp>
+#include <Crous_man/SoundManager.hpp>
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -108,6 +109,9 @@ int main( void )
 
     //createSceneECS();
     EntityManager::instance->initializeAllSystems();
+
+
+    SoundManager::instance->play("../ressources/Sounds/start.wav");
     
     
     do{

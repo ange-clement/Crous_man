@@ -170,5 +170,4 @@ void createSceneCollider() {
         ->setAsScreenCamera()
         ->build();
 
-    SoundManager::instance->play("../ressources/Sounds/start.wav");
 }

@@ -26,6 +26,33 @@
 #include "Mesh.hpp"
 
 
+Renderer::Renderer() {
+    this->draw = true;
+    this->meshID = 0;
+    this->gShaderInstance = NULL;
+
+    this->vertexArray = 0;
+
+    this->vertexbuffer = 0;
+    this->textCoordBuffer = 0;
+    this->normalsbuffer = 0;
+    this->elementbuffer = 0;
+
+    this->diffuseBuffer = loadTextureFromColor(glm::vec3(.408, .087, .915));
+    this->specularBuffer = loadTextureFromFloat(1.0);
+}
+
+void Renderer::setDiffuseBuffer(GLuint diffuseBuffer) {
+    deleteTextureBuffer(this->diffuseBuffer);
+    this->diffuseBuffer = diffuseBuffer;
+}
+
+void Renderer::setSpecularBuffer(GLuint specularBuffer) {
+    deleteTextureBuffer(this->specularBuffer);
+    this->specularBuffer = specularBuffer;
+}
+
+
 RendererSystem::RendererSystem() : ComponentSystem(){
     requiredComponentsBitmap = new Bitmap({SystemIDs::RendererID, SystemIDs::MeshID});
 }
@@ -40,9 +67,6 @@ void RendererSystem::initialize(unsigned short i, unsigned short entityID) {
         r->gShaderInstance = TextureGShader::instance;
 
         r->meshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, entityID);
-
-        r->diffuseBuffer  = loadTextureFromColor(glm::vec3(.408, .087, .915));
-        r->specularBuffer = loadTextureFromFloat(1.0);
     }
 }
 
@@ -116,7 +140,7 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
     
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         entityID = entityIDs[i];
-        if (entityID == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
 
         Renderer* r = getRenderer(i);
@@ -165,7 +189,7 @@ void RendererSystem::renderUsingShader(MeshEShader* shader, glm::mat4 view, glm:
 
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
         entityID = entityIDs[i];
-        if (entityID == (unsigned short)-1)
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
             continue;
 
         Renderer* r = getRenderer(i);

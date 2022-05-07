@@ -9,12 +9,15 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <common/ray.hpp>
+#include <common/entityPool.hpp>
+#include <common/cooldown.hpp>
+
 #include <Crous_man/InputManager.hpp>
 #include <Crous_man/ECS/EntityManager.hpp>
 #include <Crous_man/ECS/Bitmap.hpp>
 #include <Crous_man/ECS/Entity.hpp>
 #include <Crous_man/Util.hpp>
-#include <common/ray.hpp>
 
 
 #include <Crous_man/Transform.hpp>
@@ -39,6 +42,24 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     fc->sensitivity = 0.16f;
     fc->azimuth = 0.0;
     fc->zenith = 0.0;
+
+    unsigned int nbInPool = 10;
+    std::vector<Entity*> entitiesForPool;
+    for (unsigned int i = 0; i < nbInPool; i++) {
+        entitiesForPool.push_back((new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+            ->setActive(false)
+            ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
+            ->setScale(glm::vec3(0.2, 0.2, 0.2))
+            ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+            ->updateRenderer()
+            ->fitSphereColliderToMesh()
+            ->setRenderingCollider()
+            ->build()
+        );
+    }
+    fc->pool = new EntityPool(entitiesForPool);
+
+    fc->rayCastCooldown = new Cooldown(0.05f);
 
     if (colliderSystem == NULL) {
         colliderSystem = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
@@ -79,26 +100,34 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_SPACE) == GLFW_PRESS)
         tr->translation += translationAmount * udirection;
 
-    if (glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+    if (!fc->rayCastCooldown->inCooldown() && glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+        fc->rayCastCooldown->start();
+
         Entity* e = EntityManager::instance->entities[entityID];
         Ray* ray = new Ray(e->worldTransform->translation, e->worldTransform->getForward());
         std::vector<RaycastResult*> rayResult = colliderSystem->rayCastAll(*ray);
+        RaycastResult* closest;
+        float minDistance = FLT_MAX;
+        float distance;
         for (unsigned int i = 0, size = rayResult.size(); i < size; i++) {
-            std::cout << "RayCast!" << std::endl;
             if (rayResult[i] != NULL) {
-                Entity* monke = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-                    ->setTranslation(rayResult[i]->point)
-                    ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
-                    ->setScale(glm::vec3(0.2, 0.2, 0.2))
-                    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-                    ->updateRenderer()
-                    ->build();
+                distance = squareLength(e->transform->translation - rayResult[i]->point);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closest = rayResult[i];
+                }
+                /*
                 std::cout << rayResult[i]->hit << std::endl;
                 print(rayResult[i]->normal);
                 print(rayResult[i]->point);
                 std::cout << rayResult[i]->t << std::endl;
+                std::cout << rayResult[i]->entityIDCollid << std::endl;
+                */
             }
         }
+
+        Entity* instance = fc->pool->addEntity();
+        instance->transform->translation = closest->point;
     }
 
     

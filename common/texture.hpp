@@ -18,5 +18,7 @@ GLuint loadTextureFromBMP_custom(const char * imagepath);
 // Load a .DDS file using GLFW's own loader
 GLuint loadTextureFromDDS(const char * imagepath);
 
+void deleteTextureBuffer(GLuint buffer);
+
 
 #endif

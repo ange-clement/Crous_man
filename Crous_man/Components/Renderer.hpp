@@ -22,6 +22,10 @@ struct Renderer {
 
     GLuint diffuseBuffer;
     GLuint specularBuffer;
+
+    Renderer();
+    void setDiffuseBuffer(GLuint diffuseBuffer);
+    void setSpecularBuffer(GLuint specularBuffer);
 };
 
 class RendererSystem : public virtual ComponentSystem {

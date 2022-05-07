@@ -20,6 +20,7 @@
 
 Entity::Entity() {
     componentsBitmap = new Bitmap();
+    isActive = true;
     transform = new Transform();
     worldTransform = new Transform();
     id = 0;

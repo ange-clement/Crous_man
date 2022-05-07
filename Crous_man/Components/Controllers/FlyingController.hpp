@@ -4,6 +4,8 @@
 #include <Crous_man/ECS/ComponentSystem.hpp>
 
 class ColliderSystem;
+class EntityPool;
+class Cooldown;
 
 struct FlyingController {
     float speed;
@@ -11,6 +13,10 @@ struct FlyingController {
 
     float azimuth;
     float zenith;
+
+    EntityPool* pool;
+
+    Cooldown* rayCastCooldown;
 };
 
 class FlyingControllerSystem : public virtual ComponentSystem {
