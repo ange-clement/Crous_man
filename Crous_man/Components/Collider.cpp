@@ -26,6 +26,13 @@ ContactPoint::ContactPoint() {
     this->point = glm::vec3(0);
 }
 
+ContactPoint::ContactPoint(ContactPoint* c, bool inversed){
+    this->penetrationDistance   = c->penetrationDistance;
+    this->normal                = glm::vec3(((inversed)? -c->normal: c->normal));
+    this->point                 = glm::vec3(c->point);
+}
+
+
 void ContactPoint::print() {
     std::cout << this->penetrationDistance << "p : {" << this->point.x << "," << this->point.y << "," << this->point.z << "}" << "n : {" << this->normal.x << "," << this->normal.y << "," << this->normal.z << "}" << std::endl;
 }
@@ -37,12 +44,12 @@ ColliderResult::ColliderResult() {
     this->isInCollision = false;
 }
 
-ColliderResult::ColliderResult(unsigned short id, ColliderResult* c) {
+ColliderResult::ColliderResult(unsigned short id, ColliderResult* c, bool inversed) {
     this->entityCollidID = id;
     if (c != 0) {
         this->isInCollision = c->isInCollision;
         for (size_t i = 0, size = c->contactsPts.size(); i < size; i++) {
-            this->contactsPts.push_back(c->contactsPts[i]);
+            this->contactsPts.push_back(new ContactPoint(c->contactsPts[i], inversed));
         }
     }
     else {
@@ -90,7 +97,6 @@ ColliderSystem::~ColliderSystem() {
 }
 
 void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
-    std::cout << "initialise " << i << std::endl;
     getCollider(i)->entityID = entityID;
 
     if (getCollider(i)->type == colliderType::Sphere) {
@@ -189,53 +195,41 @@ void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
         }
     }
 
-    for (auto const& x : simpleCollisionResultMap) {
-        if (simpleCollisionResultMap.at(x.first).size() < entityIDs.size()) {
-
-            std::cout << "NEED TO RESIZE : " << x.first << std::endl;
-            simpleCollisionResultMap.at(x.first).resize(entityIDs.size(), false);
-
-        }
-    }
+    //for (auto const& x : simpleCollisionResultMap) {
+    //    if (simpleCollisionResultMap.at(x.first).size() < entityIDs.size()) {
+    //
+    //        std::cout << "NEED TO RESIZE : " << x.first << std::endl;
+    //        simpleCollisionResultMap.at(x.first).resize(entityIDs.size(), false);
+    //
+    //    }
+    //}
 
     //Init collider datas
     std::vector<ColliderResult*> res;
     res.resize(entityIDs.size(), 0);
     collisionResultMap.insert(CollisionResultMap::value_type(entityID, res));
 
-    std::vector<bool> res_simple;
-    res_simple.resize(entityIDs.size(), false);
-    simpleCollisionResultMap.insert(SimpleCollisionResultMap::value_type(entityID, res_simple));
+    //std::vector<bool> res_simple;
+    //res_simple.resize(entityIDs.size(), false);
+    //simpleCollisionResultMap.insert(SimpleCollisionResultMap::value_type(entityID, res_simple));
 }
-
 
 /* =============== Methods for collision detection and resolution =============== */
 void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) {
-    /*unsigned short entityIDJ;
-    Collider* c_i = getCollider(i);
-
-    for (size_t j = i+1, size = entityIDs.size(); j < size; j++) {
-        //if (!res[j]) {
-            entityIDJ = entityIDs[j];
-            Collider* c_j = getCollider(j);
-
-            ColliderResult* resC;
-            intersect(*c_i, *c_j, resC);
-            resC->entityCollidID = entityIDJ;
-            //std::cout << "result of collision : " << ((resC->isInCollision) ? "TRUE" : "FALSE") << " => (" << i << "," << j << ")" << std::endl;
-            collisionResultMap.at(entityID)[j] = resC;
-            collisionResultMap.at(entityIDJ)[i] = new ColliderResult(entityID,resC);
-        //}
-    }
-    //std::cout << " === END UPDATE COLLISION === " << std::endl;*/
-
     unsigned short entityIDJ;
-    //Collider* c_i = getCollider(i);
-
+    
     for (size_t j = i + 1, size = entityIDs.size(); j < size; j++) {
         entityIDJ = entityIDs[j];
         if (EntityManager::instance->shouldUpdate(entityIDJ)) {
             computeIntersection(i, entityID, j, entityIDJ);
+        }else{
+            //Need to clear collision jic
+            //simpleCollisionResultMap.at(entityID)[j] = false;
+            collisionResultMap.at(entityID)[j] =  0;
+
+            //Could be optional
+            //simpleCollisionResultMap.at(entityIDJ)[i] = false;
+            collisionResultMap.at(entityIDJ)[i] =  0;
         }
     }
 }
@@ -256,27 +250,14 @@ void ColliderSystem::updateOnCollideAll() {
 }
 
 bool ColliderSystem::isInContactWithSomething(unsigned short entityID) {
-    //std::cout << "ISINCONTACT START : " << entityID << std::endl;
-
-    //logSimpleCollisionResultMap(simpleCollisionResultMap);
-    //std::cout << entityIDs.size() << std::endl;
-
     for (size_t j = 0; j < entityIDs.size(); j++){
-        //std::cout << "J elem : " << j << std::endl;
-
-        //if (!EntityManager::instance->shouldUpdate(entityID)) {
-        //    //std::cout << "DONT CHECK !" << std::endl;
-        //    continue;
-        //}
-
-        if (simpleCollisionResultMap.at(entityID)[j]) return true;
+        //if (simpleCollisionResultMap.at(entityID)[j]) return true;
         ColliderResult* r = collisionResultMap.at(entityID)[j];
-
         if (r) {
             if(r->isInCollision) return true;
         }
     }
-    //std::cout << "ISINCONTACT END" << std::endl;
+
     return false;
 }
 
@@ -310,7 +291,7 @@ void logSimpleCollisionResultMap(SimpleCollisionResultMap m) {
 void ColliderSystem::clearAllCollision(unsigned short i) {
     for (size_t j = 0, size = entityIDs.size(); j < size; j++) {
         collisionResultMap.at(i)[j] = 0;
-        simpleCollisionResultMap.at(i)[j] = false;
+        //simpleCollisionResultMap.at(i)[j] = false;
     }
 }
 
@@ -1883,32 +1864,39 @@ bool isInIntersection(Collider c1, Collider c2) {
 void ColliderSystem::computeIntersection(unsigned short i, unsigned short entityIID, unsigned short j, unsigned short entityJID){
     Collider* c_i = getCollider(i);
     Collider* c_j = getCollider(j);
+
+    ColliderResult* res = collisionResultMap.at(entityIID)[j];
+    if (res == 0) {
+        res = new ColliderResult();
+    }
+    else {
+        res->contactsPts.clear();
+        res->isInCollision = false;
+    }
     
     //If the entity have a rb, we compute a more precise collision
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityIID) && EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityJID)) {
-        ColliderResult* res = collisionResultMap.at(entityIID)[j];
-        if (res == 0) {
-            res = new ColliderResult();
-        }else {
-            res->contactsPts.clear();
-            res->isInCollision = false;
-        }
+        
         intersect(*c_i, *c_j,res);
 
         //std::cout << "END OF INTERSECTION" << std::endl;
 
         if(res) res->entityCollidID = entityJID;
         collisionResultMap.at(entityIID)[j] = res;
-        ColliderResult* r = new ColliderResult(entityIID, res);
-        r->inverseNormals();
-        collisionResultMap.at(entityJID)[i] = r;
+        collisionResultMap.at(entityJID)[i] = new ColliderResult(entityIID, res, true);
     }
     else { //we just compute intersection answer
-        bool answer = isInIntersection(*c_i, *c_j);
+
+        res->isInCollision = isInIntersection(*c_i, *c_j);
+        res->entityCollidID = entityJID;
+
+        collisionResultMap.at(entityIID)[j] = res;
+        collisionResultMap.at(entityJID)[i] = new ColliderResult(entityIID, res, false);
+
         //std::cout << "END OF IS IN INTERSECTION" << std::endl;
 
-        simpleCollisionResultMap.at(entityIID)[j] = answer;
-        simpleCollisionResultMap.at(entityJID)[i] = answer;
+        //simpleCollisionResultMap.at(entityIID)[j] = answer;
+        //simpleCollisionResultMap.at(entityJID)[i] = answer;
     }
 }
 

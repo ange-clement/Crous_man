@@ -36,9 +36,11 @@ struct Collider{
     ColliderShader* shader;
 };
 
-struct ContactPoint {
-    ContactPoint();
-    ~ContactPoint();
+class ContactPoint {
+public:    
+     ContactPoint();
+     ContactPoint(ContactPoint* c, bool inversed);
+     virtual ~ContactPoint();
 
     void print();
 
@@ -52,7 +54,7 @@ struct ContactPoint {
 class ColliderResult {
 public :
     ColliderResult();
-    ColliderResult(unsigned short id, ColliderResult *c);
+    ColliderResult(unsigned short id, ColliderResult *c, bool inversed);
     ~ColliderResult();
 
     void print();
@@ -73,7 +75,7 @@ typedef std::map<unsigned short, std::vector<bool>> SimpleCollisionResultMap;
 class ColliderSystem : public ComponentSystem {
 private :
     CollisionResultMap collisionResultMap;
-    SimpleCollisionResultMap simpleCollisionResultMap;
+    //SimpleCollisionResultMap simpleCollisionResultMap;
 
     std::vector<glm::vec3> verticesCube;
 

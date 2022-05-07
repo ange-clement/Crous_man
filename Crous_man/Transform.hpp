@@ -38,7 +38,6 @@ public:
     void copy(Transform* other);
 
     glm::vec3 applyToPoint(glm::vec3 p);
-
     glm::vec3 applyToVector(glm::vec3 v);
     glm::vec3 applyToVersor(glm::vec3 n);
 
@@ -61,6 +60,8 @@ public:
     glm::vec3 getUp();
 
     glm::vec3 getForward();
+
+    glm::vec3 worldToLocal(glm::vec3 point);
 
 
 

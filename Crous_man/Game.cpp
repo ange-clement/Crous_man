@@ -109,6 +109,7 @@ int main( void )
 
     //createSceneECS();
     EntityManager::instance->initializeAllSystems();
+    EntityManager::instance->updateTransforms();
 
 
     SoundManager::instance->play("../ressources/Sounds/start.wav");
@@ -117,7 +118,6 @@ int main( void )
     do{
         InputManager::instance->update(window);
 
-        //TODO delata time ?
         EntityManager::instance->update();
         EntityManager::instance->updateTransforms();
         EntityManager::instance->updateCollision();

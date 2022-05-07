@@ -167,6 +167,10 @@ glm::vec3 Transform::getForward() {
     return applyToVersor(glm::vec3(0.0, 0.0, 1.0));
 }
 
+glm::vec3 Transform::worldToLocal(glm::vec3 point) {
+    return this->inverse()->applyToPoint(point);
+}
+
 
 
 void Transform::setLocalPosition(glm::vec3 position) {
