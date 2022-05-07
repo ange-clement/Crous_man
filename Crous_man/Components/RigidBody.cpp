@@ -271,6 +271,38 @@ glm::vec3 RigidBodySystem::updateParticlesRB_AccurateEulerIntegration(RigidBody*
 }
 
 
+glm::vec3 RigidBodySystem::updateParticlesRB_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
+    //Find the implicit velocity of the particle
+    glm::vec3 velocity = currentPos - rb->oldPosition;
+    rb->oldPosition = currentPos;
+    float deltaSquare = deltaTime * deltaTime;
+    return currentPos +(velocity * rb->cineticFriction + rb->combinedForces * deltaSquare);
+}
+
+glm::vec3 RigidBodySystem::resolveConstraintParticles_Verlet(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
+    glm::vec3 position = currentPos;
+    if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
+        glm::vec3 velocity = position - rb_particles->oldPosition;
+        glm::vec3 direction = glm::normalize(velocity);
+
+        Ray ray = Ray(rb_particles->oldPosition, direction);
+        RaycastResult result;
+
+        if (RayCastCollider(collider, ray, &result)) {
+            // Place object just a little above collision result
+            position = result.point + result.normal * 0.003f;
+
+            //velocity vector into parallel and perpendicular components relative to the collision normal :
+            glm::vec3 vn = result.normal * glm::dot(result.normal, velocity);
+            glm::vec3 vt = velocity - vn;
+
+            rb_particles->oldPosition = position - ((vt - vn) * rb_particles->bounce);
+        }
+    }
+    return position;
+}
+
+
 glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos) {
     glm::vec3 position = currentPos;
     if (LinetestCollider(collider, rb_particles->oldPosition, currentPos)) {
