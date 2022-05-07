@@ -24,7 +24,7 @@ ShadowQuadEShader* ShadowQuadEShader::instance = NULL;
 
 ShadowQuadEShader::ShadowQuadEShader() : QuadEShader(
     "Shaders/EShaders/ShadowQuadEShader.glsl",
-    800, 600, 1)
+    1024, 1024, 1)
 {
     if (ShadowQuadEShader::instance == NULL) {
         ShadowQuadEShader::instance = this;

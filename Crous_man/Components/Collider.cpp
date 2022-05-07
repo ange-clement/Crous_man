@@ -90,6 +90,7 @@ ColliderSystem::~ColliderSystem() {
 }
 
 void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
+    std::cout << "initialise " << i << std::endl;
     getCollider(i)->entityID = entityID;
 
     if (getCollider(i)->type == colliderType::Sphere) {

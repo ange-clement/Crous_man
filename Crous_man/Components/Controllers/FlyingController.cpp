@@ -43,11 +43,11 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     fc->azimuth = 0.0;
     fc->zenith = 0.0;
 
-    unsigned int nbInPool = 10;
+    unsigned int nbInPool = 50;
     std::vector<Entity*> entitiesForPool;
     for (unsigned int i = 0; i < nbInPool; i++) {
-        /*
-        entitiesForPool.push_back((new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        
+        /*entitiesForPool.push_back((new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
             ->setActive(false)
             ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
             ->setScale(glm::vec3(0.2, 0.2, 0.2))
@@ -57,8 +57,8 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
             ->setRenderingCollider()
             ->initializeComponents()
             ->build()
-        );
-        */
+        );*/
+        
         
         entitiesForPool.push_back((new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SpinID}))
             ->setActive(false)
@@ -69,6 +69,7 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
             ->initializeComponents()
             ->build()
         );
+        
         
     }
     fc->pool = new EntityPool(entitiesForPool);
@@ -120,7 +121,7 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
         Entity* e = EntityManager::instance->entities[entityID];
         Ray* ray = new Ray(e->worldTransform->translation, e->worldTransform->getForward());
         std::vector<RaycastResult*> rayResult = colliderSystem->rayCastAll(*ray);
-        RaycastResult* closest;
+        RaycastResult* closest = NULL;
         float minDistance = FLT_MAX;
         float distance;
         for (unsigned int i = 0, size = rayResult.size(); i < size; i++) {
@@ -140,8 +141,10 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
             }
         }
 
-        Entity* instance = fc->pool->addEntity();
-        instance->transform->translation = closest->point;
+        if (closest != NULL) {
+            Entity* instance = fc->pool->addEntity();
+            instance->transform->translation = closest->point + glm::vec3(0.0, 0.1, 0.0);
+        }
     }
     if (!fc->rayCastCooldown->inCooldown() && glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {
         fc->rayCastCooldown->start();
