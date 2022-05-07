@@ -139,6 +139,7 @@ bool pointOnPlane(const glm::vec3& point, const glm::vec3 normal_plan, float dis
 
 
 void logCollisionResultMap(CollisionResultMap m);
+void logSimpleCollisionResultMap(SimpleCollisionResultMap m);
 
 void AABBfromMinMax(Collider& aabb, const glm::vec3 min, const glm::vec3 max);
 void computeMinMaxAABB(const Collider& c, glm::vec3& min, glm::vec3& max);
