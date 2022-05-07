@@ -9,6 +9,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <common/ray.hpp>
+
 #include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Bitmap.hpp"
@@ -1606,6 +1608,21 @@ void intersect(Collider c1, Collider c2, ColliderResult* res) {
     }
 }
 
+std::vector<RaycastResult*> ColliderSystem::rayCastAll(const Ray& ray) {
+    std::vector<RaycastResult*> results;
+    results.reserve(entityIDs.size());
+    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+        if (entityIDs[i] == (unsigned short)-1)
+            continue;
+
+        Collider* c = getCollider(i);
+        RaycastResult* result = new RaycastResult();
+        if (RayCastCollider(*c, ray, result)) {
+            results.push_back(result);
+        }
+    }
+    return results;
+}
 
 /*============================ JUST COLLIDER INTERSECTION : NO NORMAL AND POSITION CALC ============================*/
 bool OverlapOnAxisAABBOBB(const Collider& aabb, const Collider& obb, const glm::vec3& axis) {

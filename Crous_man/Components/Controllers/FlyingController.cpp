@@ -13,12 +13,17 @@
 #include <Crous_man/ECS/EntityManager.hpp>
 #include <Crous_man/ECS/Bitmap.hpp>
 #include <Crous_man/ECS/Entity.hpp>
+#include <Crous_man/Util.hpp>
 #include <common/ray.hpp>
 
 
 #include <Crous_man/Transform.hpp>
 
+#include "../../ECS/EntityBuilder.hpp"
+
 #include "FlyingController.hpp"
+
+#include "../Collider.hpp"
 
 FlyingControllerSystem::FlyingControllerSystem() : ComponentSystem(){
     requiredComponentsBitmap = new Bitmap({SystemIDs::FlyingControllerID});
@@ -34,6 +39,10 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     fc->sensitivity = 0.16f;
     fc->azimuth = 0.0;
     fc->zenith = 0.0;
+
+    if (colliderSystem == NULL) {
+        colliderSystem = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
+    }
 }
 
 void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
@@ -69,6 +78,28 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
         tr->translation -= translationAmount * udirection;
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_SPACE) == GLFW_PRESS)
         tr->translation += translationAmount * udirection;
+
+    if (glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
+        Entity* e = EntityManager::instance->entities[entityID];
+        Ray* ray = new Ray(e->worldTransform->translation, e->worldTransform->getForward());
+        std::vector<RaycastResult*> rayResult = colliderSystem->rayCastAll(*ray);
+        for (unsigned int i = 0, size = rayResult.size(); i < size; i++) {
+            std::cout << "RayCast!" << std::endl;
+            if (rayResult[i] != NULL) {
+                Entity* monke = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+                    ->setTranslation(rayResult[i]->point)
+                    ->setRendererDiffuseColor(glm::vec3(1.0, 0.0, 0.0))
+                    ->setScale(glm::vec3(0.2, 0.2, 0.2))
+                    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+                    ->updateRenderer()
+                    ->build();
+                std::cout << rayResult[i]->hit << std::endl;
+                print(rayResult[i]->normal);
+                print(rayResult[i]->point);
+                std::cout << rayResult[i]->t << std::endl;
+            }
+        }
+    }
 
     
     if (!InputManager::instance->disableMouse) {

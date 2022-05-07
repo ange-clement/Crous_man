@@ -6,6 +6,8 @@
 #include "../ECS/ComponentSystem.hpp"
 #include "../Shaders/ColliderShader.hpp"
 
+class RaycastResult;
+class Ray;
 
 enum colliderType {
     Sphere,
@@ -107,6 +109,8 @@ public :
     void renderAll(glm::mat4 view, glm::mat4 projection);
     void drawCollider(unsigned short i);
     bool isInContactWithSomething(unsigned short i);
+
+    std::vector<RaycastResult*> rayCastAll(const Ray& ray);
 
     std::vector<ColliderResult*> getResultOf(unsigned int entityID);
 
