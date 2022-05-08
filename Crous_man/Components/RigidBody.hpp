@@ -5,6 +5,7 @@
 
 #define STATIC_OBJECT_MASS 0.0f
 
+class ContactPoint;
 
 enum RBType {
     //A particles has a mass but no volume (no rotation forces)

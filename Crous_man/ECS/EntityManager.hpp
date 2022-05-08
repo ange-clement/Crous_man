@@ -14,6 +14,7 @@ struct Spin;
 struct FollowObject;
 struct FlyingController;
 struct SimpleMovementPlayer;
+struct CrousManController;
 
 class Entity;
 class ComponentSystem;
@@ -36,6 +37,7 @@ public:
     std::vector<FollowObject> followObjectComponents;
     std::vector<FlyingController> flyingControllerComponents;
     std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;
+    std::vector<CrousManController> crousManControllerComponents;
 public:
 
     EntityManager();

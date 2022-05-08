@@ -178,17 +178,25 @@ void createSceneCollider() {
 void createSceneGame() {
 
     // CrousMan
-    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+
+    Entity* doughnutSaucisseMesh = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setMeshAsFilePLY("../ressources/Models/dougnut.ply")
         ->updateRenderer()
         ->setRendererDiffuse("../ressources/Textures/dougnutColor.ppm")
+        ->build();
+
+    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
+        ->setTranslation(glm::vec3(0.0f, 6.0f, 0.0f))
+        ->setCrousManControllerMeshEntity(doughnutSaucisseMesh)
         ->setRigidBodyMass(1.0f)
-        ->fitOBBColliderToMesh()
+        ->fitOBBColliderToMeshOf(doughnutSaucisseMesh)
         ->setRenderingCollider()
         ->build();
 
+    doughnutSaucisse->addChildren(doughnutSaucisseMesh);
+
     Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-        ->setChildOf(doughnutSaucisse)
+        ->setChildOf(doughnutSaucisseMesh)
         ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
         ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
         ->updateRenderer()
@@ -197,7 +205,7 @@ void createSceneGame() {
         ->build();
 
     Entity* crousLight = (new EntityBuilder({ SystemIDs::PointLightID }))
-        ->setChildOf(doughnutSaucisse)
+        ->setChildOf(doughnutSaucisseMesh)
         ->setTranslation(glm::vec3(0.0, 0.0, 5.0))
         ->setLightColor(glm::vec3(.958, .985, .938))
         ->setLightLinear(0.2)

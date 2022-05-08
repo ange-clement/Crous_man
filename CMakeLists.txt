@@ -175,6 +175,8 @@ add_executable(
 	Crous_man/Components/Controllers/FlyingController.hpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.cpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.hpp
+	Crous_man/Components/Controllers/CrousManController.cpp
+	Crous_man/Components/Controllers/CrousManController.hpp
 
 	Crous_man/InputManager.cpp
 	Crous_man/InputManager.hpp

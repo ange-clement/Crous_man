@@ -23,6 +23,7 @@
 #include "../Components/Collider.hpp"
 #include "../Components/RigidBody.hpp"
 #include "../Components/FollowObject.hpp"
+#include "../Components/Controllers/CrousManController.hpp"
 #include "../Transform.hpp"
 #include "../SoundManager.hpp"
 
@@ -49,6 +50,9 @@ EntityBuilder::EntityBuilder(std::initializer_list<SystemIDs> systems) {
 	this->rigidBody = NULL;
 
 	this->followObject = NULL;
+	
+	this->crousManController = NULL;
+
 }
 
 
@@ -308,6 +312,7 @@ EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
+	Mesh* mesh = this->getMesh();
 	std::cout << "AABB" << std::endl;
 
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
@@ -321,6 +326,7 @@ EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
 	return this;
 }
 EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
+	Mesh* mesh = this->getMesh();
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
@@ -328,6 +334,17 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	
 	print(collider->center);
 	print(collider->size); 
+	return this;
+}
+EntityBuilder* EntityBuilder::fitOBBColliderToMeshOf(Entity* meshEntity) {
+	unsigned short meshEntityMeshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, meshEntity->id);
+	Mesh* meshEntityMesh = &EntityManager::instance->meshComponents[meshEntityMeshID];
+
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->type = colliderType::OBB;
+	computeBox(meshEntity->transform, meshEntityMesh->indexed_vertices, collider->center, collider->size);
+
 	return this;
 }
 EntityBuilder* EntityBuilder::setRenderingCollider() {
@@ -402,6 +419,22 @@ FollowObject* EntityBuilder::getFollowObject() {
 EntityBuilder* EntityBuilder::setFollowObjectEntity(Entity* target) {
 	FollowObject* f = this->getFollowObject();
 	f->entityToFollow = target;
+	return this;
+}
+
+
+
+CrousManController* EntityBuilder::getCrousManController() {
+	if (this->crousManController == NULL) {
+		unsigned short crousManControllerID = EntityManager::instance->getComponentId(SystemIDs::CrousManControllerID, this->buildEntity->id);
+		this->crousManController = &EntityManager::instance->crousManControllerComponents[crousManControllerID];
+	}
+	return this->crousManController;
+}
+
+EntityBuilder* EntityBuilder::setCrousManControllerMeshEntity(Entity* target) {
+	CrousManController* crous = this->getCrousManController();
+	crous->meshEntity = target;
 	return this;
 }
 

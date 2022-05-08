@@ -36,6 +36,7 @@
 #include "../Components/FollowObject.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 #include "../Components/Controllers/SimpleMovementPlayer.hpp"
+#include "../Components/Controllers/CrousManController.hpp"
 
 
 #include "ComponentSystem.hpp"
@@ -88,7 +89,7 @@ void EntityManager::initShaders() {
 
 void EntityManager::initSystems() {
 
-    if (SystemIDs::NUMBER >= 16) {
+    if (SystemIDs::NUMBER >= 64) {
         std::cout << "WARNING TOO MANY COMPONENTS" << std::endl;
     }
     systems.resize(SystemIDs::NUMBER);
@@ -104,6 +105,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::DestructibleID] =            new DestructibleSystem();
     systems[SystemIDs::FlyingControllerID] =        new FlyingControllerSystem();
     systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
+    systems[SystemIDs::CrousManControllerID] =      new CrousManControllerSystem();
 }
 
 void EntityManager::initializeAllSystems() {

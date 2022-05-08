@@ -13,6 +13,7 @@ enum SystemIDs {
     RigidBodyID,
     FlyingControllerID,
     SimplePlayerControllerID,
+    CrousManControllerID,
     NUMBER
 };
 

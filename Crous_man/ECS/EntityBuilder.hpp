@@ -15,6 +15,9 @@ struct PointLight;
 struct RigidBody;
 
 class Entity;
+
+class CrousManController;
+
 enum colliderType;
 
 class EntityBuilder {
@@ -34,6 +37,8 @@ private:
 	RigidBody* rigidBody;
 
 	FollowObject* followObject;
+
+	CrousManController* crousManController;
 public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
@@ -70,6 +75,7 @@ public:
 	EntityBuilder* fitSphereColliderToMesh();
 	EntityBuilder* fitAABBColliderToMesh();
 	EntityBuilder* fitOBBColliderToMesh();
+	EntityBuilder* fitOBBColliderToMeshOf(Entity* meshEntity);
 	EntityBuilder* setRenderingCollider();
 
 	RigidBody* getRigidBody();
@@ -86,6 +92,9 @@ public:
 
 	FollowObject* getFollowObject();
 	EntityBuilder* setFollowObjectEntity(Entity* target);
+	
+	CrousManController* getCrousManController();
+	EntityBuilder* setCrousManControllerMeshEntity(Entity* target);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);
