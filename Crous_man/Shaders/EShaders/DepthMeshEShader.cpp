@@ -9,14 +9,16 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <Crous_man/Components/Renderer.hpp>
+
 #include "DepthMeshEShader.hpp"
 
 DepthMeshEShader* DepthMeshEShader::instance = NULL;
 
 DepthMeshEShader::DepthMeshEShader() : MeshEShader(
     "Shaders/EShaders/DepthMeshEShader.glsl",
-    800, 600, 1,
-    [](Renderer* r) { return true; } )
+    1024, 1024, 1,
+    [](Renderer* r) { return r->castShadows; } )
 {
     if (DepthMeshEShader::instance == NULL) {
         DepthMeshEShader::instance = this;

@@ -11,6 +11,7 @@ struct Collider;
 struct RigidBody;
 struct Destructible;
 struct Spin;
+struct FollowObject;
 struct FlyingController;
 struct SimpleMovementPlayer;
 
@@ -32,6 +33,7 @@ public:
     std::vector<RigidBody> rigidBodyComponents;
     std::vector<Spin> spinComponents;
     std::vector<Destructible> destructibleComponents;
+    std::vector<FollowObject> followObjectComponents;
     std::vector<FlyingController> flyingControllerComponents;
     std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;
 public:

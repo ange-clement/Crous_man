@@ -10,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <common/frameBuffer.hpp>
+#include <Crous_man/Transform.hpp>
+#include <Crous_man/Util.hpp>
 
 #include "../../ECS/EntityManager.hpp"
 
@@ -19,6 +21,7 @@
 
 #include "DepthMeshEShader.hpp"
 #include "../../Components/Renderer.hpp"
+#include "../../ECS/Entity.hpp"
 
 ShadowQuadEShader* ShadowQuadEShader::instance = NULL;
 
@@ -71,16 +74,14 @@ void ShadowQuadEShader::use() {
     if (rendererInstance == NULL) {
         rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
     }
+    glm::vec3 shadowLightSourcePos = targetEntity->worldTransform->translation - shadowSourceDistance * shadowDirection;
+    glm::vec3 shadowLightSourceTarget = targetEntity->worldTransform->translation;
+
     glm::mat4 lightView = glm::lookAt(
         shadowLightSourcePos,
         shadowLightSourceTarget,
         glm::vec3(0.0f, 1.0f, 0.0f) );
     glm::mat4 lightProjection = glm::ortho(-width, width, -width, width, near_plane, far_plane);
-    /*glm::mat4 lightProjection = glm::perspective(
-        45.0f,
-        4.0f/3.0f,
-        near_plane, far_plane
-    );*/
     depthInstance->use();
     depthInstance->setFromPos(shadowLightSourcePos);
     depthInstance->setMaxDistance(far_plane);

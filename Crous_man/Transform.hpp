@@ -70,8 +70,8 @@ public:
     void translate(glm::vec3 amount);
 
     void lookAt(const Transform* other);
-
     void lookAt(glm::vec3 target);
+    void lookAtDirection(glm::vec3 forwardVector);
 };
 
 #endif

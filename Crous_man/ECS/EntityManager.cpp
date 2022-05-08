@@ -33,6 +33,7 @@
 #include "../Components/PointLight.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Destructible.hpp"
+#include "../Components/FollowObject.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 #include "../Components/Controllers/SimpleMovementPlayer.hpp"
 
@@ -99,6 +100,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::RigidBodyID] =               new RigidBodySystem();
     systems[SystemIDs::CameraID] =                  new CameraSystem();
     systems[SystemIDs::SpinID] =                    new SpinSystem();
+    systems[SystemIDs::FollowObjectID] =            new FollowObjectSystem();
     systems[SystemIDs::DestructibleID] =            new DestructibleSystem();
     systems[SystemIDs::FlyingControllerID] =        new FlyingControllerSystem();
     systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
@@ -106,7 +108,6 @@ void EntityManager::initSystems() {
 
 void EntityManager::initializeAllSystems() {
     for (size_t i = 0, size = systems.size(); i < size; i++) {
-        std::cout << "initialize ALL "<< i << std::endl;
         systems[i]->initializeAll();
     }
 }

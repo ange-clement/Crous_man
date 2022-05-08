@@ -21,7 +21,7 @@ void main()
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow
-    float bias = 0.0005;
+    float bias = 0.005;
     //float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     
@@ -39,4 +39,5 @@ void main()
     shadow = (projCoords.z > 1.0 - bias) ? 0.0 : shadow;
 
     texBuffer0.rgba = vec4(vec3(1.0 - shadow), 1.0);
+    //texBuffer0.rgba = texture(uShadowMap, TexCoords);
 }

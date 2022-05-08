@@ -10,6 +10,7 @@ struct Mesh;
 
 struct Renderer {
     bool draw = true;
+    bool castShadows = true;
     unsigned short meshID;
     GShader* gShaderInstance;
 

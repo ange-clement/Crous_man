@@ -32,6 +32,8 @@ private:
 	PointLight* pointLight;
 
 	RigidBody* rigidBody;
+
+	FollowObject* followObject;
 public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
@@ -48,9 +50,12 @@ public:
 	Renderer* getRenderer();
 	unsigned short getRendererID();
 	EntityBuilder* updateRenderer();
+	EntityBuilder* setRendererDiffuse(std::string diffuseFile);
+	EntityBuilder* setRendererSpecular(std::string specularFile);
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
 	EntityBuilder* setRendererDraw(bool draw);
+	EntityBuilder* setRendererCastShadows(bool castShadows);
 
 	Destructible* getDestructible();
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
@@ -78,6 +83,9 @@ public:
 	EntityBuilder* setLightQuadratic(float quadratic);
 
 	EntityBuilder* setAsScreenCamera();
+
+	FollowObject* getFollowObject();
+	EntityBuilder* setFollowObjectEntity(Entity* target);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);

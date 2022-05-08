@@ -7,6 +7,7 @@ enum SystemIDs {
     PointLightID,
     CameraID,
     SpinID,
+    FollowObjectID,
     DestructibleID,
     ColliderID,
     RigidBodyID,

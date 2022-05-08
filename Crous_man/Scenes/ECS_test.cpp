@@ -172,5 +172,99 @@ void createSceneCollider() {
         ->setAsScreenCamera()
         ->setAsAudioListener()
         ->build();
+}
 
+
+void createSceneGame() {
+
+    // CrousMan
+    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
+        ->setMeshAsFilePLY("../ressources/Models/dougnut.ply")
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/dougnutColor.ppm")
+        ->setRigidBodyMass(1.0f)
+        ->fitOBBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
+    Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setChildOf(doughnutSaucisse)
+        ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
+        ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
+        //->setRendererCastShadows(false)
+        ->build();
+
+    Entity* crousLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setChildOf(doughnutSaucisse)
+        ->setTranslation(glm::vec3(0.0, 0.0, 5.0))
+        ->setLightColor(glm::vec3(.958, .985, .938))
+        ->setLightLinear(0.2)
+        ->setLightQuadratic(0.04)
+        ->build();
+
+    Entity* wantedCameraPosition = (new EntityBuilder({}))
+        ->setTranslation(glm::vec3(0.0f, 15.0f, -50.0f))
+        //->setRotation(1.57079632679, glm::vec3(0.0f, 1.0f, 0.0f))
+        ->setChildOf(doughnutSaucisse)
+        ->build();
+
+
+    // Scene
+
+    Entity* plane = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
+        ->setScale(glm::vec3(100.0, 100.0, 1.0))
+        ->setRotation(-3.141592653 * 0.5, glm::vec3(1.0, 0.0, 0.0))
+        ->setRigidBodyStatic(true)
+        ->setMeshAsQuad()
+        //->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
+        ->updateRenderer()
+        ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
+        ->fitAABBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+    
+    Entity* explosionCube = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
+        ->setTranslation(glm::vec3(0.0f, 5.0f, 50.0f))
+        ->setScale(glm::vec3(10.0f, 10.0f, 10.0f))
+        ->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
+        ->addDestructibleMeshes({
+            "../ressources/Models/fragment/cubeFragment1.ply",
+            "../ressources/Models/fragment/cubeFragment2.ply",
+            "../ressources/Models/fragment/cubeFragment3.ply",
+            "../ressources/Models/fragment/cubeFragment4.ply",
+            "../ressources/Models/fragment/cubeFragment5.ply",
+            "../ressources/Models/fragment/cubeFragment6.ply",
+            "../ressources/Models/fragment/cubeFragment7.ply",
+            "../ressources/Models/fragment/cubeFragment8.ply",
+            "../ressources/Models/fragment/cubeFragment9.ply",
+            "../ressources/Models/fragment/cubeFragment10.ply",
+            "../ressources/Models/fragment/cubeFragment11.ply",
+            "../ressources/Models/fragment/cubeFragment12.ply" })
+            ->addDestructibleMeshes({
+                "../ressources/Models/fragment/cubeFragment13.ply"
+                }, true)
+        ->updateRenderer()
+        ->setRendererDiffuseColor(glm::vec3(.958, .985, .938))
+        ->build();
+
+
+
+
+    Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
+        ->setLightLinear(0.01)
+        ->setLightQuadratic(0.0)
+        ->build();
+
+
+    // Camera
+
+    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FollowObjectID }))
+        ->setFollowObjectEntity(wantedCameraPosition)
+        ->setAsScreenCamera()
+        ->setAsAudioListener()
+        ->build();
 }

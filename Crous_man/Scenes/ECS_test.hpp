@@ -5,4 +5,6 @@ void createSceneECS();
 
 void createSceneCollider();
 
+void createSceneGame();
+
 #endif

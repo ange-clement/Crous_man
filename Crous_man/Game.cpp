@@ -105,7 +105,8 @@ int main( void )
     
     new EntityManager();
     
-    createSceneCollider();
+    //createSceneCollider();
+    createSceneGame();
 
     //createSceneECS();
     EntityManager::instance->initializeAllSystems();

@@ -156,6 +156,8 @@ add_executable(
 	Crous_man/Components/Mesh.hpp
 	Crous_man/Components/Spin.cpp
 	Crous_man/Components/Spin.hpp
+	Crous_man/Components/FollowObject.cpp
+	Crous_man/Components/FollowObject.hpp
 	Crous_man/Components/Renderer.cpp
 	Crous_man/Components/Renderer.hpp
 	Crous_man/Components/Camera.cpp
