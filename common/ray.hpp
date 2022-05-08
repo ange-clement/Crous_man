@@ -28,8 +28,10 @@ public:
 
 typedef struct RaycastResult {
 	unsigned short entityIDCollid;
+	
 	glm::vec3 point;
 	glm::vec3 normal;
+
 	float t;
 
 	bool hit;

@@ -171,7 +171,7 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     // 2- Accumulate forces acting on the rigidbodies
     // 3- Apply impulses to resolve collisions (except if static)
 
-    RigidBody* rb = getRigidBody(i);
+    /*RigidBody* rb = getRigidBody(i);
     RigidBody* otherRb;
 
     Entity* e = EntityManager::instance->entities[entityID];
@@ -179,64 +179,63 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     
     for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
         //First get the RB of the other member of the collision
-        otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
-        otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
+        //otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
+        //otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
 
         //Apply impulse for collision resolution
-        unsigned int sizeContact = collisionResults[c]->contactsPts.size();
-        if (sizeContact > 0) {
-            float invSize = 1.0f / (float)sizeContact;
-            for (unsigned int p = 0; p < sizeContact; p++) {
+        //unsigned int sizeContact = collisionResults[c]->contactsPts.size();
+        //if (sizeContact > 0) {
+            //float invSize = 1.0f / (float)sizeContact;
+            //for (unsigned int p = 0; p < sizeContact; p++) {
                 
                 //DEBUG
-                std::cout << "collision rigid" << std::endl;
-                std::cout << "point : ";
-                print(collisionResults[c]->contactsPts[p]->point);
-                std::cout << "normal : ";
-                print(collisionResults[c]->contactsPts[p]->normal);
-                std::cout << "point in local space : ";
-                glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                print(pointA);
-                glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                print(pointB);
+                //std::cout << "collision rigid" << std::endl;
+                //std::cout << "point : ";
+                //print(collisionResults[c]->contactsPts[p]->point);
+                //std::cout << "normal : ";
+                //print(collisionResults[c]->contactsPts[p]->normal);
+                //std::cout << "point in local space : ";
+                //glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointA);
+                //glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointB);
 
                 //For particles, we dont make bounces
                 
-                /*if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
-                    resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
-                }*/
+                //if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
+                //    resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
+                //}
                 
                 //old fnc
-                if (!rb->static_RB) {
-                    glm::vec3 centerOfMass = glm::vec3(0.0f);
-                    glm::vec3 rA = pointA - centerOfMass;
-                    glm::vec3 rB = pointB - centerOfMass;
-                    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
-                    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
-                }
+                //if (!rb->static_RB) {
+                //    glm::vec3 centerOfMass = glm::vec3(0.0f);
+                //    glm::vec3 rA = pointA - centerOfMass;
+                //    glm::vec3 rB = pointB - centerOfMass;
+                //    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
+                //    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
+                //}
           
-                /*
-                (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-                    ->setTranslation(collisionResults[c]->contactsPts[p]->point)
-                    ->setRendererDiffuseColor(glm::vec3(0.0, 1.0, 1.0))
-                    ->setScale(glm::vec3(0.2, 0.2, 0.2))
-                    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-                    ->updateRenderer()
-                    ->initializeComponents()
-                    ->build();
-                */
+                
+                //(new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+                //    ->setTranslation(collisionResults[c]->contactsPts[p]->point)
+                //    ->setRendererDiffuseColor(glm::vec3(0.0, 1.0, 1.0))
+                //    ->setScale(glm::vec3(0.2, 0.2, 0.2))
+                //    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+                //    ->updateRenderer()
+                //    ->initializeComponents()
+                //    ->build();
+         
                 //rb->addImpulse(collisionResults[c]->contactsPts[p]->normal * 0.01f / invSize);
-            }
-        }
-        else {
-            std::cout << "trigger" << std::endl;
-        }
-    }
+            //}
+        //}
+        //else {
+        //    std::cout << "trigger" << std::endl;
+        //}
+    }*/
 
 
 
     /*=========================================================================================================================*/
-    /*
     bool with_dynamic_friction = false;
     bool with_rotation = false;
     bool correctPos = false;
@@ -263,6 +262,19 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
         glm::vec3 otherpos;
 
         for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+            if (correctPos) {
+                //We can correct position of RB to avoid penetration
+                glm::vec3 newpos;
+                glm::vec3 otherNewpos;
+
+                positionCorrection(newpos, otherNewpos, rb, otherRb, collisionResults[c]->contactsPts[0]);
+                e->transform->translate(newpos);
+                e->worldTransform->translate(newpos);
+
+                otherE->transform->translate(otherNewpos);
+                otherE->worldTransform->translate(otherNewpos);
+            }
+
             //First get the entity and RB of the other member of the collision
             otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
             otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
@@ -286,6 +298,8 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 //For each contacts points
                 for (unsigned int p = 0; p < sizeContact; p++) {
                     ContactPoint* cp = collisionResults[c]->contactsPts[p];
+
+
                     if (with_rotation) {
                         if (with_dynamic_friction) {
                             linearAndAngular_resolveConstraintVolumeRB_Euler_dynamicfriction(rb, otherRb, cp, sizeContact, pos, otherpos, inversedTensor_I, inversedTensor_J);
@@ -302,40 +316,23 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                             linear_resolveConstraintVolumeRB_Euler(rb, otherRb, cp, sizeContact);
                         }
                     }
-
-                    if (correctPos) {
-                        //We can correct position of RB to avoid penetration
-                        glm::vec3 newpos;
-                        glm::vec3 otherNewpos;
-
-                        positionCorrection(newpos, otherNewpos, rb, otherRb, cp);
-                        e->transform->translate(newpos);
-                        e->worldTransform->translate(newpos);
-
-                        otherE->transform->translate(otherNewpos);
-                        otherE->worldTransform->translate(otherNewpos);
-                    }
                 }
             }
             else {
                 std::cout << "trigger" << std::endl;
-            }
-
-
-            
+            }       
         }
     }
     else {
         std::cout << "NO COLLIDER, SKIPPED : " << entityID << std::endl;
-    }*/
+    }
 }
 
 void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     //2 - Update position of every rb 
     //3 - Correct sinking using Linear Projection
     //4 - Solve contraint if applicable
-
-
+    /*
     RigidBody* rb = getRigidBody(i);
     float deltaTime = InputManager::instance->deltaTime;
 
@@ -376,12 +373,11 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     rb->combinedForces = gravity * rb->mass;        // initialised by weight
     rb->combinedAngularForces = glm::vec3(0.0f);
     rb->combinedStaticFriction = glm::vec3(0.0f);
-    rb->combinedCineticFriction = glm::vec3(0.0f);
+    rb->combinedCineticFriction = glm::vec3(0.0f);*/
 
 
 
     /*=========================================================================================================================*/
-    /*
     bool with_rotation = false;
     RigidBody* rb = getRigidBody(i);
     float deltaTime = InputManager::instance->deltaTime;
@@ -401,13 +397,17 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     //We can't perform angular impulse without Collider of the element 
     if (with_rotation && col != 0) {
         inversedTensor_I = getMatrixInverseTensor(entityID, *col, rb);
+        
         rotational_update(rb, deltaTime, getFromMat4(inversedTensor_I));
+
+        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.x), glm::vec3(1,0,0));
+        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.y), glm::vec3(0,1,0));
+        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.z), glm::vec3(0,0,1));
     }
 
     // Apply on object
     e->transform->translate(newPos - currentPos);
     e->worldTransform->translate(newPos - currentPos);
-    */
 }
 
 
