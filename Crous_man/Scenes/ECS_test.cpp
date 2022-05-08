@@ -178,25 +178,29 @@ void createSceneCollider() {
 void createSceneGame() {
 
     // CrousMan
+    Entity* rotatingCenterForCamera = (new EntityBuilder({}))
+        ->build();
 
-    Entity* doughnutSaucisseMesh = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+    Entity* wantedCameraPosition = (new EntityBuilder({}))
+        ->setTranslation(glm::vec3(0.0f, 15.0f, -50.0f))
+        //->setRotation(1.57079632679, glm::vec3(0.0f, 1.0f, 0.0f))
+        ->setChildOf(rotatingCenterForCamera)
+        ->build();
+
+    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
+        ->setTranslation(glm::vec3(0.0f, 6.0f, 0.0f))
+        ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
+        ->setCrousManControllerCameraTarget(wantedCameraPosition)
         ->setMeshAsFilePLY("../ressources/Models/dougnut.ply")
         ->updateRenderer()
         ->setRendererDiffuse("../ressources/Textures/dougnutColor.ppm")
-        ->build();
-
-    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
-        ->setTranslation(glm::vec3(0.0f, 6.0f, 0.0f))
-        ->setCrousManControllerMeshEntity(doughnutSaucisseMesh)
         ->setRigidBodyMass(1.0f)
-        ->fitOBBColliderToMeshOf(doughnutSaucisseMesh)
+        ->fitOBBColliderToMesh()
         ->setRenderingCollider()
         ->build();
 
-    doughnutSaucisse->addChildren(doughnutSaucisseMesh);
-
     Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-        ->setChildOf(doughnutSaucisseMesh)
+        ->setChildOf(doughnutSaucisse)
         ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
         ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
         ->updateRenderer()
@@ -205,18 +209,13 @@ void createSceneGame() {
         ->build();
 
     Entity* crousLight = (new EntityBuilder({ SystemIDs::PointLightID }))
-        ->setChildOf(doughnutSaucisseMesh)
+        ->setChildOf(doughnutSaucisse)
         ->setTranslation(glm::vec3(0.0, 0.0, 5.0))
         ->setLightColor(glm::vec3(.958, .985, .938))
         ->setLightLinear(0.2)
         ->setLightQuadratic(0.04)
         ->build();
 
-    Entity* wantedCameraPosition = (new EntityBuilder({}))
-        ->setTranslation(glm::vec3(0.0f, 15.0f, -50.0f))
-        //->setRotation(1.57079632679, glm::vec3(0.0f, 1.0f, 0.0f))
-        ->setChildOf(doughnutSaucisse)
-        ->build();
 
 
     // Scene

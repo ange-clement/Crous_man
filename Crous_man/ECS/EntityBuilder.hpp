@@ -94,7 +94,8 @@ public:
 	EntityBuilder* setFollowObjectEntity(Entity* target);
 	
 	CrousManController* getCrousManController();
-	EntityBuilder* setCrousManControllerMeshEntity(Entity* target);
+	EntityBuilder* setCrousManControllerRotatingCenterForCamera(Entity* target);
+	EntityBuilder* setCrousManControllerCameraTarget(Entity* target);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);

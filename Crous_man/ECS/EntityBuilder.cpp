@@ -432,9 +432,14 @@ CrousManController* EntityBuilder::getCrousManController() {
 	return this->crousManController;
 }
 
-EntityBuilder* EntityBuilder::setCrousManControllerMeshEntity(Entity* target) {
+EntityBuilder* EntityBuilder::setCrousManControllerRotatingCenterForCamera(Entity* target) {
 	CrousManController* crous = this->getCrousManController();
-	crous->meshEntity = target;
+	crous->rotatingCenterForCamera = target;
+	return this;
+}
+EntityBuilder* EntityBuilder::setCrousManControllerCameraTarget(Entity* target) {
+	CrousManController* crous = this->getCrousManController();
+	crous->cameraTarget = target;
 	return this;
 }
 

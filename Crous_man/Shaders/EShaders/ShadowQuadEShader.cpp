@@ -74,8 +74,9 @@ void ShadowQuadEShader::use() {
     if (rendererInstance == NULL) {
         rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
     }
-    glm::vec3 shadowLightSourcePos = targetEntity->worldTransform->translation - shadowSourceDistance * shadowDirection;
-    glm::vec3 shadowLightSourceTarget = targetEntity->worldTransform->translation;
+    glm::vec3 targetPos = targetEntity->worldTransform->translation + targetEntity->worldTransform->getForward() * width * 1.0f;
+    glm::vec3 shadowLightSourcePos = targetPos - shadowSourceDistance * shadowDirection;
+    glm::vec3 shadowLightSourceTarget = targetPos;
 
     glm::mat4 lightView = glm::lookAt(
         shadowLightSourcePos,

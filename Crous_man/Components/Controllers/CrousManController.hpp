@@ -11,7 +11,8 @@ struct CrousManController {
     float acceleration;
     float sensitivity;
 
-    Entity* meshEntity;
+    Entity* rotatingCenterForCamera;
+    Entity* cameraTarget;
     float azimuth;
     float zenith;
     float lastMoovedAzimuth;

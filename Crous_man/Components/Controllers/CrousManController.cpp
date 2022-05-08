@@ -62,16 +62,17 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     CrousManController* crous = getCrousManController(i);
     RigidBody* rb = crous->rb;
     Transform* tr = EntityManager::instance->entities[entityID]->transform;
-    Transform* meshTr = EntityManager::instance->entities[crous->meshEntity->id]->transform;
+    Transform* rotatingTr = EntityManager::instance->entities[crous->rotatingCenterForCamera->id]->transform;
+    Transform* cameraTargetTr = EntityManager::instance->entities[crous->cameraTarget->id]->transform;
 
     float accelerationAmount = crous->acceleration;
     glm::vec3 appliedAcceleration = glm::vec3(0.0f);
     float currentMaxSpeed = crous->maxSpeed;
 
-    glm::vec3 r = tr->getRight();
+    glm::vec3 r = rotatingTr->getRight();
     glm::vec3 rdirection = glm::normalize(glm::vec3(r.x, 0.0, r.z));
     glm::vec3 udirection = glm::vec3(0.0, 1.0, 0.0);
-    glm::vec3 f = tr->getForward();
+    glm::vec3 f = rotatingTr->getForward();
     glm::vec3 fdirection = glm::normalize(glm::vec3(f.x, 0.0, f.z));
 
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
@@ -120,13 +121,13 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
             crous->lastMoovedZenith = crous->zenith;
         }
 
-        tr->rotation.setRotation(crous->azimuth, glm::vec3(0.0, 1.0, 0.0));
-        //tr->rotation.combineRotation(-crous->zenith, glm::vec3(1.0, 0.0, 0.0));
+        rotatingTr->translation = tr->translation;
+        rotatingTr->rotation.setRotation(crous->azimuth, glm::vec3(0.0, 1.0, 0.0));
+        rotatingTr->rotation.combineRotation(-crous->zenith, glm::vec3(1.0, 0.0, 0.0));
 
-        /*meshTr->translation = tr->translation;
         if (glm::dot(rb->velocity, rb->velocity) > 0.0f) {
-            meshTr->lookAtDirection(glm::normalize(rb->velocity));
-        }*/
+            tr->lookAtDirection(glm::normalize(rb->velocity));
+        }
     }
 }
 
