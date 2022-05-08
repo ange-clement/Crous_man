@@ -156,8 +156,6 @@ public:
     //In three dimensions, an object has six degrees of freedom
     //A joint is a type of constraint that limits the degrees of freedom between two objects.
     void resolveConstraintParticles_JointDistance(RigidBody* rb_particles_1, RigidBody* rb_particles_2, glm::vec3& currentPos_1, glm::vec3& currentPos_2, float distancejoint);
-
-
 };
 
 

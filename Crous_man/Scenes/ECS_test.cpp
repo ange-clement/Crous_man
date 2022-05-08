@@ -170,6 +170,7 @@ void createSceneCollider() {
     Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FlyingControllerID }))
         ->setTranslation(glm::vec3(0.0, 0.0, -10.0))
         ->setAsScreenCamera()
+        ->setAsAudioListener()
         ->build();
 
 }

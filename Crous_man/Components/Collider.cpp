@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <common/ray.hpp>
+#include <common/cooldown.hpp>
 
 #include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
@@ -19,6 +20,7 @@
 #include "../Util.hpp"
 
 #include "Collider.hpp"
+
 
 ContactPoint::ContactPoint() {
     this->penetrationDistance = FLT_MAX;
@@ -126,14 +128,16 @@ void ColliderSystem::update(unsigned short i, unsigned short entityID) {
         getCollider(i)->orientation = EntityManager::instance->entities[entityID]->worldTransform->rotation.rotationMatrix;
     }
 
-    if (glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_PRESS) {
-        drawCollider(i);
-    }
-}
 
-void ColliderSystem::drawCollider(unsigned short i) {
-    Collider* c = getCollider(i);
-    c->draw = true;
+    
+    if (!isPressedColliderDraw && glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_PRESS) {
+        isPressedColliderDraw = true;
+        drawColliders = !drawColliders;
+    }
+    if (glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_RELEASE) {
+        isPressedColliderDraw = false;
+    }
+    
 }
 
 void ColliderSystem::addEntityComponent() {
@@ -141,29 +145,28 @@ void ColliderSystem::addEntityComponent() {
 }
 
 void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
-    unsigned short entityID;
-    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        entityID = entityIDs[i];
+    if (drawColliders) {
+        unsigned short entityID;
+        for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
+            entityID = entityIDs[i];
 
-        if (!EntityManager::instance->shouldUpdate(entityID)) {
-            continue;
+            Collider* c = getCollider(i);
+
+            if (!EntityManager::instance->shouldUpdate(entityID) || !c->drawable) {
+                continue;
+            }
+
+            Entity* e = EntityManager::instance->entities[entityID];
+            c->shader->use();
+
+            //std::cout << "RENDER ALL" << std::endl;
+            //print(c->orientation);
+            //print(c->dimensions);
+
+            glm::mat4 model = e->worldTransform->toMat4NoScalingNoRotation();
+            c->shader->setMVPC(model * glm::mat4(c->orientation), view, projection, isInContactWithSomething(entityID), c->dimensions);
+            c->shader->draw();
         }
-
-        Collider* c = getCollider(i);
-        if (!c->drawable || !c->draw) {
-            continue;
-        }
-
-        Entity* e = EntityManager::instance->entities[entityID];
-        c->shader->use();
-
-        //std::cout << "RENDER ALL" << std::endl;
-        //print(c->orientation);
-        //print(c->dimensions);
-
-        glm::mat4 model = e->worldTransform->toMat4NoScalingNoRotation();
-        c->shader->setMVPC(model * glm::mat4(c->orientation), view, projection, isInContactWithSomething(entityID), c->dimensions);
-        c->shader->draw();
     }
 }
 
@@ -184,12 +187,12 @@ bool isSupportedCollider(Collider c) {
 }
 
 void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
-    std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
+    //std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
     //Resize older components (for perform add in game)
     for (auto const& x : collisionResultMap) {
         if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
 
-            std::cout << "NEED TO RESIZE : " << x.first << std::endl;
+            //std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
         
         }
@@ -295,29 +298,6 @@ void ColliderSystem::clearAllCollision(unsigned short i) {
     }
 }
 
-void ColliderSystem::simpleCollisionResolution() {
-    unsigned short entityID_first;
-    unsigned short entityID_second;
-
-    for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        entityID_first = entityIDs[i];
-        Collider* c_first = getCollider(i);
-        for (size_t j = i+1; j < entityIDs.size(); j++){
-            entityID_second = entityIDs[j];
-            Collider* c_second = getCollider(j);
-            ColliderResult* res;
-            intersect(*c_first, *c_second, res);
-            collisionResultMap[i][j] = res;
-            collisionResultMap[j][i] = res;
-        }
-    }
-}
-void ColliderSystem::QuadTreeCollisionResolution() {
-
-}
-void ColliderSystem::OcTreeCollisionResolution() {
-
-}
 
 /* =================== =================== COLLISION DETECTION FUNCTIONS =================== ===================*/
 //create AABB form a min and a max position only

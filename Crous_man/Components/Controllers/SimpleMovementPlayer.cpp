@@ -15,6 +15,7 @@
 #include <Crous_man/ECS/Entity.hpp>
 
 #include <Crous_man/Transform.hpp>
+#include <Crous_man/SoundManager.hpp>
 
 #include "../Collider.hpp"
 #include "../RigidBody.hpp"
@@ -81,6 +82,7 @@ void SimpleMovementPlayerSystem::initialize(unsigned short i, unsigned short ent
         rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
         rbSystem->setGravity(glm::vec3(0.0f));
     }
+
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
         fc->rb = rbSystem->getRigidBody(EntityManager::instance->getComponentId(SystemIDs::RigidBodyID, entityID));
     }
@@ -143,6 +145,9 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
             sp->rbMovementType++;
             sp->rbMovementType %= 12;
             std::cout << sp->rbMovementType << std::endl;
+
+            SoundManager::instance->playOver("../ressources/Sounds/start.wav", e);
+            //SoundManager::instance->audios.back().sound3D->setIsLooped(true);
         }
 
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_Z) == GLFW_RELEASE) {

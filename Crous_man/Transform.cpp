@@ -67,7 +67,7 @@ void Rotation::lookAt(glm::vec3 position, glm::vec3 target, glm::vec3 up) {
         target,
         up
     );
-    rotationMatrix = getFromMat4(lookAtMatrice);
+    rotationMatrix = getFromMat4Transposed(lookAtMatrice);
 }
 
 
@@ -182,9 +182,11 @@ void Transform::translate(glm::vec3 amount) {
 }
 
 void Transform::lookAt(const Transform* other) {
-    rotation.lookAt(translation, other->translation, glm::vec3(0.0, 1.0, 0.0));
+    glm::vec3 up = glm::cross(getRight(), other->translation - translation);
+    rotation.lookAt(translation, other->translation, up);
 }
 
 void Transform::lookAt(glm::vec3 target) {
-    rotation.lookAt(translation, target, glm::vec3(0.0, 1.0, 0.0));
+    glm::vec3 up = glm::cross(getRight(), target - translation);
+    rotation.lookAt(translation, target, up);
 }

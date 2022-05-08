@@ -200,6 +200,17 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 //glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
                 //print(pointB);
 
+                //std::cout << "collision rigid" << std::endl;
+                //std::cout << "point : ";
+                //print(collisionResults[c]->contactsPts[p]->point);
+                //std::cout << "normal : ";
+                //print(collisionResults[c]->contactsPts[p]->normal);
+                //std::cout << "point in local space : ";
+                //glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointA);
+                //glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointB);
+
                 //For particles, we dont make bounces
                 
                 //if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {

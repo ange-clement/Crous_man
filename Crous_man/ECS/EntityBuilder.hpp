@@ -82,8 +82,11 @@ public:
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);
 	EntityBuilder* setRotation(float angle, glm::vec3 axis);
+	EntityBuilder* setLookAt(glm::vec3 target);
 
 	EntityBuilder* setChildOf(Entity* parent);
+
+	EntityBuilder* setAsAudioListener();
 
 	Entity* build();
 };

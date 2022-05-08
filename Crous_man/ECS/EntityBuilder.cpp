@@ -23,6 +23,7 @@
 #include "../Components/Collider.hpp"
 #include "../Components/RigidBody.hpp"
 #include "../Transform.hpp"
+#include "../SoundManager.hpp"
 
 #include "Bitmap.hpp"
 #include "EntityManager.hpp"
@@ -187,22 +188,26 @@ EntityBuilder* EntityBuilder::setColliderOrientation(glm::mat3 orientation) {
 }
 
 void computeSphere(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, float& radius) {
-	position = glm::vec3(0.0);
-	radius = 1.f;
+	glm::vec3 tmpPosition = glm::vec3(0.0);
+	float tmpRadius = 0.f;
 
-	std::vector<glm::vec3> list_bis;
-	for (size_t i = 0; i < in_vertices.size(); i++) {
-		list_bis.push_back(t->applyToVector(in_vertices[i]));
+	glm::vec3 tmpVertexPos;
+	glm::vec3 vertexPos;
+	for (size_t i = 0, size = in_vertices.size(); i < size; i++) {
+		tmpVertexPos = in_vertices[i];
+		vertexPos = t->applyToVector(tmpVertexPos);
+		tmpPosition += vertexPos;
+	}
+	tmpPosition /= (float)in_vertices.size();
+
+	for (size_t i = 0, size = in_vertices.size(); i < size; i++) {
+		tmpVertexPos = in_vertices[i];
+		vertexPos = t->applyToVector(tmpVertexPos);
+		tmpRadius = std::max(tmpRadius, glm::distance(tmpPosition, vertexPos));
 	}
 
-	for (const auto& p : in_vertices) {
-		position += p;
-	}
-	position /= in_vertices.size();
-
-	for (const auto& p : list_bis) {
-		radius = std::max(radius, glm::distance(position, p));
-	}
+	position = tmpPosition;
+	radius = tmpRadius;
 }
 void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, glm::vec3& size) {
 	glm::vec3 cur_pt;
@@ -327,6 +332,7 @@ EntityBuilder* EntityBuilder::setRigidBodyMass(float mass) {
 }
 EntityBuilder* EntityBuilder::setRigidBodyStatic(bool staticStatus) {
 	getRigidBody()->static_RB = staticStatus;
+	getRigidBody()->setMass(FLT_MAX);
 	return this;
 }
 
@@ -374,9 +380,18 @@ EntityBuilder* EntityBuilder::setRotation(float angle, glm::vec3 axis) {
 	this->buildEntity->transform->rotation.setRotation(angle, axis);
 	return this;
 }
+EntityBuilder* EntityBuilder::setLookAt(glm::vec3 target) {
+	this->buildEntity->transform->lookAt(target);
+	return this;
+}
 
 EntityBuilder* EntityBuilder::setChildOf(Entity* parent) {
 	parent->addChildren(this->buildEntity);
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setAsAudioListener() {
+	SoundManager::instance->setAudioListener(this->buildEntity);
 	return this;
 }
 
