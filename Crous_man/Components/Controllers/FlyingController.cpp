@@ -75,7 +75,7 @@ void FlyingControllerSystem::initialize(unsigned short i, unsigned short entityI
     }
     fc->pool = new EntityPool(entitiesForPool);
 
-    fc->rayCastCooldown = new Cooldown(0.05f);
+    fc->rayCastCooldown = new Cooldown(0.08f);
 
     if (colliderSystem == NULL) {
         colliderSystem = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
@@ -144,7 +144,8 @@ void FlyingControllerSystem::update(unsigned short i, unsigned short entityID) {
 
         if (closest != NULL) {
             Entity* instance = fc->pool->addEntity();
-            instance->transform->translation = closest->point + glm::vec3(0.0, 0.1, 0.0);
+            instance->transform->translation = closest->point;
+            instance->transform->lookAt(closest->point + closest->normal);
         }
     }
     if (!fc->rayCastCooldown->inCooldown() && glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_2) == GLFW_PRESS) {

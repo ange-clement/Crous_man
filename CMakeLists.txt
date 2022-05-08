@@ -82,6 +82,8 @@ add_executable(
 	common/textureFramebuffer.hpp
 	common/entityPool.cpp
 	common/entityPool.hpp
+	common/cooldown.cpp
+	common/cooldown.hpp
 
 	common/ray.hpp
 	common/ray.cpp
@@ -178,7 +180,7 @@ add_executable(
 	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
-	Crous_man/Scenes/ECS_test.hpp "common/cooldown.hpp" "common/cooldown.cpp")
+	Crous_man/Scenes/ECS_test.hpp)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

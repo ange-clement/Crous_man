@@ -82,6 +82,7 @@ void SimpleMovementPlayerSystem::initialize(unsigned short i, unsigned short ent
         rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
         rbSystem->setGravity(glm::vec3(0.0f));
     }
+
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
         fc->rb = rbSystem->getRigidBody(EntityManager::instance->getComponentId(SystemIDs::RigidBodyID, entityID));
     }

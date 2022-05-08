@@ -82,4 +82,9 @@ bool RayCastCollider(const Collider& collider, const Ray& ray, RaycastResult* ou
 glm::vec3 unproject(const glm::vec3& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection);
 Ray getPickRay(const glm::vec2& viewportPoint, const glm::vec2& viewportOrigin, const glm::vec2& viewportSize, const glm::mat4& view, const glm::mat4& projection);
 
+
+
+
+void printray(const Ray& r);
+
 #endif

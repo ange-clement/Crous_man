@@ -78,6 +78,10 @@ Ray::~Ray() {
 
 }
 
+void printray(const Ray& r){
+	print(r.origin);
+	print(r.direction);
+}
 
 bool Ray::PointOnRay(const glm::vec3& point) {
 	if (point == this->origin) {
@@ -183,6 +187,10 @@ bool LinetestCollider(const Collider& collider, const glm::vec3& start_line, con
 /*============ =============== COLLIDERS-RAY INTERSECTION FUNCTIONS =============== ============*/
 bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outResult) {
 	assert(sphere.type == colliderType::Sphere);
+	
+	//std::cout << "RAY CAST ON SPHERE: " << std::endl;
+	//printray(ray);
+
 	ResetRaycastResult(outResult);
 
 	glm::vec3 e = sphere.position - ray.origin;
@@ -193,6 +201,7 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 	float bSq = eSq - (a * a);
 	float f = std::sqrt(fabsf((rSq)- bSq));
 
+
 	// Assume normal intersection!
 	float t = a - f;
 
@@ -200,11 +209,14 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 	if (rSq - (eSq - a * a) < 0.0f) {
 		return false;
 	}
+	
 	// Ray starts inside the sphere
 	else if (eSq < rSq) {
 		// Just reverse direction
+		//std::cout << "REVERSE DIRECTION" << std::endl;
 		t = a + f;
 	}
+
 	if (outResult != 0) {
 		outResult->t = t;
 		outResult->hit = true;
@@ -217,6 +229,11 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 //Same mechenism as AABB, but we find tmin and tmax in a different way
 bool OBBRaycast(const Collider& obb, const Ray& ray, RaycastResult* outResult) {
 	assert(obb.type == colliderType::OBB);
+
+	//std::cout << "RAY CAST ON OBB: " << std::endl;
+	//printray(ray);
+
+
 	ResetRaycastResult(outResult);
 
 	glm::vec3 p = obb.position - ray.origin;
@@ -408,6 +425,7 @@ bool PlaneRaycast(const glm::vec3 normal_plan, float distance_to_origin, const R
 
 bool TriangleRaycast(const Triangle& triangle, const Ray& ray, RaycastResult* outResult) {
 	ResetRaycastResult(outResult);
+
 	glm::vec3 normal_plan;
 	float distance_plan;
 	FromTriangle(triangle, normal_plan,distance_plan);

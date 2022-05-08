@@ -171,7 +171,7 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     // 2- Accumulate forces acting on the rigidbodies
     // 3- Apply impulses to resolve collisions (except if static)
 
-    RigidBody* rb = getRigidBody(i);
+    /*RigidBody* rb = getRigidBody(i);
     RigidBody* otherRb;
 
     Entity* e = EntityManager::instance->entities[entityID];
@@ -189,42 +189,43 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
             for (unsigned int p = 0; p < sizeContact; p++) {
                 
                 //DEBUG
-                std::cout << "collision rigid" << std::endl;
-                std::cout << "point : ";
-                print(collisionResults[c]->contactsPts[p]->point);
-                std::cout << "normal : ";
-                print(collisionResults[c]->contactsPts[p]->normal);
-                std::cout << "point in local space : ";
-                glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                print(pointA);
-                glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                print(pointB);
+
+                //std::cout << "collision rigid" << std::endl;
+                //std::cout << "point : ";
+                //print(collisionResults[c]->contactsPts[p]->point);
+                //std::cout << "normal : ";
+                //print(collisionResults[c]->contactsPts[p]->normal);
+                //std::cout << "point in local space : ";
+                //glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointA);
+                //glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                //print(pointB);
 
                 //For particles, we dont make bounces
                 
-                /*if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
-                    resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
-                }*/
+                //if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
+                //linear_resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
+                //}
                 
                 //old fnc
-                if (!rb->static_RB) {
-                    glm::vec3 centerOfMass = glm::vec3(0.0f);
-                    glm::vec3 rA = pointA - centerOfMass;
-                    glm::vec3 rB = pointB - centerOfMass;
-                    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
-                    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
-                }
+                //if (!rb->static_RB) {
+                //    glm::vec3 centerOfMass = glm::vec3(0.0f);
+                //    glm::vec3 rA = pointA - centerOfMass;
+                //    glm::vec3 rB = pointB - centerOfMass;
+                //    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
+                //    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
+                //}
           
-                /*
-                (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-                    ->setTranslation(collisionResults[c]->contactsPts[p]->point)
-                    ->setRendererDiffuseColor(glm::vec3(0.0, 1.0, 1.0))
-                    ->setScale(glm::vec3(0.2, 0.2, 0.2))
-                    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
-                    ->updateRenderer()
-                    ->initializeComponents()
-                    ->build();
-                */
+                
+                //(new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+                //    ->setTranslation(collisionResults[c]->contactsPts[p]->point)
+                //    ->setRendererDiffuseColor(glm::vec3(0.0, 1.0, 1.0))
+                //    ->setScale(glm::vec3(0.2, 0.2, 0.2))
+                //    ->setMeshAsFile("../ressources/Models/suzanne.off", false)
+                //    ->updateRenderer()
+                //    ->initializeComponents()
+                //    ->build();
+                //
                 //rb->addImpulse(collisionResults[c]->contactsPts[p]->normal * 0.01f / invSize);
             }
         }
@@ -232,7 +233,7 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
             std::cout << "trigger" << std::endl;
         }
     }
-
+    */
 
 
     /*=========================================================================================================================*/

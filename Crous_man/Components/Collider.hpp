@@ -8,6 +8,7 @@
 
 class RaycastResult;
 class Ray;
+class Cooldown;
 
 enum colliderType {
     Sphere,
@@ -32,7 +33,7 @@ struct Collider{
 
     //RENDERING DATA
     bool drawable = false;
-    bool draw = false;
+    //bool draw = false;
     ColliderShader* shader;
 };
 
@@ -73,15 +74,15 @@ typedef std::map<unsigned short, std::vector<bool>> SimpleCollisionResultMap;
 
 class ColliderSystem : public ComponentSystem {
 private :
+
+    bool isPressedColliderDraw = false;
+    bool drawColliders = false;
+
     CollisionResultMap collisionResultMap;
     //SimpleCollisionResultMap simpleCollisionResultMap;
 
     std::vector<glm::vec3> verticesCube;
 
-    //Collision treatment
-    void simpleCollisionResolution();
-    void QuadTreeCollisionResolution();
-    void OcTreeCollisionResolution();
 
 
     void addNewColliderEntry(unsigned short entityID);
@@ -111,7 +112,7 @@ public :
     Collider* getColliderEntityID(unsigned short entityID);
 
     void renderAll(glm::mat4 view, glm::mat4 projection);
-    void drawCollider(unsigned short i);
+    //void drawCollider(unsigned short i);
     bool isInContactWithSomething(unsigned short i);
 
     std::vector<RaycastResult*> rayCastAll(const Ray& ray);

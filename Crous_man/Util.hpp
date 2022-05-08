@@ -9,6 +9,7 @@
 float degToRad(float deg);
 
 glm::mat3 getFromMat4(glm::mat4 mat);
+glm::mat3 getFromMat4Transposed(glm::mat4 mat);
 
 void print(float v);
 
