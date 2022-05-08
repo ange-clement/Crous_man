@@ -117,6 +117,7 @@ int main( void )
     
     do{
         InputManager::instance->update(window);
+        SoundManager::instance->update();
 
         EntityManager::instance->update();
         EntityManager::instance->updateTransforms();

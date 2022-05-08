@@ -85,6 +85,8 @@ public:
 
 	EntityBuilder* setChildOf(Entity* parent);
 
+	EntityBuilder* setAsAudioListener();
+
 	Entity* build();
 };
 

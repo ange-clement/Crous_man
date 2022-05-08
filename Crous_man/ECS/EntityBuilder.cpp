@@ -23,6 +23,7 @@
 #include "../Components/Collider.hpp"
 #include "../Components/RigidBody.hpp"
 #include "../Transform.hpp"
+#include "../SoundManager.hpp"
 
 #include "Bitmap.hpp"
 #include "EntityManager.hpp"
@@ -377,6 +378,11 @@ EntityBuilder* EntityBuilder::setRotation(float angle, glm::vec3 axis) {
 
 EntityBuilder* EntityBuilder::setChildOf(Entity* parent) {
 	parent->addChildren(this->buildEntity);
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setAsAudioListener() {
+	SoundManager::instance->setAudioListener(this->buildEntity);
 	return this;
 }
 
