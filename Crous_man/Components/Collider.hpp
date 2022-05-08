@@ -62,7 +62,6 @@ public :
 
     unsigned short entityCollidID;
     
-
     bool isInCollision;
 
     std::vector<ContactPoint*> contactsPts;

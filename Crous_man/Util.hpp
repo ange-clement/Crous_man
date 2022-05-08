@@ -1,6 +1,13 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+
+#ifndef  M_PI
+	#define M_PI 3.14159265358979323846f
+#endif
+
+float degToRad(float deg);
+
 glm::mat3 getFromMat4(glm::mat4 mat);
 
 void print(float v);

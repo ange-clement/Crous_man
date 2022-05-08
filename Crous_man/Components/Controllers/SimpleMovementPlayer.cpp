@@ -68,8 +68,6 @@ void SimpleMovementPlayer::applyRbMovement(glm::vec3 amount) {
 
 SimpleMovementPlayerSystem::SimpleMovementPlayerSystem() : ComponentSystem() {
     requiredComponentsBitmap = new Bitmap({ SystemIDs::SimplePlayerControllerID });
-
-
 }
 
 SimpleMovementPlayerSystem::~SimpleMovementPlayerSystem() {}

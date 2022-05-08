@@ -174,7 +174,7 @@ Collider* ColliderSystem::getCollider(unsigned short i) {
 Collider* ColliderSystem::getColliderEntityID(unsigned short entityID) {
     for (size_t j = 0, size = entityIDs.size(); j < size; j++) {
         Collider* c = getCollider(j);
-        if (c->entityID == entityID) return c;
+        if (c && c->entityID == entityID) return c;
     }
     return 0;
 }
