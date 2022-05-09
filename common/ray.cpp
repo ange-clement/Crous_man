@@ -18,7 +18,7 @@
 Triangle::Triangle(){
 }
 
-Triangle::Triangle(const glm::vec3& _p1, const glm::vec3& _p2, const glm::vec3& _p3) : a(_p1), b(_p2), c(_p3) {
+Triangle::Triangle(const glm::vec3& _p1, const glm::vec3& _p2, const glm::vec3& _p3) : indexes({_p1, _p2, _p3}) {
 }
 
 
@@ -36,20 +36,20 @@ bool LinetestTriangle(const Triangle& triangle, const glm::vec3& start_line, con
 }
 
 void FromTriangle(const Triangle& t, glm::vec3& normal_plan, float& distance_plan) {
-	normal_plan = glm::normalize(glm::cross(t.b - t.a, t.c - t.a));
-	distance_plan = glm::dot(normal_plan, t.a);
+	normal_plan = glm::normalize(glm::cross(t.indexes.b - t.indexes.a, t.indexes.c - t.indexes.a));
+	distance_plan = glm::dot(normal_plan, t.indexes.a);
 }
 
 glm::vec3 Barycentric(const glm::vec3& p, const Triangle& t) {
-	glm::vec3 ap = p - t.a;
-	glm::vec3 bp = p - t.b;
-	glm::vec3 cp = p - t.c;
+	glm::vec3 ap = p - t.indexes.a;
+	glm::vec3 bp = p - t.indexes.b;
+	glm::vec3 cp = p - t.indexes.c;
 
-	glm::vec3 ab = t.b - t.a;
-	glm::vec3 ac = t.c - t.a;
-	glm::vec3 bc = t.c - t.b;
-	glm::vec3 cb = t.b - t.c;
-	glm::vec3 ca = t.a - t.c;
+	glm::vec3 ab = t.indexes.b - t.indexes.a;
+	glm::vec3 ac = t.indexes.c - t.indexes.a;
+	glm::vec3 bc = t.indexes.c - t.indexes.b;
+	glm::vec3 cb = t.indexes.b - t.indexes.c;
+	glm::vec3 ca = t.indexes.a - t.indexes.c;
 
 	glm::vec3 v = ab - Project(ab, cb);
 	float a = 1.0f - (glm::dot(v, ap) / glm::dot(v, ab));

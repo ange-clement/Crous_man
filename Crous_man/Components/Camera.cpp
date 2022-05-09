@@ -11,7 +11,7 @@
 
 
 #include <common/basicShapeRender.hpp>
-#include <common/FrameBuffer.hpp>
+#include <common/frameBuffer.hpp>
 
 #include "../Util.hpp"
 

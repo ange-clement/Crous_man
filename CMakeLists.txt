@@ -44,8 +44,23 @@ set(ALL_LIBS
 	${OPENGL_LIBRARY}
 	glfw
 	GLEW_1130
+	${CMAKE_SOURCE_DIR}/external/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so -pthread
+)
+
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+set(ALL_LIBS
+	${ALL_LIBS}
+	${CMAKE_SOURCE_DIR}/external/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so -pthread
+)
+else()
+set(ALL_LIBS
+	${ALL_LIBS}
 	irrKlang
 )
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+
 
 add_definitions(
 	-DTW_STATIC

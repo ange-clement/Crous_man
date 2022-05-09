@@ -2,6 +2,7 @@
 #define ENTITY_BUILDER_HPP
 
 #include "SystemIDs.hpp"
+#include "../Components/Collider.hpp"
 
 struct Mesh;
 
@@ -17,8 +18,6 @@ struct RigidBody;
 class Entity;
 
 class CrousManController;
-
-enum colliderType;
 
 class EntityBuilder {
 private:

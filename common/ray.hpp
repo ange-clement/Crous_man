@@ -11,12 +11,12 @@ public:
 			glm::vec3 a;
 			glm::vec3 b;
 			glm::vec3 c;
-		};
-		struct {
-			glm::vec3 p1;
-			glm::vec3 p2;
-			glm::vec3 p3;
-		};
+		} indexes;
+		// struct {
+		// 	glm::vec3 p1;
+		// 	glm::vec3 p2;
+		// 	glm::vec3 p3;
+		// };
 
 		glm::vec3 points[3];
 		float values[9];
