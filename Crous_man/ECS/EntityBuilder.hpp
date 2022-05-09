@@ -2,6 +2,7 @@
 #define ENTITY_BUILDER_HPP
 
 #include "SystemIDs.hpp"
+#include "../Components/Collider.hpp"
 
 struct Mesh;
 
@@ -15,7 +16,8 @@ struct PointLight;
 struct RigidBody;
 
 class Entity;
-enum colliderType;
+
+class CrousManController;
 
 class EntityBuilder {
 private:
@@ -32,6 +34,10 @@ private:
 	PointLight* pointLight;
 
 	RigidBody* rigidBody;
+
+	FollowObject* followObject;
+
+	CrousManController* crousManController;
 public:
 	EntityBuilder(std::initializer_list<SystemIDs> systems);
 
@@ -48,9 +54,12 @@ public:
 	Renderer* getRenderer();
 	unsigned short getRendererID();
 	EntityBuilder* updateRenderer();
+	EntityBuilder* setRendererDiffuse(std::string diffuseFile);
+	EntityBuilder* setRendererSpecular(std::string specularFile);
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
 	EntityBuilder* setRendererDraw(bool draw);
+	EntityBuilder* setRendererCastShadows(bool castShadows);
 
 	Destructible* getDestructible();
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
@@ -65,6 +74,7 @@ public:
 	EntityBuilder* fitSphereColliderToMesh();
 	EntityBuilder* fitAABBColliderToMesh();
 	EntityBuilder* fitOBBColliderToMesh();
+	EntityBuilder* fitOBBColliderToMeshOf(Entity* meshEntity);
 	EntityBuilder* setRenderingCollider();
 
 	RigidBody* getRigidBody();
@@ -78,6 +88,14 @@ public:
 	EntityBuilder* setLightQuadratic(float quadratic);
 
 	EntityBuilder* setAsScreenCamera();
+
+	FollowObject* getFollowObject();
+	EntityBuilder* setFollowObjectEntity(Entity* target);
+	
+	CrousManController* getCrousManController();
+	EntityBuilder* setCrousManControllerRotatingCenterForCamera(Entity* target);
+	EntityBuilder* setCrousManControllerCameraTarget(Entity* target);
+	EntityBuilder* setCrousManControllerSaucisseEntity(Entity* saucisse);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);

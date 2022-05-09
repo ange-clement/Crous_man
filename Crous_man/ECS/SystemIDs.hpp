@@ -7,11 +7,13 @@ enum SystemIDs {
     PointLightID,
     CameraID,
     SpinID,
+    FollowObjectID,
     DestructibleID,
     ColliderID,
     RigidBodyID,
     FlyingControllerID,
     SimplePlayerControllerID,
+    CrousManControllerID,
     NUMBER
 };
 

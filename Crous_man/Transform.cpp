@@ -190,3 +190,9 @@ void Transform::lookAt(glm::vec3 target) {
     glm::vec3 up = glm::cross(getRight(), target - translation);
     rotation.lookAt(translation, target, up);
 }
+
+void Transform::lookAtDirection(glm::vec3 forwardVector) {
+    glm::vec3 up = glm::cross(getRight(), forwardVector);
+    glm::vec3 target = translation + forwardVector;
+    rotation.lookAt(translation, target, up);
+}

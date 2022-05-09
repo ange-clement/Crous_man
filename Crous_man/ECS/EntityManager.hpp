@@ -11,8 +11,10 @@ struct Collider;
 struct RigidBody;
 struct Destructible;
 struct Spin;
+struct FollowObject;
 struct FlyingController;
 struct SimpleMovementPlayer;
+struct CrousManController;
 
 class Entity;
 class ComponentSystem;
@@ -32,8 +34,10 @@ public:
     std::vector<RigidBody> rigidBodyComponents;
     std::vector<Spin> spinComponents;
     std::vector<Destructible> destructibleComponents;
+    std::vector<FollowObject> followObjectComponents;
     std::vector<FlyingController> flyingControllerComponents;
     std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;
+    std::vector<CrousManController> crousManControllerComponents;
 public:
 
     EntityManager();

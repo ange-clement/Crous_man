@@ -33,8 +33,10 @@
 #include "../Components/PointLight.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Destructible.hpp"
+#include "../Components/FollowObject.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 #include "../Components/Controllers/SimpleMovementPlayer.hpp"
+#include "../Components/Controllers/CrousManController.hpp"
 
 
 #include "ComponentSystem.hpp"
@@ -87,7 +89,7 @@ void EntityManager::initShaders() {
 
 void EntityManager::initSystems() {
 
-    if (SystemIDs::NUMBER >= 16) {
+    if (SystemIDs::NUMBER >= 64) {
         std::cout << "WARNING TOO MANY COMPONENTS" << std::endl;
     }
     systems.resize(SystemIDs::NUMBER);
@@ -99,14 +101,15 @@ void EntityManager::initSystems() {
     systems[SystemIDs::RigidBodyID] =               new RigidBodySystem();
     systems[SystemIDs::CameraID] =                  new CameraSystem();
     systems[SystemIDs::SpinID] =                    new SpinSystem();
+    systems[SystemIDs::FollowObjectID] =            new FollowObjectSystem();
     systems[SystemIDs::DestructibleID] =            new DestructibleSystem();
     systems[SystemIDs::FlyingControllerID] =        new FlyingControllerSystem();
     systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
+    systems[SystemIDs::CrousManControllerID] =      new CrousManControllerSystem();
 }
 
 void EntityManager::initializeAllSystems() {
     for (size_t i = 0, size = systems.size(); i < size; i++) {
-        std::cout << "initialize ALL "<< i << std::endl;
         systems[i]->initializeAll();
     }
 }

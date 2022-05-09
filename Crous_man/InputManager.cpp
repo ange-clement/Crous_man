@@ -65,6 +65,11 @@ void InputManager::update(GLFWwindow *window) {
     lastMouseY = ypos;
 }
 
+void InputManager::initialize(GLFWwindow *window) {
+    lastFrame = glfwGetTime();
+    deltaTime = FLT_EPSILON;
+}
+
 void InputManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     scroll_distance -= yoffset;
 

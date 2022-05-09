@@ -22,6 +22,8 @@
 #include "../Components/Camera.hpp"
 #include "../Components/Collider.hpp"
 #include "../Components/RigidBody.hpp"
+#include "../Components/FollowObject.hpp"
+#include "../Components/Controllers/CrousManController.hpp"
 #include "../Transform.hpp"
 #include "../SoundManager.hpp"
 
@@ -46,6 +48,11 @@ EntityBuilder::EntityBuilder(std::initializer_list<SystemIDs> systems) {
 	this->pointLight = NULL;
 
 	this->rigidBody = NULL;
+
+	this->followObject = NULL;
+	
+	this->crousManController = NULL;
+
 }
 
 
@@ -113,6 +120,18 @@ EntityBuilder* EntityBuilder::updateRenderer() {
 	return this;
 }
 
+EntityBuilder* EntityBuilder::setRendererDiffuse(std::string diffuseFile) {
+	Renderer* renderer = this->getRenderer();
+	renderer->diffuseBuffer = loadTextureFromPPM(diffuseFile.c_str());
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setRendererSpecular(std::string specularFile) {
+	Renderer* renderer = this->getRenderer();
+	renderer->setSpecularBuffer(loadTextureFromPGM(specularFile.c_str()));
+	return this;
+}
+
 EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile) {
 	Renderer* renderer = this->getRenderer();
 	renderer->diffuseBuffer = loadTextureFromPPM(diffuseFile.c_str());
@@ -129,6 +148,12 @@ EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
 EntityBuilder* EntityBuilder::setRendererDraw(bool draw) {
 	Renderer* renderer = this->getRenderer();
 	renderer->draw = draw;
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setRendererCastShadows(bool castShadows) {
+	Renderer* renderer = this->getRenderer();
+	renderer->castShadows = castShadows;
 	return this;
 }
 
@@ -287,6 +312,7 @@ EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
+	Mesh* mesh = this->getMesh();
 	std::cout << "AABB" << std::endl;
 
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
@@ -300,6 +326,7 @@ EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
 	return this;
 }
 EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
+	Mesh* mesh = this->getMesh();
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
@@ -307,6 +334,17 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	
 	print(collider->center);
 	print(collider->size); 
+	return this;
+}
+EntityBuilder* EntityBuilder::fitOBBColliderToMeshOf(Entity* meshEntity) {
+	unsigned short meshEntityMeshID = EntityManager::instance->getComponentId(SystemIDs::MeshID, meshEntity->id);
+	Mesh* meshEntityMesh = &EntityManager::instance->meshComponents[meshEntityMeshID];
+
+	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
+	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->type = colliderType::OBB;
+	computeBox(meshEntity->transform, meshEntityMesh->indexed_vertices, collider->center, collider->size);
+
 	return this;
 }
 EntityBuilder* EntityBuilder::setRenderingCollider() {
@@ -362,10 +400,54 @@ EntityBuilder* EntityBuilder::setLightQuadratic(float quadratic) {
 }
 
 
+
 EntityBuilder* EntityBuilder::setAsScreenCamera() {
 	dynamic_cast<CameraSystem*>(EntityManager::instance->systems[SystemIDs::CameraID])->setScreenCamera(this->buildEntity->id);
 	return this;
 }
+
+
+
+FollowObject* EntityBuilder::getFollowObject() {
+	if (this->followObject == NULL) {
+		unsigned short followObjectID = EntityManager::instance->getComponentId(SystemIDs::FollowObjectID, this->buildEntity->id);
+		this->followObject = &EntityManager::instance->followObjectComponents[followObjectID];
+	}
+	return this->followObject;
+}
+
+EntityBuilder* EntityBuilder::setFollowObjectEntity(Entity* target) {
+	FollowObject* f = this->getFollowObject();
+	f->entityToFollow = target;
+	return this;
+}
+
+
+
+CrousManController* EntityBuilder::getCrousManController() {
+	if (this->crousManController == NULL) {
+		unsigned short crousManControllerID = EntityManager::instance->getComponentId(SystemIDs::CrousManControllerID, this->buildEntity->id);
+		this->crousManController = &EntityManager::instance->crousManControllerComponents[crousManControllerID];
+	}
+	return this->crousManController;
+}
+
+EntityBuilder* EntityBuilder::setCrousManControllerRotatingCenterForCamera(Entity* target) {
+	CrousManController* crous = this->getCrousManController();
+	crous->rotatingCenterForCamera = target;
+	return this;
+}
+EntityBuilder* EntityBuilder::setCrousManControllerCameraTarget(Entity* target) {
+	CrousManController* crous = this->getCrousManController();
+	crous->cameraTarget = target;
+	return this;
+}
+EntityBuilder* EntityBuilder::setCrousManControllerSaucisseEntity(Entity* saucisse) {
+	CrousManController* crous = this->getCrousManController();
+	crous->saucisseEntity = saucisse;
+	return this;
+}
+
 
 
 EntityBuilder* EntityBuilder::setTranslation(glm::vec3 translation) {

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

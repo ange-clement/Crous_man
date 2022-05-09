@@ -44,8 +44,23 @@ set(ALL_LIBS
 	${OPENGL_LIBRARY}
 	glfw
 	GLEW_1130
+	${CMAKE_SOURCE_DIR}/external/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so -pthread
+)
+
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+set(ALL_LIBS
+	${ALL_LIBS}
+	${CMAKE_SOURCE_DIR}/external/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so -pthread
+)
+else()
+set(ALL_LIBS
+	${ALL_LIBS}
 	irrKlang
 )
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
+
 
 add_definitions(
 	-DTW_STATIC
@@ -156,6 +171,8 @@ add_executable(
 	Crous_man/Components/Mesh.hpp
 	Crous_man/Components/Spin.cpp
 	Crous_man/Components/Spin.hpp
+	Crous_man/Components/FollowObject.cpp
+	Crous_man/Components/FollowObject.hpp
 	Crous_man/Components/Renderer.cpp
 	Crous_man/Components/Renderer.hpp
 	Crous_man/Components/Camera.cpp
@@ -173,6 +190,8 @@ add_executable(
 	Crous_man/Components/Controllers/FlyingController.hpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.cpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.hpp
+	Crous_man/Components/Controllers/CrousManController.cpp
+	Crous_man/Components/Controllers/CrousManController.hpp
 
 	Crous_man/InputManager.cpp
 	Crous_man/InputManager.hpp
