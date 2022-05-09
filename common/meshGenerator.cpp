@@ -120,7 +120,6 @@ void face(  std::vector<glm::vec3> & vertices,
  * Create a model of a cube, centered at the origin.  (This is not
  * a particularly good format for a cube, since an IFS representation
  * has a lot of redundancy.)
- * @side the length of a side of the cube.  If not given, the value will be 1.
  */
 void cube(      std::vector<glm::vec3> & vertices,
                 std::vector<glm::vec3> & normals,
@@ -137,7 +136,7 @@ void cube(      std::vector<glm::vec3> & vertices,
     
     float s = 0.5f;
     
-    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s,-s, s), glm::vec3( s,-s, s), glm::vec3( s, s, s), glm::vec3(-s, s, s)}, glm::vec3( 0, 0, 1));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s, s, s), glm::vec3(-s,-s, s), glm::vec3( s,-s, s), glm::vec3( s, s, s)}, glm::vec3( 0, 0, 1));
     face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s,-s,-s), glm::vec3(-s, s,-s), glm::vec3( s, s,-s), glm::vec3( s,-s,-s)}, glm::vec3( 0, 0,-1));
     face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s, s,-s), glm::vec3(-s, s, s), glm::vec3( s, s, s), glm::vec3( s, s,-s)}, glm::vec3( 0, 1, 0));
     face(vertices, normals, texCoords, indices, triangles, {glm::vec3( s,-s,-s), glm::vec3( s,-s, s), glm::vec3(-s,-s, s), glm::vec3(-s,-s,-s)}, glm::vec3( 0,-1, 0));

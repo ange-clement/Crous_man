@@ -7,6 +7,8 @@ class ColliderSystem;
 class DestructibleSystem;
 class RigidBody;
 
+struct PlayingAudio;
+
 struct CrousManController {
     float maxSpeed;
     float acceleration;
@@ -26,7 +28,9 @@ struct CrousManController {
     Entity* saucisseEntity;
     Entity* laserEntity;
 
-    Cooldown* laserCooldown;
+    Cooldown* laserSoundCooldown;
+    bool firstLaserSound = true;
+    unsigned int laserAudioInd = (unsigned int)-1;
 
     RigidBody* rb;
 };

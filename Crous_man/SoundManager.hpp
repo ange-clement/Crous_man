@@ -1,6 +1,8 @@
 #ifndef SOUND_MANAGER_HPP
 #define SOUND_MANAGER_HPP
 
+#define DEBUG_AUDIO false
+
 #include <irrKlang.h>
 
 class Entity;
@@ -8,8 +10,6 @@ class Entity;
 struct PlayingAudio {
     irrklang::ISound* sound3D;
     Entity* attachedEntity;
-
-    PlayingAudio(irrklang::ISound* sound3D, Entity* attachedEntity);
 };
 
 class SoundManager {
@@ -32,14 +32,16 @@ public:
     void update();
 
     void play(std::string soundFile);
-    void playAt(std::string soundFile, glm::vec3 pos);
-    void playAt(std::string soundFile, glm::vec3 pos, float minDistance);
-    void playOver(std::string soundFile, Entity* entity);
-    void playOver(std::string soundFile, Entity* entity, float minDistance);
+    unsigned int playAt(std::string soundFile, glm::vec3 pos);
+    unsigned int playAt(std::string soundFile, glm::vec3 pos, float minDistance);
+    unsigned int playOver(std::string soundFile, Entity* entity);
+    unsigned int playOver(std::string soundFile, Entity* entity, float minDistance);
 
     void setAudioListener(Entity* audioListener);
 
     irrklang::vec3df getAudioListenerVelocity();
+
+    unsigned int getLowerNonOccupied();
 };
 
 irrklang::vec3df glmVec3ToIrrklangVec3(glm::vec3 vec);

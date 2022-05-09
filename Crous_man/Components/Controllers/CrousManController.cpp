@@ -16,6 +16,7 @@
 #include <Crous_man/Transform.hpp>
 
 #include <Crous_man/InputManager.hpp>
+#include <Crous_man/SoundManager.hpp>
 #include <Crous_man/Util.hpp>
 #include <Crous_man/ECS/EntityManager.hpp>
 #include <Crous_man/ECS/Bitmap.hpp>
@@ -48,7 +49,7 @@ void CrousManControllerSystem::initialize(unsigned short i, unsigned short entit
 
     crous->initialRotatingPos = EntityManager::instance->entities[crous->rotatingCenterForCamera->id]->transform->translation;
 
-    crous->laserCooldown = new Cooldown(3.0f);
+    crous->laserSoundCooldown = new Cooldown(0.5f);
 
     crous->rb = &EntityManager::instance->rigidBodyComponents[EntityManager::instance->getComponentId(SystemIDs::RigidBodyID, entityID)];
 
@@ -163,12 +164,34 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         float laserSize = sin(InputManager::instance->lastFrame * 15.0f)*1.0f+2.0f;
         glm::vec3 crousToHit = laserHit - tr->translation;
         crous->laserEntity->transform->translation = tr->translation + crousToHit * 0.5f;
-        crous->laserEntity->transform->lookAt(laserHit);
+        crous->laserEntity->transform->rotation.lookAt(crous->laserEntity->transform->translation, laserHit, glm::vec3(0.0, 1.0, 0.0));
         crous->laserEntity->transform->scaling = glm::vec3(laserSize, laserSize, distance * 0.5f);
         crous->laserEntity->setActiveRecursive(true);
+
+
+        // Laser Sounds
+
+        if (crous->firstLaserSound) {
+            SoundManager::instance->playOver("../ressources/Sounds/laserStart.wav", crousEntity);
+            crous->firstLaserSound = false;
+        }
+        else if (crous->laserAudioInd == (unsigned int)-1) {
+            crous->laserAudioInd = SoundManager::instance->playOver("../ressources/Sounds/laser.wav", crousEntity);
+            SoundManager::instance->audios[crous->laserAudioInd].sound3D->setIsLooped(true);
+        }
+        if (closest != NULL && !crous->laserSoundCooldown->inCooldown()) {
+            crous->laserSoundCooldown->start();
+            SoundManager::instance->playAt("../ressources/Sounds/laserHit.wav", laserHit);
+        }
     }
-    else {
+    if (glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE){
         crous->laserEntity->setActiveRecursive(false);
+        if (crous->laserAudioInd != (unsigned int)-1) {
+            SoundManager::instance->audios[crous->laserAudioInd].sound3D->setIsLooped(false);
+            SoundManager::instance->audios[crous->laserAudioInd].sound3D->stop();
+            crous->laserAudioInd = (unsigned int)-1;
+            crous->firstLaserSound = true;
+        }
     }
 
 

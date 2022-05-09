@@ -87,6 +87,7 @@ void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     c->quadEShadersinstances.push_back(new SSAOQuadEShader());
     c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
     c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
+    c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
     c->lShaderInstance = BlinnPhongShadowSSAOLShader::instance;
     BlinnPhongShadowSSAOLShader::instance->use();
     BlinnPhongShadowSSAOLShader::instance->setAmbiant(0.3f);

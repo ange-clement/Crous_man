@@ -207,7 +207,7 @@ void createSceneGame() {
         ->setChildOf(laser)
         ->setLightColor(glm::vec3(.958, .198, .375))
         ->setLightLinear(0.05)
-        ->setLightQuadratic(0.005)
+        ->setLightQuadratic(0.00)
         ->build();
 
     Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
@@ -260,7 +260,7 @@ void createSceneGame() {
         ->build();
     
     Entity* explosionCube = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
-        ->setTranslation(glm::vec3(0.0f, 5.0f, 50.0f))
+        ->setTranslation(glm::vec3(0.0f, 10.0f, 50.0f))
         ->setScale(glm::vec3(10.0f, 10.0f, 10.0f))
         ->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
         ->fitAABBColliderToMesh()
@@ -285,7 +285,7 @@ void createSceneGame() {
         ->setRendererDiffuseColor(glm::vec3(.958, .985, .938))
         ->build();
 
-
+    
 
 
     Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
