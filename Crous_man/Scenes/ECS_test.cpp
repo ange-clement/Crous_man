@@ -187,25 +187,33 @@ void createSceneGame() {
         ->setChildOf(rotatingCenterForCamera)
         ->build();
 
+    // Camera
+
+    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID}))
+        ->setChildOf(wantedCameraPosition)
+        ->setAsScreenCamera()
+        ->setAsAudioListener()
+        ->build();
+
+    Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
+        ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
+        //->setRendererCastShadows(false)
+        ->build();
+
     Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
         ->setTranslation(glm::vec3(0.0f, 6.0f, 0.0f))
         ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
         ->setCrousManControllerCameraTarget(wantedCameraPosition)
+        ->setCrousManControllerSaucisseEntity(saucisse)
         ->setMeshAsFilePLY("../ressources/Models/dougnut.ply")
         ->updateRenderer()
         ->setRendererDiffuse("../ressources/Textures/dougnutColor.ppm")
         ->setRigidBodyMass(1.0f)
         ->fitOBBColliderToMesh()
         ->setRenderingCollider()
-        ->build();
-
-    Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
-        ->setChildOf(doughnutSaucisse)
-        ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
-        ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
-        ->updateRenderer()
-        ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
-        //->setRendererCastShadows(false)
         ->build();
 
     Entity* crousLight = (new EntityBuilder({ SystemIDs::PointLightID }))
@@ -215,7 +223,6 @@ void createSceneGame() {
         ->setLightLinear(0.2)
         ->setLightQuadratic(0.04)
         ->build();
-
 
 
     // Scene
@@ -264,14 +271,5 @@ void createSceneGame() {
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
         ->setLightLinear(0.01)
         ->setLightQuadratic(0.0)
-        ->build();
-
-
-    // Camera
-
-    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FollowObjectID }))
-        ->setFollowObjectEntity(wantedCameraPosition)
-        ->setAsScreenCamera()
-        ->setAsAudioListener()
         ->build();
 }

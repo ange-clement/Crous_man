@@ -442,6 +442,11 @@ EntityBuilder* EntityBuilder::setCrousManControllerCameraTarget(Entity* target) 
 	crous->cameraTarget = target;
 	return this;
 }
+EntityBuilder* EntityBuilder::setCrousManControllerSaucisseEntity(Entity* saucisse) {
+	CrousManController* crous = this->getCrousManController();
+	crous->saucisseEntity = saucisse;
+	return this;
+}
 
 
 

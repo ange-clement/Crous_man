@@ -95,6 +95,7 @@ public:
 	CrousManController* getCrousManController();
 	EntityBuilder* setCrousManControllerRotatingCenterForCamera(Entity* target);
 	EntityBuilder* setCrousManControllerCameraTarget(Entity* target);
+	EntityBuilder* setCrousManControllerSaucisseEntity(Entity* saucisse);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);

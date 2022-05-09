@@ -115,7 +115,7 @@ int main( void )
 
     SoundManager::instance->play("../ressources/Sounds/start.wav");
     
-    
+    InputManager::instance->initialize(window);
     do{
         InputManager::instance->update(window);
         SoundManager::instance->update();

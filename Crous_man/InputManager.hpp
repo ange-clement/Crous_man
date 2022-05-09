@@ -26,6 +26,8 @@ public:
     
     void update(GLFWwindow *window);
 
+    void initialize(GLFWwindow *window);
+
 
     void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 

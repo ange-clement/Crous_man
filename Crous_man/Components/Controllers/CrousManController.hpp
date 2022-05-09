@@ -13,6 +13,7 @@ struct CrousManController {
 
     Entity* rotatingCenterForCamera;
     Entity* cameraTarget;
+    Entity* saucisseEntity;
     float azimuth;
     float zenith;
     float lastMoovedAzimuth;
