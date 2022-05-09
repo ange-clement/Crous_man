@@ -23,7 +23,7 @@ public:
     Entity* audioListener = NULL;
     irrklang::vec3df previousAudioListenerPos;
 
-    float defaultMinDistance = 5.0f;
+    float defaultMinDistance = 50.0f;
 
 public:
     SoundManager();

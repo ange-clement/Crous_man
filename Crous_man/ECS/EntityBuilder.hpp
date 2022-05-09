@@ -46,6 +46,7 @@ public:
 
 	Mesh* getMesh();
 	EntityBuilder* setMeshAsQuad();
+	EntityBuilder* setMeshAsCube();
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile, bool invertTriangles);
@@ -58,6 +59,7 @@ public:
 	EntityBuilder* setRendererSpecular(std::string specularFile);
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
+	EntityBuilder* setRendererSpecularValue(float spec);
 	EntityBuilder* setRendererDraw(bool draw);
 	EntityBuilder* setRendererCastShadows(bool castShadows);
 
@@ -95,7 +97,9 @@ public:
 	CrousManController* getCrousManController();
 	EntityBuilder* setCrousManControllerRotatingCenterForCamera(Entity* target);
 	EntityBuilder* setCrousManControllerCameraTarget(Entity* target);
+	EntityBuilder* setCrousManControllerCameraEntity(Entity* target);
 	EntityBuilder* setCrousManControllerSaucisseEntity(Entity* saucisse);
+	EntityBuilder* setCrousManControllerLaserEntity(Entity* laser);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);

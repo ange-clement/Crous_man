@@ -82,6 +82,14 @@ bool Entity::removeComponent(SystemIDs componentId) {
     }
 }
 
+void Entity::setActiveRecursive(bool activeStatus) {
+    this->isActive = activeStatus;
+    
+    for (size_t i = 0, size = this->childrens.size(); i < size; i++) {
+        this->childrens[i]->setActiveRecursive(activeStatus);
+    }
+}
+
 
 void Entity::updateTransforms() {
     Transform* parentTransform;

@@ -15,6 +15,7 @@ public:
     void updateBufferWidthHeight(unsigned int width, unsigned int height);
 
     virtual void useBuffers(const GLuint* buffers);
+    virtual void useVP(const glm::mat4& view, const glm::mat4& projection);
     virtual void setOutputShaders(GLuint* buffers);
 
     virtual void use();

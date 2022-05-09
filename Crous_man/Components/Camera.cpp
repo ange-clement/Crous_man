@@ -23,8 +23,10 @@
 #include "../Shaders/EShaders/DepthMeshEShader.hpp"
 #include "../Shaders/EShaders/ShadowQuadEShader.hpp"
 #include "../Shaders/EShaders/BlurQuadEShader.hpp"
+#include "../Shaders/EShaders/SSAOQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongShadowSSAOLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
 
 #include "Camera.hpp"
@@ -78,14 +80,16 @@ CameraSystem::~CameraSystem() {
 void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     Camera* c = getCamera(i);
 
-
-
     ShadowQuadEShader* shadowEShader = ShadowQuadEShader::instance;
-    shadowEShader->targetEntity = EntityManager::instance->entities[entityID];
-
+    shadowEShader->targetEntity = EntityManager::instance->entities[entityID];    
 
     c->quadEShadersinstances.push_back(shadowEShader);
-    c->lShaderInstance = BlinnPhongShadowLShader::instance;
+    c->quadEShadersinstances.push_back(new SSAOQuadEShader());
+    c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
+    c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
+    c->lShaderInstance = BlinnPhongShadowSSAOLShader::instance;
+    BlinnPhongShadowSSAOLShader::instance->use();
+    BlinnPhongShadowSSAOLShader::instance->setAmbiant(0.3f);
     c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
     c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
@@ -135,6 +139,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
         // Render a quad
         c->quadEShadersinstances[i]->use();
         c->quadEShadersinstances[i]->useBuffers(buffers);
+        c->quadEShadersinstances[i]->useVP(view, projection);
         BasicShapeRender::instance->renderQuad();
         // Add the buffers to the list
         c->quadEShadersinstances[i]->setOutputShaders(buffers);
@@ -142,7 +147,7 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
 
     c->textureFramebuffer.use();
     glViewport(0, 0, c->SCR_WIDTH, c->SCR_HEIGHT);
-    // 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
+    // 3. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
     // -----------------------------------------------------------------------------------------------------------------------
     LShader* ls = c->lShaderInstance;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -156,18 +161,23 @@ void CameraSystem::render(unsigned short i, unsigned short entityID) {
     PointLight* l;
     for (unsigned int i = 0; i < lights->size(); i++)
     {
-        if (pointLightInstance->entityIDs[i] == (unsigned short)-1)
+        if (pointLightInstance->entityIDs[i] == (unsigned int) -1)
             continue;
         lightEntity = EntityManager::instance->entities[pointLightInstance->entityIDs[i]];
-        l = &(*lights)[i];
-        ls->setLight(i, lightEntity->worldTransform->translation, l->color, l->linear, l->quadratic);
+        if (lightEntity->isActive) {
+            l = &(*lights)[i];
+            ls->setLight(i, lightEntity->worldTransform->translation, l->color, l->linear, l->quadratic);
+        }
+        else {
+            ls->setLight(i, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, 0.0f);
+        }
     }
     // finally render quad
     BasicShapeRender::instance->renderQuad();
 
     //TODO bind final framebuffer ( 0 iff screen )
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // 3. post effect pass: do something with the image then render it
+    // 4. post effect pass: do something with the image then render it
     // ---------------------------------------------------------------
     //TODO : plusieurs PEShaders? (ping pong framebuffer ou écrire dans une texture?)
     PEShader* pe = c->peShaderInstance;

@@ -76,6 +76,12 @@ EntityBuilder* EntityBuilder::setMeshAsQuad() {
 	return this;
 }
 
+EntityBuilder* EntityBuilder::setMeshAsCube() {
+	Mesh* mesh = this->getMesh();
+	cube(mesh->indexed_vertices, mesh->normals, mesh->UV, mesh->indices, mesh->triangles);
+	return this;
+}
+
 EntityBuilder* EntityBuilder::setMeshAsFile(std::string meshFile, bool fileHasNormals) {
 	this->getMesh()->loadFromFile(meshFile, false);
 	return this;
@@ -142,6 +148,12 @@ EntityBuilder* EntityBuilder::setRendererDiffuseSpecular(std::string diffuseFile
 EntityBuilder* EntityBuilder::setRendererDiffuseColor(glm::vec3 diffuseColor) {
 	Renderer* renderer = this->getRenderer();
 	renderer->setDiffuseBuffer(loadTextureFromColor(diffuseColor));
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setRendererSpecularValue(float spec) {
+	Renderer* renderer = this->getRenderer();
+	renderer->setSpecularBuffer(loadTextureFromFloat(spec));
 	return this;
 }
 
@@ -305,7 +317,7 @@ EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::Sphere;
-	computeSphere(this->buildEntity->transform,mesh->indexed_vertices, collider->center, collider->radius);
+	computeSphere(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->radius);
 	
 	print(collider->center);
 	std::cout << "radius : " << collider->radius << std::endl;
@@ -318,7 +330,7 @@ EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::AABB;
-	computeBox(this->buildEntity->transform, mesh->indexed_vertices, collider->center, collider->size);
+	computeBox(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->size);
 
 	print(collider->center);
 	print(collider->size);
@@ -330,7 +342,7 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
-	computeBox(this->buildEntity->transform, mesh->indexed_vertices, collider->center, collider->size);
+	computeBox(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->size);
 	
 	print(collider->center);
 	print(collider->size); 
@@ -343,7 +355,7 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMeshOf(Entity* meshEntity) {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::OBB;
-	computeBox(meshEntity->transform, meshEntityMesh->indexed_vertices, collider->center, collider->size);
+	computeBox(meshEntity->worldTransform, meshEntityMesh->indexed_vertices, collider->center, collider->size);
 
 	return this;
 }
@@ -442,9 +454,19 @@ EntityBuilder* EntityBuilder::setCrousManControllerCameraTarget(Entity* target) 
 	crous->cameraTarget = target;
 	return this;
 }
+EntityBuilder* EntityBuilder::setCrousManControllerCameraEntity(Entity* camera) {
+	CrousManController* crous = this->getCrousManController();
+	crous->camera = camera;
+	return this;
+}
 EntityBuilder* EntityBuilder::setCrousManControllerSaucisseEntity(Entity* saucisse) {
 	CrousManController* crous = this->getCrousManController();
 	crous->saucisseEntity = saucisse;
+	return this;
+}
+EntityBuilder* EntityBuilder::setCrousManControllerLaserEntity(Entity* laser) {
+	CrousManController* crous = this->getCrousManController();
+	crous->laserEntity = laser;
 	return this;
 }
 
@@ -452,23 +474,28 @@ EntityBuilder* EntityBuilder::setCrousManControllerSaucisseEntity(Entity* saucis
 
 EntityBuilder* EntityBuilder::setTranslation(glm::vec3 translation) {
 	this->buildEntity->transform->translation = translation;
+	this->buildEntity->updateTransforms();
 	return this;
 }
 EntityBuilder* EntityBuilder::setScale(glm::vec3 scale) {
 	this->buildEntity->transform->scaling = scale;
+	this->buildEntity->updateTransforms();
 	return this;
 }
 EntityBuilder* EntityBuilder::setRotation(float angle, glm::vec3 axis) {
 	this->buildEntity->transform->rotation.setRotation(angle, axis);
+	this->buildEntity->updateTransforms();
 	return this;
 }
 EntityBuilder* EntityBuilder::setLookAt(glm::vec3 target) {
 	this->buildEntity->transform->lookAt(target);
+	this->buildEntity->updateTransforms();
 	return this;
 }
 
 EntityBuilder* EntityBuilder::setChildOf(Entity* parent) {
 	parent->addChildren(this->buildEntity);
+	this->buildEntity->updateTransforms();
 	return this;
 }
 

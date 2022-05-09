@@ -3,6 +3,8 @@
 
 #include "../ECS/ComponentSystem.hpp"
 
+class RendererSystem;
+
 struct Destructible {
     float destructionAmount = 1.0;
     std::vector<std::string> fragmentMeshFiles;
@@ -24,6 +26,7 @@ public:
     Destructible* getDestructible(unsigned short i);
 
     void destroy(unsigned short i);
+    void destroyAmount(unsigned short i, float amount);
 };
 
 #endif

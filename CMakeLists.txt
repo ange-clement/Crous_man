@@ -142,6 +142,8 @@ add_executable(
 	Crous_man/Shaders/EShaders/DepthMeshEShader.hpp
 	Crous_man/Shaders/EShaders/ShadowQuadEShader.cpp
 	Crous_man/Shaders/EShaders/ShadowQuadEShader.hpp
+	Crous_man/Shaders/EShaders/SSAOQuadEShader.cpp
+	Crous_man/Shaders/EShaders/SSAOQuadEShader.hpp
 	Crous_man/Shaders/EShaders/BlurQuadEShader.cpp
 	Crous_man/Shaders/EShaders/BlurQuadEShader.hpp
 
@@ -149,6 +151,8 @@ add_executable(
 	Crous_man/Shaders/LShaders/BlinnPhongLShader.hpp
 	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.cpp
 	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.hpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowSSAOLShader.cpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowSSAOLShader.hpp
 
 	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.cpp
 	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.hpp

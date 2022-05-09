@@ -4,6 +4,7 @@
 #include <Crous_man/ECS/ComponentSystem.hpp>
 
 class ColliderSystem;
+class DestructibleSystem;
 class RigidBody;
 
 struct CrousManController {
@@ -11,13 +12,19 @@ struct CrousManController {
     float acceleration;
     float sensitivity;
 
-    Entity* rotatingCenterForCamera;
-    Entity* cameraTarget;
-    Entity* saucisseEntity;
     float azimuth;
     float zenith;
     float lastMoovedAzimuth;
     float lastMoovedZenith;
+
+    float maxCameraDistance = 50.0f;
+    glm::vec3 initialRotatingPos;
+
+    Entity* rotatingCenterForCamera;
+    Entity* cameraTarget;
+    Entity* camera;
+    Entity* saucisseEntity;
+    Entity* laserEntity;
 
     Cooldown* laserCooldown;
 
@@ -27,6 +34,7 @@ struct CrousManController {
 class CrousManControllerSystem : public virtual ComponentSystem {
 public:
     ColliderSystem* colliderSystem = NULL;
+    DestructibleSystem* destructibleSystem = NULL;
 public:
     CrousManControllerSystem();
 

@@ -18,6 +18,7 @@
 #include "../Shaders/EShaders/ShadowQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongShadowSSAOLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
 
 #include "../InputManager.hpp"
@@ -79,6 +80,7 @@ void EntityManager::initShaders() {
     new TextureGShader();
     new DepthMeshEShader();
     new ShadowQuadEShader();
+    new BlinnPhongShadowSSAOLShader();
     new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();

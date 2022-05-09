@@ -33,6 +33,8 @@ public:
     void addComponent(SystemIDs componentId);
     bool removeComponent(SystemIDs componentId);
 
+    void setActiveRecursive(bool activeStatus);
+
     void updateTransforms();
 };
 

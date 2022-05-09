@@ -78,9 +78,7 @@ void SoundManager::playAt(std::string soundFile, glm::vec3 pos) {
 void SoundManager::playAt(std::string soundFile, glm::vec3 pos, float minDistance) {
     irrklang::ISound* sound3D = soundEngine->play3D(soundFile.c_str(), glmVec3ToIrrklangVec3(pos), false, false, true);
 
-    if (sound3D) {
-        sound3D->setMinDistance(5.0f);
-    }
+    sound3D->setMinDistance(minDistance);
 
     audios.push_back(PlayingAudio(sound3D, NULL));
 }
@@ -93,7 +91,7 @@ void SoundManager::playOver(std::string soundFile, Entity* entity, float minDist
     irrklang::ISound* sound3D = soundEngine->play3D(soundFile.c_str(), glmVec3ToIrrklangVec3(entity->worldTransform->translation), false, false, true);
 
     if (sound3D) {
-        sound3D->setMinDistance(5.0f);
+        sound3D->setMinDistance(minDistance);
     }
 
     audios.push_back(PlayingAudio(sound3D, entity));

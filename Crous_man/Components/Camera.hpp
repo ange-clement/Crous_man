@@ -19,6 +19,7 @@ enum RenderBufferID : unsigned short{
     Normal,
     AlbedoSpec,
     Shadow,
+    SSAO,
     NUMBER_OF_BUFFERS
 };
 

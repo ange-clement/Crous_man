@@ -109,6 +109,7 @@ int main( void )
     createSceneGame();
 
     //createSceneECS();
+    EntityManager::instance->updateTransforms();
     EntityManager::instance->initializeAllSystems();
     EntityManager::instance->updateTransforms();
 
