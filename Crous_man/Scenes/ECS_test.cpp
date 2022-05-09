@@ -293,4 +293,8 @@ void createSceneGame() {
         ->setLightLinear(0.01)
         ->setLightQuadratic(0.004)
         ->build();
+
+
+
+    SoundManager::instance->playLoop("../ressources/Sounds/apokalipss.wav");
 }

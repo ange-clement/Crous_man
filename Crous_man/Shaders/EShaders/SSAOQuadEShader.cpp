@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <string>
 #include <random>
 
 #include <GL/glew.h>
@@ -95,7 +96,7 @@ void SSAOQuadEShader::useBuffers(const GLuint* buffers) {
     glBindTexture(GL_TEXTURE_2D, this->noiseTexture);
 
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < 64; ++i)
+    for (unsigned int i = 0; i < 32; ++i)
         glUniform3fv(glGetUniformLocation(this->programID, ("samples[" + std::to_string(i) + "]").c_str()), 1, &this->ssaoKernel[i][0]);
 }
 

@@ -32,6 +32,7 @@ public:
     void update();
 
     void play(std::string soundFile);
+    void playLoop(std::string soundFile);
     unsigned int playAt(std::string soundFile, glm::vec3 pos);
     unsigned int playAt(std::string soundFile, glm::vec3 pos, float minDistance);
     unsigned int playOver(std::string soundFile, Entity* entity);
