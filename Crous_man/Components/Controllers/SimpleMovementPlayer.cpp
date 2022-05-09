@@ -80,7 +80,7 @@ void SimpleMovementPlayerSystem::initialize(unsigned short i, unsigned short ent
     fc->speed = 40.0f;
     if (rbSystem == NULL) {
         rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
-        rbSystem->setGravity(glm::vec3(0.0f));
+        //rbSystem->setGravity(glm::vec3(0.0f));
     }
 
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
@@ -163,12 +163,13 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
             forceAmount /= 8;
         }
 
-        if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_PRESS) {
+        /*if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_PRESS) {
             rbSystem->setGravity(glm::vec3(0.0, -0.1f, 0.0) * forceAmount);
         }
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_X) == GLFW_RELEASE) {
             rbSystem->setGravity(glm::vec3(0.0, 0.0f, 0.0) * forceAmount);
-        }
+        }*/
+
         if (glfwGetKey(InputManager::instance->window, GLFW_KEY_V) == GLFW_PRESS) {
             sp->rb->addForce(-glm::normalize(e->transform->translation) * forceAmount);
         }

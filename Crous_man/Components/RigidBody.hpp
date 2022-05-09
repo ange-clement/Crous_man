@@ -45,6 +45,7 @@ struct RigidBody {
 
 
     void rotational_addImpulseAtPosition(const glm::vec3& point, const glm::vec3& impulse, const glm::vec3& currentPosition, const glm::mat3& inverseTensor);
+    void linear_addImpulse(const glm::vec3& impulse);
 
 
     void setMass(float mass);
@@ -64,6 +65,8 @@ struct RigidBody {
     void addAccelerationAtPosition(glm::vec3 acc, glm::vec3 pos);
     void addVelocityAtPosition(glm::vec3 cel, glm::vec3 pos);
     void addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos);
+
+    void print();
 };
 
 struct TensorMatrix{
@@ -76,6 +79,10 @@ struct TensorMatrix{
 
 class RigidBodySystem : public virtual ComponentSystem {
 public:
+
+    bool with_rotation = true;
+
+
     glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
     glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
 
@@ -158,7 +165,7 @@ public:
     void resolveConstraintParticles_JointDistance(RigidBody* rb_particles_1, RigidBody* rb_particles_2, glm::vec3& currentPos_1, glm::vec3& currentPos_2, float distancejoint);
 };
 
-
+void printRB(RigidBody* r);
 
 float computeVelocityFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal);
 float computeAngularFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal, glm::vec3 rA, glm::vec3 rB);

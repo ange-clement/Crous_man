@@ -36,7 +36,7 @@ ContactPoint::ContactPoint(ContactPoint* c, bool inversed){
 
 
 void ContactPoint::print() {
-    std::cout << this->penetrationDistance << "p : {" << this->point.x << "," << this->point.y << "," << this->point.z << "}" << "n : {" << this->normal.x << "," << this->normal.y << "," << this->normal.z << "}" << std::endl;
+    std::cout << this->penetrationDistance << " ON p : {" << this->point.x << "," << this->point.y << "," << this->point.z << "}" << "n : {" << this->normal.x << "," << this->normal.y << "," << this->normal.z << "}" << std::endl;
 }
 
 ContactPoint::~ContactPoint() {}
@@ -117,6 +117,10 @@ void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
 void ColliderSystem::update(unsigned short i, unsigned short entityID) {
     //We move all the positions from all colliders
     Entity* entity = EntityManager::instance->entities[entityID];
+    
+    //std::cout << "UPDATE COLLIDER : " << entityID << std::endl;
+    //print(entity->worldTransform->translation);
+
     getCollider(i)->position = entity->worldTransform->translation + getCollider(i)->center;
 
     //We also need to perform others implementations like dimensions for AABB

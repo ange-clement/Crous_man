@@ -142,6 +142,22 @@ void RigidBody::addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos) {
 }
 
 
+void printRB(RigidBody* rb) {
+    std::cout << "VELOCITY : ";
+    print(rb->velocity);
+    std::cout << "ANGULAR SPEED : ";
+    print(rb->angularSpeed);
+    std::cout << "MASS : " << rb->mass << std::endl;
+    std::cout << "inverse MASS : " << rb->inverseOfMass << std::endl;
+
+    std::cout << "static friction : " << rb->mass << std::endl;
+    std::cout << "cinetic friction : " << rb->inverseOfMass << std::endl;
+    std::cout << "COMBINED FORCES : ";
+    print(rb->combinedForces);
+
+    std::cout << "DRAG : " << rb->drag << std::endl;
+    std::cout << "ANGULAR DRAG : " << rb->angularDrag << std::endl;
+}
 
 
 
@@ -245,15 +261,19 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     }*/
 
 
+    std::cout << "============== UPDATE ON COLID : " << i << std::endl;
+    std::cout << "UPDATE ON COLID entityID : " << entityID << std::endl;
+    std::cout << "COL RES SIZE : " << collisionResults.size() << std::endl;
+   
 
     /*=========================================================================================================================*/
     bool with_dynamic_friction = false;
-    bool with_rotation = false;
+    bool with_rotation = true;
     bool correctPos = false;
 
     RigidBody* rb = getRigidBody(i);
-    //Apply basic gravity
-    initForcesRB(rb);
+    //std::cout << "RB : " << rb << std::endl;
+
     RigidBody* otherRb;
 
     Entity* e = EntityManager::instance->entities[entityID];
@@ -261,6 +281,10 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 
     Collider* col = getColliderFromEntityID(entityID);
     Collider* otherCol = 0;
+
+    //std::cout << "PERFORM ANGULAR VELOCITY" << std::endl;
+    //std::cout << "COLLIDER OF I : " << col << std::endl;
+
 
     //We can't perform angular impulse without Collider of the element 
     if (col != 0 || !with_rotation) {
@@ -272,7 +296,18 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
         glm::vec3 pos = e->worldTransform->translation;
         glm::vec3 otherpos;
 
+        //std::cout << "FOR ON COLLISION RES" << std::endl;
+
         for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+            //First get the entity and RB of the other member of the collision
+            otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
+            otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
+
+            if (otherRb == 0) {
+                std::cout << "COL WITH TRIGER : " << otherE << std::endl;
+                continue;
+            }
+            
             if (correctPos) {
                 //We can correct position of RB to avoid penetration
                 glm::vec3 newpos;
@@ -286,13 +321,11 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 otherE->worldTransform->translate(otherNewpos);
             }
 
-            //First get the entity and RB of the other member of the collision
-            otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
-            otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
-
+            
             otherpos = otherE->worldTransform->translation;
             
             if (with_rotation) {
+                std::cout << "WITH ROTATION"<< std::endl;
                 otherCol = getColliderFromEntityID(collisionResults[c]->entityCollidID);
                 if (otherCol != 0) {
                     inversedTensor_J = getMatrixInverseTensor(entityID, *otherCol, otherRb);
@@ -309,7 +342,6 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 //For each contacts points
                 for (unsigned int p = 0; p < sizeContact; p++) {
                     ContactPoint* cp = collisionResults[c]->contactsPts[p];
-
 
                     if (with_rotation) {
                         if (with_dynamic_friction) {
@@ -386,39 +418,87 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     rb->combinedStaticFriction = glm::vec3(0.0f);
     rb->combinedCineticFriction = glm::vec3(0.0f);*/
 
-
+    std::cout << "UPDATE ON PHYSICS RB i : " << i << std::endl;
+    std::cout << "UPDATE ON PHYSICS RB id : " << entityID << std::endl;
 
     /*=========================================================================================================================*/
-    bool with_rotation = false;
+
     RigidBody* rb = getRigidBody(i);
-    float deltaTime = InputManager::instance->deltaTime;
+    //Apply basic gravity
+    if (rb!=0 && !rb->static_RB) {
+        initForcesRB(rb);
 
-    Entity* e = EntityManager::instance->entities[entityID];
+        float deltaTime = InputManager::instance->deltaTime;
+
+        Entity* e = EntityManager::instance->entities[entityID];
 
 
-    glm::vec3 currentPos = e->worldTransform->translation;
-    //linear update part
-    glm::vec3 newPos = linear_update_EulerIntegration(rb, currentPos, deltaTime);
-    //glm::vec3 newPos = linear_update_AccurateEulerIntegration(rb, currentPos, deltaTime);
-    //glm::vec3 newPos = linear_update_VerletIntegration(rb, currentPos, deltaTime);
+        glm::vec3 currentPos = e->worldTransform->translation;
+    
 
-    //Rotational update part
-    glm::mat4 inversedTensor_I;
-    Collider* col = getColliderFromEntityID(entityID);
-    //We can't perform angular impulse without Collider of the element 
-    if (with_rotation && col != 0) {
-        inversedTensor_I = getMatrixInverseTensor(entityID, *col, rb);
+        std::cout << "============ RB VALUE ============" << std::endl;
+        printRB(rb);
+
+        std::cout << "                     X VAL CUR P : " << currentPos.x << std::endl;
+        std::cout << "                     Y VAL CUR P : " << currentPos.y << std::endl;
+        std::cout << "                     Z VAL CUR P : " << currentPos.z << std::endl;
+
+        /*
+        if (currentPos.x >= 0) {
+            std::cout << "                     X VAL CUR P : " << currentPos.x << std::endl;
+        }
+        if (currentPos.y >= 0) {
+            std::cout << "                     Y VAL CUR P : " << currentPos.y << std::endl;
+        }
+        if (currentPos.z >= 0) {
+            std::cout << "=====================================" << std::endl;
+            std::cout << "                     Z VAL CUR P : " << currentPos.z << std::endl;
+        }*/
+       
+
+        //linear update part
+        glm::vec3 newPos = linear_update_EulerIntegration(rb, currentPos, deltaTime);
+        //glm::vec3 newPos = linear_update_AccurateEulerIntegration(rb, currentPos, deltaTime);
+        //glm::vec3 newPos = linear_update_VerletIntegration(rb, currentPos, deltaTime);
+
+        //Rotational update part
+        glm::mat4 inversedTensor_I;
+        Collider* col = getColliderFromEntityID(entityID);
+
+        //std::cout << "GET COLLIDER FROM ENTITY ID" << std::endl;
+
+        //We can't perform angular impulse without Collider of the element 
+        if (with_rotation && col != 0) {
+
+            //std::cout << "GET MATRICE INVERSE TENSOR" << std::endl;
+            inversedTensor_I = getMatrixInverseTensor(entityID, *col, rb);
+            //print(inversedTensor_I);
+
+            rotational_update(rb, deltaTime, getFromMat4(inversedTensor_I));
+
+            e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.x), glm::vec3(1, 0, 0));
+            e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.y), glm::vec3(0, 1, 0));
+            e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.z), glm::vec3(0, 0, 1));
+
+            //std::cout << "COMBINE ROT END" << std::endl;
+        }
+
+        // Apply on object
+        glm::vec3 dif = newPos - currentPos;
+
         
-        rotational_update(rb, deltaTime, getFromMat4(inversedTensor_I));
+        std::cout << "UPDATE ON PHYSICS DIF"<< std::endl;
+        print(dif);
+        print(newPos);
 
-        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.x), glm::vec3(1,0,0));
-        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.y), glm::vec3(0,1,0));
-        e->transform->rotation.combineRotation(degToRad(rb->angularSpeed.z), glm::vec3(0,0,1));
+        e->transform->translate(dif);
+        e->worldTransform->translate(dif);
     }
-
-    // Apply on object
-    e->transform->translate(newPos - currentPos);
-    e->worldTransform->translate(newPos - currentPos);
+    else {
+        std::cout << "===== STATIC ELEM" << std::endl;
+    }
+    std::cout << "=====================================" << std::endl;
+    
 }
 
 
@@ -455,7 +535,6 @@ RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
     }
     return getRigidBody(id);
 }
-
 
 
 
@@ -503,11 +582,16 @@ void RigidBodySystem::clearMatrixTensorStructure(unsigned short id) {
     tensorMatrix[id].computed = false;
 }
 glm::mat4 RigidBodySystem::getMatrixInverseTensor(unsigned short entityID, Collider c, RigidBody* rb) {
-    if (tensorMatrix.size() < entityID) {
+    if (tensorMatrix.size() <= entityID) {
         // If tensorMatrix is too small, extend it
+        //std::cout << " -> resize tensor matrix" << std::endl;
         tensorMatrix.resize(entityID + 1, TensorMatrix());
     }
+
+    //std::cout << "compute tensor matrix from : " << entityID << std::endl;
+    //std::cout << "size : " << tensorMatrix.size() << std::endl;
     TensorMatrix t = tensorMatrix[entityID];
+    
     if (!t.computed) {
         t.computed = true;
         t.mat = inverseTensorComputation(c,rb);
@@ -521,9 +605,9 @@ glm::mat4 RigidBodySystem::getMatrixInverseTensor(unsigned short entityID, Colli
 
 void RigidBodySystem::initForcesRB(RigidBody* rb) {
     rb->combinedForces = gravity * rb->mass;
-    rb->combinedAngularForces = glm::vec3(0.0f);
-    rb->combinedStaticFriction = glm::vec3(0.0f);
-    rb->combinedCineticFriction = glm::vec3(0.0f);
+    //rb->combinedAngularForces = glm::vec3(0.0f);
+    //rb->combinedStaticFriction = glm::vec3(0.0f);
+    //rb->combinedCineticFriction = glm::vec3(0.0f);
 }
 
 //Resolves constraints : PARTICLES
@@ -574,20 +658,30 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, 
 
 /*================ LINEAR MOVEMENT EQUATIONS ================*/
 glm::vec3 RigidBodySystem::linear_update_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime) {
-    rb->oldPosition = currentPos;
+    std::cout << "EULER INTEGRATION" << std::endl;
+    std::cout << "DELTA TIME : " << deltaTime << std::endl;
+
+    //rb->oldPosition = currentPos;
+
     glm::vec3 acceleration = rb->combinedForces * rb->inverseOfMass;
     rb->velocity = rb->velocity * rb->cineticFriction + acceleration * deltaTime;
 
     //Nullify small velocities
     if (fabsf(rb->velocity.x) < 0.001f) {
+        std::cout << "RESET VELOCITY X" << std::endl;
         rb->velocity.x = 0.0f;
     }
     if (fabsf(rb->velocity.y) < 0.001f) {
+        std::cout << "RESET VELOCITY Y" << std::endl;
         rb->velocity.y = 0.0f;
     }
     if (fabsf(rb->velocity.z) < 0.001f) {
+        std::cout << "RESET VELOCITY Z" << std::endl;
         rb->velocity.z = 0.0f;
     }
+
+    std::cout << "FORCE APPLIED" << std::endl;
+    print(rb->velocity * deltaTime);
 
     return currentPos + rb->velocity * deltaTime;
 }
@@ -632,6 +726,8 @@ glm::vec3 RigidBodySystem::linear_update_VerletIntegration(RigidBody* rb, const 
 
 //Resolves constraints : VOLUMES (Colliders objects)
 void RigidBodySystem::linear_resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
+    //std::cout << "LINEAR RESOLVE VOLUME RB" << std::endl;
+    
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
         float invMassSum = rb_1->inverseOfMass + rb_2->inverseOfMass;
@@ -697,6 +793,8 @@ void RigidBodySystem::linear_resolveConstraintVolumeRB_Euler(RigidBody* rb_1, Ri
     }
 }
 void RigidBodySystem::linear_resolveConstraintVolumeRB_Euler_dynamicfriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
+    //std::cout << "LINEAR RESOLVE VOLUME RB DYNAMIC FRICTION" << std::endl;
+
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
         float invMassSum = rb_1->inverseOfMass + rb_2->inverseOfMass;
@@ -763,6 +861,8 @@ void RigidBodySystem::linear_resolveConstraintVolumeRB_Euler_dynamicfriction(Rig
 
 //Correct new RB position
 void RigidBodySystem::positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2, RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res) {
+    std::cout << "POSITION CORRECTION" << std::endl;
+    
     float totalMass = rb_1->inverseOfMass + rb_2->inverseOfMass;
     if (totalMass == 0.0f) {
         return;
@@ -868,8 +968,26 @@ void RigidBodySystem::rotational_update(RigidBody* rb, float deltaTime, const gl
 //  the point of impactand collision normal divided by the inertia tensor.Knowing this, we can
 //  find the final equation for j
 void RigidBodySystem::linearAndAngular_resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
+    std::cout << "LINEAR AND ANGULAR RESOLVE CONSTRAINT VOLUME RB" << std::endl;
+    std::cout << "rb_1 : " << rb_1 << std::endl;
+    std::cout << "rb_2 : " << rb_2 << std::endl;
+
+    std::cout << "pres " << p_res << std::endl;
+    p_res->print();
+    
+    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+
+    print(posrb1);
+    print(posrb2);
+
+    print(inverseTensorrb1);
+    print(inverseTensorrb2);
+
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
+        //std::cout << "PERFORM CALCS" << std::endl;
+
         float invMassSum = rb_1->inverseOfMass + rb_2->inverseOfMass;
         if (invMassSum == 0.0f) return;
 
@@ -990,6 +1108,8 @@ void RigidBodySystem::linearAndAngular_resolveConstraintVolumeRB_Euler(RigidBody
 }
 
 void RigidBodySystem::linearAndAngular_resolveConstraintVolumeRB_Euler_dynamicfriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
+    //std::cout << "LINEAR AND ANGULAR RESOLVE CONSTRAINT VOLUME RB DYNAMIC FRICTION" << std::endl;
+
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
         float invMassSum = rb_1->inverseOfMass + rb_2->inverseOfMass;
