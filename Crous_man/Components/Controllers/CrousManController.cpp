@@ -39,6 +39,15 @@ CrousManControllerSystem::~CrousManControllerSystem() {
 
 }
 
+void CrousManControllerSystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults) {
+    for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+        if (EntityManager::instance->hasComponent(SystemIDs::DestructibleID, collisionResults[c]->entityCollidID)) {
+            unsigned int destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, collisionResults[c]->entityCollidID);
+            destructibleSystem->destroyAmount(destructibleID, .5f * InputManager::instance->deltaTime);
+        }
+    }
+}
+
 void CrousManControllerSystem::initialize(unsigned short i, unsigned short entityID) {
     CrousManController* crous = getCrousManController(i);
     crous->maxSpeed = 1.0f;

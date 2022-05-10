@@ -190,31 +190,31 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 
                 //DEBUG
 
-                //std::cout << "collision rigid" << std::endl;
-                //std::cout << "point : ";
-                //print(collisionResults[c]->contactsPts[p]->point);
-                //std::cout << "normal : ";
-                //print(collisionResults[c]->contactsPts[p]->normal);
-                //std::cout << "point in local space : ";
-                //glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                //print(pointA);
-                //glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
-                //print(pointB);
+                std::cout << "collision rigid" << std::endl;
+                std::cout << "point : ";
+                print(collisionResults[c]->contactsPts[p]->point);
+                std::cout << "normal : ";
+                print(collisionResults[c]->contactsPts[p]->normal);
+                std::cout << "point in local space : ";
+                glm::vec3 pointA = e->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                print(pointA);
+                glm::vec3 pointB = otherE->transform->worldToLocal(collisionResults[c]->contactsPts[p]->point);
+                print(pointB);
 
-                //For particles, we dont make bounces
+                // For particles, we dont make bounces
                 
-                //if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
-                //linear_resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
-                //}
+                // if (rb->type == RBType::VOLUME && otherRb->type == RBType::VOLUME) {
+                // linear_resolveConstraintVolumeRB_Euler(rb, otherRb, collisionResults[c]->contactsPts[p], sizeContact);
+                // }
                 
                 //old fnc
-                //if (!rb->static_RB) {
-                //    glm::vec3 centerOfMass = glm::vec3(0.0f);
-                //    glm::vec3 rA = pointA - centerOfMass;
-                //    glm::vec3 rB = pointB - centerOfMass;
-                //    float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
-                //    rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
-                //}
+                if (!rb->static_RB) {
+                   glm::vec3 centerOfMass = glm::vec3(0.0f);
+                   glm::vec3 rA = pointA - centerOfMass;
+                   glm::vec3 rB = pointB - centerOfMass;
+                   float j = computeAngularFactor(rb, otherRb, collisionResults[c]->contactsPts[p]->normal, rA, rB);
+                   rb->addImpulseAtPosition(collisionResults[c]->contactsPts[p]->normal * j / invSize, pointA);
+                }
           
                 
                 //(new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
@@ -229,9 +229,9 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                 //rb->addImpulse(collisionResults[c]->contactsPts[p]->normal * 0.01f / invSize);
             }
         }
-        else {
-            std::cout << "trigger" << std::endl;
-        }
+        // else {
+        //     std::cout << "trigger" << std::endl;
+        // }
     }
     */
 
@@ -776,8 +776,8 @@ void RigidBodySystem::positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2,
 
 //  Torque : The further a point where force is applied is from the center of mass of an object, the less force it takes to rotate the object
 //  To find the total amount of torque applied in an object, we need to sum up torque
-//  sum(torque) = sum(r²m) * a
-//  where sum(r²m) is the <<moment of inertia>>, "I". This vakue is a 3x3 mat, different for every shapes
+//  sum(torque) = sum(rï¿½m) * a
+//  where sum(rï¿½m) is the <<moment of inertia>>, "I". This vakue is a 3x3 mat, different for every shapes
 
 void RigidBody::rotational_addImpulseAtPosition(const glm::vec3& point, const glm::vec3& impulse, const glm::vec3& currentPosition, const glm::mat3& inverseTensor) {
     glm::vec3 centerOfMass = currentPosition;

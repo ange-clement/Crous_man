@@ -44,6 +44,7 @@ public:
 
     ~CrousManControllerSystem();
 
+    virtual void updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*> & collisionResults);
     virtual void update(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();

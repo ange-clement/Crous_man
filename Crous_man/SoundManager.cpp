@@ -69,9 +69,11 @@ void SoundManager::update() {
             }
         }
         if ((it+1) >= audios.end() && it->sound3D == NULL) {
-            audios.erase(it);
+            it = audios.erase(it);
         }
-        it++;
+        else {
+            it++;
+        }
     }
 
     if (DEBUG_AUDIO && audios.size() > 0.0f) {

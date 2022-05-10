@@ -84,7 +84,6 @@ void EntityManager::initShaders() {
     new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
-    new TextureGShader();
     new SphereColliderShader();
     new BoxColliderShader();
 }

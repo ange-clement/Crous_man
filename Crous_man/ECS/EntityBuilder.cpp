@@ -87,6 +87,19 @@ EntityBuilder* EntityBuilder::setMeshAsFile(std::string meshFile, bool fileHasNo
 	return this;
 }
 
+EntityBuilder* EntityBuilder::setMeshAsFilePLYCenter(std::string meshFile) {
+	setMeshAsFilePLY(meshFile, false);
+	glm::vec3 centerPos = glm::vec3(0.0f);
+	unsigned int size = this->getMesh()->indexed_vertices.size();
+	for (unsigned int i = 0; i < size; i++) {
+		centerPos += this->getMesh()->indexed_vertices[i];
+	}
+	centerPos /= size;
+	for (unsigned int i = 0; i < size; i++) {
+		this->getMesh()->indexed_vertices[i] = this->getMesh()->indexed_vertices[i] - centerPos;
+	}
+	return this;
+}
 EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile) {
 	return setMeshAsFilePLY(meshFile, false);
 }
@@ -192,6 +205,24 @@ EntityBuilder* EntityBuilder::addDestructibleMeshes(std::initializer_list<std::s
 	return this;
 }
 
+EntityBuilder* EntityBuilder::setDestructibleFragmentScaling(glm::vec3 fragmentScaling) {
+	Destructible* destructible = this->getDestructible();
+	destructible->fragmentScaling = fragmentScaling;
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setDestructibleFragmentColor(glm::vec3 fragmentColor) {
+	Destructible* destructible = this->getDestructible();
+	destructible->fragmentColor = fragmentColor;
+	return this;
+}
+
+EntityBuilder* EntityBuilder::setDestructibleHealth(float health) {
+	Destructible* destructible = this->getDestructible();
+	destructible->destructionAmount = health;
+	return this;
+}
+
 
 EntityBuilder* EntityBuilder::setColliderType(colliderType type) {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
@@ -199,9 +230,10 @@ EntityBuilder* EntityBuilder::setColliderType(colliderType type) {
 	collider->type = type;
 	return this;
 }
-EntityBuilder* EntityBuilder::setColliderPosition(glm::vec3 pos) {
+EntityBuilder* EntityBuilder::setColliderCenter(glm::vec3 pos) {
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
+	collider->center = pos;
 	collider->position = pos;
 	return this;
 }
@@ -319,21 +351,26 @@ EntityBuilder* EntityBuilder::fitSphereColliderToMesh() {
 	collider->type = colliderType::Sphere;
 	computeSphere(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->radius);
 	
-	print(collider->center);
-	std::cout << "radius : " << collider->radius << std::endl;
+	if (DEBUG_ENTITY_BUILDER) {
+		print(collider->center);
+		std::cout << "radius : " << collider->radius << std::endl;
+	}
 	return this;
 }
 EntityBuilder* EntityBuilder::fitAABBColliderToMesh() {
 	Mesh* mesh = this->getMesh();
-	std::cout << "AABB" << std::endl;
+	if (DEBUG_ENTITY_BUILDER)
+		std::cout << "AABB" << std::endl;
 
 	unsigned short colliderID = EntityManager::instance->getComponentId(SystemIDs::ColliderID, this->buildEntity->id);
 	Collider* collider = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID])->getCollider(colliderID);
 	collider->type = colliderType::AABB;
 	computeBox(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->size);
 
-	print(collider->center);
-	print(collider->size);
+	if (DEBUG_ENTITY_BUILDER) {
+		print(collider->center);
+		print(collider->size);
+	}
 
 	return this;
 }
@@ -344,8 +381,10 @@ EntityBuilder* EntityBuilder::fitOBBColliderToMesh() {
 	collider->type = colliderType::OBB;
 	computeBox(this->buildEntity->worldTransform, mesh->indexed_vertices, collider->center, collider->size);
 	
-	print(collider->center);
-	print(collider->size); 
+	if (DEBUG_ENTITY_BUILDER) {
+		print(collider->center);
+		print(collider->size);
+	}
 	return this;
 }
 EntityBuilder* EntityBuilder::fitOBBColliderToMeshOf(Entity* meshEntity) {
