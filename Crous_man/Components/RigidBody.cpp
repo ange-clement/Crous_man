@@ -30,6 +30,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <common/quaternion_utils.hpp>
 
+#define DEBUG_RIGIDBODY false
+
 
 void RigidBody::setMass(float mass) {
     if (mass == 0) {
@@ -187,10 +189,11 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     // 2- Accumulate forces acting on the rigidbodies
     // 3- Apply impulses to resolve collisions (except if static)
 
-
-    std::cout << "============== UPDATE ON COLID : " << i << std::endl;
-    std::cout << "UPDATE ON COLID entityID : " << entityID << std::endl;
-    std::cout << "COL RES SIZE : " << collisionResults.size() << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "============== UPDATE ON COLID : " << i << std::endl;
+        std::cout << "UPDATE ON COLID entityID : " << entityID << std::endl;
+        std::cout << "COL RES SIZE : " << collisionResults.size() << std::endl;
+    }
 
     /*=========================================================================================================================*/
     with_dynamic_friction &= with_friction;
@@ -223,7 +226,9 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
         //std::cout << "FOR ON COLLISION RES" << std::endl;
 
         for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
-            std::cout << " ->COL WITH : " << collisionResults[c]->entityCollidID << std::endl;
+            if (DEBUG_RIGIDBODY) {
+                std::cout << " ->COL WITH : " << collisionResults[c]->entityCollidID << std::endl;
+            }
 
             //First get the entity and RB of the other member of the collision
             otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
@@ -327,15 +332,16 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
     //3 - Correct sinking using Linear Projection
     //4 - Solve contraint if applicable
 
-    std::cout << "UPDATE ON PHYSICS RB i : " << i << std::endl;
-    std::cout << "UPDATE ON PHYSICS RB id : " << entityID << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "UPDATE ON PHYSICS RB i : " << i << std::endl;
+        std::cout << "UPDATE ON PHYSICS RB id : " << entityID << std::endl;
+    }
 
     /*=========================================================================================================================*/
     //if (InputManager::instance->nbFrames % frame_update_update_physics == 0) {
         RigidBody* rb = getRigidBody(i);
         //Apply basic gravity
         if (rb != 0 && !rb->static_RB) {
-            ApplyForces(rb);
 
             float deltaTime = InputManager::instance->deltaTime;
 
@@ -404,6 +410,8 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
 
             e->transform->translate(dif);
             e->worldTransform->translate(dif);
+
+            ApplyForces(rb);
         }
     //}
         //std::cout << "END UPDATE PHYS" << std::endl;
@@ -529,7 +537,9 @@ glm::vec3 RigidBodySystem::update_VerletIntegration(RigidBody* rb, const glm::ve
 
 void RigidBodySystem::rotational_update(RigidBody* rb, float deltaTime, const glm::mat3& inverseTensor) {
 
-    std::cout << "ROTATIONNAL UPDATE" << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "ROTATIONNAL UPDATE" << std::endl;
+    }
     glm::vec3 angAccel = rb->combinedAngularForces * inverseTensor;
 
     rb->angularSpeed = rb->angularSpeed + angAccel * deltaTime;
@@ -539,15 +549,21 @@ void RigidBodySystem::rotational_update(RigidBody* rb, float deltaTime, const gl
 
     //if the speed is to slow, no more rotation performed
     if (fabsf(rb->angularSpeed.x) < 0.001f) {
-        std::cout << "X DEL" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "X DEL" << std::endl;
+        }
         rb->angularSpeed.x = 0.0f;
     }
     if (fabsf(rb->angularSpeed.y) < 0.001f) {
-        std::cout << "Y DEL" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "Y DEL" << std::endl;
+        }
         rb->angularSpeed.y = 0.0f;
     }
     if (fabsf(rb->angularSpeed.z) < 0.001f) {
-        std::cout << "Z DEL" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "Z DEL" << std::endl;
+        }
         rb->angularSpeed.z = 0.0f;
     }
 
@@ -768,19 +784,23 @@ void RigidBodySystem::applyImpulse_linear(RigidBody* rb_1, RigidBody* rb_2, Cont
     //std::cout << "====================================================" << std::endl;
 }      
 void RigidBodySystem::applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
-    std::cout << "APPLY IMPULSE LINEAR WITH FRICTIONS" << std::endl;
-    std::cout << "rb_1 : " << rb_1 << std::endl;
-    std::cout << "rb_2 : " << rb_2 << std::endl;
-    std::cout << "pres " << p_res << std::endl;
-    p_res->print();
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR WITH FRICTIONS" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
 
-    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+    }
 
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
-        std::cout << "PERFORM AN IMPULSE" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "PERFORM AN IMPULSE" << std::endl;
+        }
 
         float invMassSum;
         if (rb_1->static_RB) {
@@ -800,18 +820,22 @@ void RigidBodySystem::applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb
 
 
 
-        std::cout << "RELATIVE VEL : ";
-        print(relative_vel);
-        std::cout << "VEL 1 : ";
-        print(rb_1->velocity);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        std::cout << "VEL 2 : ";
-        print(rb_2->velocity);
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
 
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        std::cout << "RELATIVE NORMALE : ";
-        print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -848,9 +872,11 @@ void RigidBodySystem::applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb
         //t : tangential vector to the collision normal
         glm::vec3 t = relative_vel - (relative_n * d_vn);
 
-        std::cout << "dot vn : " << d_vn << std::endl;
-        std::cout << "tangential vector : ";
-        print(t);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "dot vn : " << d_vn << std::endl;
+            std::cout << "tangential vector : ";
+            print(t);
+        }
 
         if (compareWithEpsilon(glm::dot(t, t), 0.0f)) {
             return;
@@ -903,26 +929,31 @@ void RigidBodySystem::applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb
         }
     }
 
-    std::cout << "FINAL VELOCITY : ";
-    print(rb_1->velocity);
-    print(rb_2->velocity);
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "FINAL VELOCITY : ";
+        print(rb_1->velocity);
+        print(rb_2->velocity);
 
-    std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+    }
 }
 void RigidBodySystem::applyImpulse_linearDynamicFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
-    std::cout << "APPLY IMPULSE LINEAR WITH DYNAMICS FRICTIONS" << std::endl;
-    std::cout << "rb_1 : " << rb_1 << std::endl;
-    std::cout << "rb_2 : " << rb_2 << std::endl;
-    std::cout << "pres " << p_res << std::endl;
-    p_res->print();
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR WITH DYNAMICS FRICTIONS" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
 
-    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
-
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+    }
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
-        std::cout << "PERFORM AN IMPULSE" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "PERFORM AN IMPULSE" << std::endl;
+        }
 
         float invMassSum;
         if (rb_1->static_RB) {
@@ -942,18 +973,22 @@ void RigidBodySystem::applyImpulse_linearDynamicFriction(RigidBody* rb_1, RigidB
 
 
 
-        std::cout << "RELATIVE VEL : ";
-        print(relative_vel);
-        std::cout << "VEL 1 : ";
-        print(rb_1->velocity);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        std::cout << "VEL 2 : ";
-        print(rb_2->velocity);
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
 
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        std::cout << "RELATIVE NORMALE : ";
-        print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -1032,11 +1067,13 @@ void RigidBodySystem::applyImpulse_linearDynamicFriction(RigidBody* rb_1, RigidB
         }
     }
 
-    std::cout << "FINAL VELOCITY : ";
-    print(rb_1->velocity);
-    print(rb_2->velocity);
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "FINAL VELOCITY : ";
+        print(rb_1->velocity);
+        print(rb_2->velocity);
 
-    std::cout << "====================================================" << std::endl;
+        std::cout << "====================================================" << std::endl;
+    }
 }
 
 //Correct new RB position
@@ -1183,20 +1220,22 @@ glm::mat4 RigidBodySystem::inverseTensorComputation(Collider c, RigidBody* rb) {
 //  the point of impactand collision normal divided by the inertia tensor.Knowing this, we can
 //  find the final equation for j
 void RigidBodySystem::applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
-    std::cout << "APPLY IMPULSE LINEAR ANGULAR" << std::endl;
-    std::cout << "rb_1 : " << rb_1 << std::endl;
-    std::cout << "rb_2 : " << rb_2 << std::endl;
-    std::cout << "pres " << p_res << std::endl;
-    p_res->print();
-    
-    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR ANGULAR" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
+        
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
 
 
-    print(posrb1);
-    print(posrb2);
-    print(inverseTensorrb1);
-    print(inverseTensorrb2);
+        print(posrb1);
+        print(posrb2);
+        print(inverseTensorrb1);
+        print(inverseTensorrb2);
+    }
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
@@ -1315,33 +1354,39 @@ void RigidBodySystem::applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_
         }
     }
 
-    std::cout << "FINAL VELOCITY : ";
-    print(rb_1->velocity);
-    print(rb_2->velocity);
-    std::cout << "FINAL ANGULAR VELOCITY : ";
-    print(rb_1->angularSpeed);
-    print(rb_2->angularSpeed);
-    std::cout << "====================================================" << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "FINAL VELOCITY : ";
+        print(rb_1->velocity);
+        print(rb_2->velocity);
+        std::cout << "FINAL ANGULAR VELOCITY : ";
+        print(rb_1->angularSpeed);
+        print(rb_2->angularSpeed);
+        std::cout << "====================================================" << std::endl;
+    }
 }
 void RigidBodySystem::applyImpulse_linearAngularFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
-    std::cout << "APPLY IMPULSE LINEAR ANGULAR FRICTION" << std::endl;
-    std::cout << "rb_1 : " << rb_1 << std::endl;
-    std::cout << "rb_2 : " << rb_2 << std::endl;
-    std::cout << "pres " << p_res << std::endl;
-    p_res->print();
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR ANGULAR FRICTION" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
 
-    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
 
 
-    print(posrb1);
-    print(posrb2);
-    print(inverseTensorrb1);
-    print(inverseTensorrb2);
+        print(posrb1);
+        print(posrb2);
+        print(inverseTensorrb1);
+        print(inverseTensorrb2);
+    }
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
-        std::cout << "PERFORM AN IMPULSE" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "PERFORM AN IMPULSE" << std::endl;
+        }
 
         float invMassSum;
         if (rb_1->static_RB) {
@@ -1367,18 +1412,22 @@ void RigidBodySystem::applyImpulse_linearAngularFriction(RigidBody* rb_1, RigidB
         glm::vec3 relative_vel = (rb_2->velocity + glm::cross(rb_2->angularSpeed, r2)) - (rb_1->angularSpeed + glm::cross(rb_1->angularSpeed, r1));
 
 
-        std::cout << "RELATIVE VEL : ";
-        print(relative_vel);
-        std::cout << "VEL 1 : ";
-        print(rb_1->velocity);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        std::cout << "VEL 2 : ";
-        print(rb_2->velocity);
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
 
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        std::cout << "RELATIVE NORMALE : ";
-        print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -1508,24 +1557,28 @@ void RigidBodySystem::applyImpulse_linearAngularFriction(RigidBody* rb_1, RigidB
     }
 }
 void RigidBodySystem::applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
-    std::cout << "APPLY IMPULSE LINEAR ANGULAR DYNAMIC FRICTION" << std::endl;
-    std::cout << "rb_1 : " << rb_1 << std::endl;
-    std::cout << "rb_2 : " << rb_2 << std::endl;
-    std::cout << "pres " << p_res << std::endl;
-    p_res->print();
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR ANGULAR DYNAMIC FRICTION" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
 
-    std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
 
 
-    print(posrb1);
-    print(posrb2);
-    print(inverseTensorrb1);
-    print(inverseTensorrb2);
+        print(posrb1);
+        print(posrb2);
+        print(inverseTensorrb1);
+        print(inverseTensorrb2);
+    }
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
-        std::cout << "PERFORM AN IMPULSE" << std::endl;
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "PERFORM AN IMPULSE" << std::endl;
+        }
 
         float invMassSum;
         if (rb_1->static_RB) {
@@ -1551,18 +1604,22 @@ void RigidBodySystem::applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1,
         glm::vec3 relative_vel = (rb_2->velocity + glm::cross(rb_2->angularSpeed, r2)) - (rb_1->angularSpeed + glm::cross(rb_1->angularSpeed, r1));
 
 
-        std::cout << "RELATIVE VEL : ";
-        print(relative_vel);
-        std::cout << "VEL 1 : ";
-        print(rb_1->velocity);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        std::cout << "VEL 2 : ";
-        print(rb_2->velocity);
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
 
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        std::cout << "RELATIVE NORMALE : ";
-        print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -1692,7 +1749,9 @@ void RigidBodySystem::applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1,
 
 
 void RigidBodySystem::applyImpulse_linearAngular_bis(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
-    std::cout << "APLLY LINEAR ANGULAR BIS" << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APLLY LINEAR ANGULAR BIS" << std::endl;
+    }
     applyImpulse_linear(rb_1, rb_2, p_res, nbC);
     if(!rb_1->static_RB) rb_1->rotational_addImpulseAtPosition(p_res->point, p_res->normal * p_res->penetrationDistance, posrb1, getFromMat4(inverseTensorrb1));
     if(!rb_2->static_RB) rb_2->rotational_addImpulseAtPosition(p_res->point, -p_res->normal * p_res->penetrationDistance, posrb2, getFromMat4(inverseTensorrb2));

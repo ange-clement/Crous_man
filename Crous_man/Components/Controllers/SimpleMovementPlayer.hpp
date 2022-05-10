@@ -14,7 +14,7 @@ struct SimpleMovementPlayer {
 
 };
 
-class SimpleMovementPlayerSystem : public virtual ComponentSystem {
+class SimpleMovementPlayerSystem : public virtual ColliderManagerComponentSystem {
 public:
     RigidBodySystem* rbSystem = NULL;
 public:

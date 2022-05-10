@@ -21,6 +21,8 @@
 
 #include "Collider.hpp"
 
+#define DEBUG_COLLIDER false
+
 
 ContactPoint::ContactPoint() {
     this->penetrationDistance = FLT_MAX;
@@ -644,7 +646,10 @@ void AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, ColliderRes
 
 //Collision between two Sphere
 void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
-    std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
+    if (DEBUG_COLLIDER) {
+        std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
+    }
+        
     assert(sp1.type == colliderType::Sphere);
     assert(sp2.type == colliderType::Sphere);
     assert(res != 0);
@@ -656,11 +661,15 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
 
     float distance = glm::length(mvt);
 
-    std::cout << "DISTANCE : " << distance << std::endl;
-    std::cout << "RAYON : " << r << std::endl;
+    if (DEBUG_COLLIDER) {
+        std::cout << "DISTANCE : " << distance << std::endl;
+        std::cout << "RAYON : " << r << std::endl;
+    }
 
     if (distance < r) {
-        std::cout << "CONTACT !!" << std::endl;
+        if (DEBUG_COLLIDER) {
+            std::cout << "CONTACT !!" << std::endl;
+        }
         cp_res = new ContactPoint();
         
         //res->penetrationDistance = (sp1.radius - distance) + sp2.radius;
@@ -673,13 +682,17 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
 
     //If there is a contact point
     if (cp_res != 0) {
-        std::cout << "CP TROUVE !"<< std::endl;
+        if (DEBUG_COLLIDER) {
+            std::cout << "CP TROUVE !"<< std::endl;
+        }
         res->isInCollision = true;
         cp_res->print();
 
         res->contactsPts.push_back(cp_res);
     }
-    std::cout << "=========== END ==========" << std::endl;
+    if (DEBUG_COLLIDER) {
+        std::cout << "=========== END ==========" << std::endl;
+    }
 }
 
 
