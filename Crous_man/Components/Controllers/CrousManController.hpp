@@ -35,7 +35,7 @@ struct CrousManController {
     RigidBody* rb;
 };
 
-class CrousManControllerSystem : public virtual ComponentSystem {
+class CrousManControllerSystem : public virtual ColliderManagerComponentSystem {
 public:
     ColliderSystem* colliderSystem = NULL;
     DestructibleSystem* destructibleSystem = NULL;

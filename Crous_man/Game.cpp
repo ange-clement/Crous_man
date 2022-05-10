@@ -105,10 +105,10 @@ int main( void )
     
     new EntityManager();
     
-    //createSceneCollider();
-    createSceneGame();
-
+    createSceneCollider();
+    //createSceneGame();
     //createSceneECS();
+
     EntityManager::instance->updateTransforms();
     EntityManager::instance->initializeAllSystems();
     EntityManager::instance->updateTransforms();

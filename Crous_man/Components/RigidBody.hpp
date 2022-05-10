@@ -34,7 +34,7 @@ struct RigidBody {
     glm::vec3 combinedStaticFriction    = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 combinedCineticFriction   = glm::vec3(0.0, 0.0, 0.0);
 
-    //résistance
+    //rï¿½sistance
     float drag = 0.98f;
     float angularDrag = 0.98f;
 

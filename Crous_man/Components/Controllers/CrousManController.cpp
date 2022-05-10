@@ -50,7 +50,7 @@ void CrousManControllerSystem::updateOnCollide(unsigned short i, unsigned short 
 
 void CrousManControllerSystem::initialize(unsigned short i, unsigned short entityID) {
     CrousManController* crous = getCrousManController(i);
-    crous->maxSpeed = 1.0f;
+    crous->maxSpeed = 50.0f;
     crous->acceleration = crous->maxSpeed * 4.0f;
     crous->sensitivity = 0.16f;
     crous->azimuth = 0.0;
@@ -72,8 +72,8 @@ void CrousManControllerSystem::initialize(unsigned short i, unsigned short entit
 
 
     //TODO supprimer
-    RigidBodySystem* rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
-    rbSystem->setGravity(glm::vec3(0.0f));
+    // RigidBodySystem* rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
+    // rbSystem->setGravity(glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 void CrousManControllerSystem::update(unsigned short i, unsigned short entityID) {
@@ -208,12 +208,12 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
 
     rb->addAcceleration(appliedAcceleration);
 
-    if (!mooved) {
-        if (glm::dot(rb->velocity, rb->velocity) > 0.01f)
-            rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(rb->velocity));
-        else
-            rb->velocity = glm::vec3(0.0f);
-    }
+    // if (!mooved) {
+    //     if (glm::dot(rb->velocity, rb->velocity) > 0.01f)
+    //         rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(rb->velocity));
+    //     else
+    //         rb->velocity = glm::vec3(0.0f);
+    // }
 
 
     // process mouse movement

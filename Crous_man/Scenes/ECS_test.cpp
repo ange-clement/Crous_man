@@ -119,6 +119,77 @@ void createSceneECS() {
 };
 
 void createSceneCollider() {
+
+    // CrousMan
+    Entity* rotatingCenterForCamera = (new EntityBuilder({}))
+        ->setTranslation(glm::vec3(0.0f, 15.0f, 0.0f))
+        ->build();
+
+    Entity* wantedCameraPosition = (new EntityBuilder({}))
+        ->setTranslation(glm::vec3(0.0f, 0.0f, -50.0f))
+        //->setRotation(1.57079632679, glm::vec3(0.0f, 1.0f, 0.0f))
+        ->setChildOf(rotatingCenterForCamera)
+        ->build();
+
+    // Camera
+
+    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID}))
+        ->setAsScreenCamera()
+        ->setAsAudioListener()
+        ->build();
+    
+    Entity* laser = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setMeshAsCube()
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/laser.ppm")
+        ->setRendererSpecularValue(0.0f)
+        ->setRendererCastShadows(false)
+        ->build();
+    
+    Entity* laserLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setChildOf(laser)
+        ->setLightColor(glm::vec3(.958, .198, .375))
+        ->setLightLinear(0.05)
+        ->setLightQuadratic(0.00)
+        ->build();
+
+    Entity* saucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setTranslation(glm::vec3(0.0f, 7.0f, 0.0f))
+        ->setMeshAsFilePLY("../ressources/Models/saucisseCentre.ply")
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
+        ->build();
+
+    Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
+        ->setTranslation(glm::vec3(0.0f, 20.0f, 0.0f))
+        ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
+        ->setCrousManControllerCameraTarget(wantedCameraPosition)
+        ->setCrousManControllerCameraEntity(cameraEntity)
+        ->setCrousManControllerSaucisseEntity(saucisse)
+        ->setCrousManControllerLaserEntity(laser)
+        ->setMeshAsFilePLY("../ressources/Models/dougnut.ply")
+        ->updateRenderer()
+        ->setRendererDiffuse("../ressources/Textures/dougnutColor.ppm")
+        ->setRigidBodyMass(1.0f)
+        ->fitOBBColliderToMesh()
+        ->setRenderingCollider()
+        ->build();
+
+    Entity* crousLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setChildOf(saucisse)
+        ->setTranslation(glm::vec3(0.0, -4.0, 0.0))
+        ->setLightColor(glm::vec3(.958, .985, .938))
+        ->setLightLinear(0.2)
+        ->setLightQuadratic(0.04)
+        ->build();
+
+    Entity* croustopLight = (new EntityBuilder({ SystemIDs::PointLightID }))
+        ->setChildOf(saucisse)
+        ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
+        ->setLightLinear(0.01)
+        ->setLightQuadratic(0.0001)
+        ->setLightColor(glm::vec3(.984, .948, .628))
+        ->build();
    
     Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
         ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
@@ -176,11 +247,11 @@ void createSceneCollider() {
         ->setLightQuadratic(0.0)
         ->build();
 
-    Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FlyingControllerID }))
-        ->setTranslation(glm::vec3(0.0, 0.0, -10.0))
-        ->setAsScreenCamera()
-        ->setAsAudioListener()
-        ->build();
+    // Entity* cameraEntity = (new EntityBuilder({ SystemIDs::CameraID, SystemIDs::FlyingControllerID }))
+    //     ->setTranslation(glm::vec3(0.0, 0.0, -10.0))
+    //     ->setAsScreenCamera()
+    //     ->setAsAudioListener()
+    //     ->build();
 }
 
 void addTree(glm::vec3 pos, glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f)) {
@@ -268,7 +339,7 @@ void createSceneGame() {
         ->build();
 
     Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
-        ->setTranslation(glm::vec3(0.0f, 6.0f, 0.0f))
+        ->setTranslation(glm::vec3(0.0f, 20.0f, 0.0f))
         ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
         ->setCrousManControllerCameraTarget(wantedCameraPosition)
         ->setCrousManControllerCameraEntity(cameraEntity)
@@ -290,7 +361,7 @@ void createSceneGame() {
         ->setLightQuadratic(0.04)
         ->build();
 
-    Entity* croustopLight = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::PointLightID }))
+    Entity* croustopLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setChildOf(saucisse)
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
         ->setLightLinear(0.01)
@@ -314,7 +385,8 @@ void createSceneGame() {
     glm::vec3 lightColor = glm::vec3(.984, .948, .628);
 
     Entity* ground = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
-        ->setScale(glm::vec3(500.0, 1.0, 500.0))
+        ->setTranslation(glm::vec3(0.0, -5.0, 0.0))
+        ->setScale(glm::vec3(500.0, 10.0, 500.0))
         ->setRigidBodyStatic(true)
         ->setMeshAsCube()
         ->updateRenderer()
@@ -404,8 +476,8 @@ void createSceneGame() {
         ->setRendererDiffuseColor(glm::vec3(.850f, .619f, .698f))
         ->setRendererSpecularValue(trotSpec)
         ->setColliderType(colliderType::AABB)
-        ->setColliderCenter(glm::vec3(185.0f, 1.7f, 55.0f))
-        ->setColliderSize(glm::vec3(62.0f, 1.5f, 111.0f))
+        ->setColliderCenter(glm::vec3(185.0f, 0.2f, 55.0f))
+        ->setColliderSize(glm::vec3(62.0f, 3.0f, 111.0f))
         ->setRenderingCollider()
         ->build();
 
@@ -545,7 +617,7 @@ void createSceneGame() {
         
         ->build();
 
-    Entity* restoTopLight = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::PointLightID }))
+    Entity* restoTopLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setChildOf(restoElevation)
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
         ->setLightLinear(0.01)
@@ -559,7 +631,7 @@ void createSceneGame() {
     
 
 
-    Entity* topLight = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::PointLightID }))
+    Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
         ->setLightLinear(0.01)
         ->setLightQuadratic(0.004)
