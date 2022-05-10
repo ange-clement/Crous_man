@@ -77,6 +77,8 @@ void CrousManControllerSystem::initialize(unsigned short i, unsigned short entit
 }
 
 void CrousManControllerSystem::update(unsigned short i, unsigned short entityID) {
+    std::cout << "UPDATE ON CROUSSMAN CONTROLLER" << std::endl;
+    
     //Get data
     CrousManController* crous = getCrousManController(i);
     RigidBody* rb = crous->rb;

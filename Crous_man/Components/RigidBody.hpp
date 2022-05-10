@@ -78,7 +78,7 @@ struct TensorMatrix{
     glm::mat4 mat;
 };
 
-
+//ColliderManagerComponentSystem
 class RigidBodySystem : public virtual ColliderManagerComponentSystem {
 public:
 

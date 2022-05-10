@@ -202,7 +202,6 @@ void SimpleMovementPlayerSystem::update(unsigned short i, unsigned short entityI
 
 
 void SimpleMovementPlayerSystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults) {
-    
     //std::cout << "COLISION with " << collisionResults.size() << " elements : " << std::endl;
     //for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
     //    std::cout << c << std::endl;

@@ -28,19 +28,26 @@ ColliderManagerComponentSystem::~ColliderManagerComponentSystem() {
 }
 
 void ColliderManagerComponentSystem::updateOnCollideAll() {
-    //std::cout << " =========== UPDATE COLLID ALL  =========== " << std::endl;
-    //std::cout << " ENTITIES : " << entityIDs.size() << std::endl;
+    std::cout << " =========== UPDATE COLLID ALL  =========== " << std::endl;
+    std::cout << " ENTITIES : " << entityIDs.size() << std::endl;
 
     if (colliderSystemInstance == NULL)
         colliderSystemInstance = dynamic_cast<ColliderSystem*>(EntityManager::instance->systems[SystemIDs::ColliderID]);
 
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        if (!EntityManager::instance->shouldUpdate(entityIDs[i]))
-            continue;
-        if (!EntityManager::instance->hasComponent(SystemIDs::ColliderID, entityIDs[i]))
-            continue;
+        std::cout << "IM SEEING : " << entityIDs[i] << std::endl;
 
-        //std::cout << " -> ENTITY ID with collider : " << entityIDs[i] << std::endl;
+        if (!EntityManager::instance->shouldUpdate(entityIDs[i])) {
+
+            std::cout << "NO UPDATE NEED" << std::endl;
+            continue;
+        }
+        if (!EntityManager::instance->hasComponent(SystemIDs::ColliderID, entityIDs[i])) {
+            std::cout << "NO UPDATE NO COLLIDER" << std::endl;
+            continue;
+        }
+
+        std::cout << " -> ENTITY ID with collider : " << entityIDs[i] << std::endl;
 
         std::vector<ColliderResult*> collisionResults;
         std::vector<ColliderResult*> collisionMapResult = colliderSystemInstance->getResultOf(entityIDs[i]);
@@ -51,7 +58,9 @@ void ColliderManagerComponentSystem::updateOnCollideAll() {
             }
         }
 
+
         if (collisionResults.size() == 0) {
+            std::cout << "NO COLLISON : " << entityIDs[i] << std::endl;
             continue;
         }
 

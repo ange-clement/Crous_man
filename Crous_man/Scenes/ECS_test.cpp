@@ -121,6 +121,8 @@ void createSceneECS() {
 void createSceneCollider() {
 
     // CrousMan
+
+    
     Entity* rotatingCenterForCamera = (new EntityBuilder({}))
         ->setTranslation(glm::vec3(0.0f, 15.0f, 0.0f))
         ->build();
@@ -160,6 +162,7 @@ void createSceneCollider() {
         ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
         ->build();
 
+    //7
     Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
         ->setTranslation(glm::vec3(0.0f, 20.0f, 0.0f))
         ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
@@ -191,6 +194,7 @@ void createSceneCollider() {
         ->setLightColor(glm::vec3(.984, .948, .628))
         ->build();
    
+    //10
     Entity* monke = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID }))
         ->setTranslation(glm::vec3(2.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
@@ -200,6 +204,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
+    //11
     Entity* monke2 = (new EntityBuilder({SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::SimplePlayerControllerID}))
         ->setTranslation(glm::vec3(10.0, 2.0, 2.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
@@ -208,6 +213,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
+    //12
     Entity* monke3 = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(10.0, 2.0, 10.0))
         ->setMeshAsFile("../ressources/Models/suzanne.off", false)
@@ -217,6 +223,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
     
+    //13
     Entity* monke4 = (new EntityBuilder({SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID}))
         ->setTranslation(glm::vec3(10.0, 20.0, 2.0))
         ->setScale(glm::vec3(10.0, 10.0, 10.0))
@@ -227,6 +234,7 @@ void createSceneCollider() {
         ->setRenderingCollider()
         ->build();
 
+    //14
     Entity* plane = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0, -1.0, 0.0))
         ->setScale(glm::vec3(100.0, 100.0, 1.0))

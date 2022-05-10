@@ -3,10 +3,13 @@
 
 class Bitmap;
 class ColliderResult;
+class ColliderSystem;
 
 class ComponentSystem {
 public:
     std::vector<unsigned short> entityIDs;
+
+    //ColliderSystem* colliderSystemInstance;
 
     Bitmap* requiredComponentsBitmap;
 public:
