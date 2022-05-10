@@ -11,6 +11,7 @@
 
 #include "../Transform.hpp"
 #include "../SoundManager.hpp"
+#include "../Util.hpp"
 
 #include "../InputManager.hpp"
 #include "../ECS/EntityManager.hpp"
@@ -71,14 +72,24 @@ Destructible* DestructibleSystem::getDestructible(unsigned short i) {
     return &EntityManager::instance->destructibleComponents[i];
 }
 
-void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
+float getRandomValue() {
+    return ((rand() /(float) RAND_MAX) - .5) * 2.0;
+}
+
+void DestructibleSystem::setFragmentParameters(Entity* myself, Destructible* d, Entity* e) {
     e->transform->scaling = d->fragmentScaling;
     e->updateTransforms();
 
+    glm::vec3 centerToChild = glm::vec3(getRandomValue(), getRandomValue(), getRandomValue());
+    if (glm::dot(centerToChild, centerToChild) > FLT_EPSILON) {
+        centerToChild = glm::normalize(centerToChild);
+    }
+    float explosionAmount = 100.0f;
+
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, e->id)) {
-        unsigned int id = rigidBodySystem->getComponentId(e->id);
-        RigidBody* rb = rigidBodySystem->getRigidBody(id);
-        rb->static_RB = true;
+        RigidBody* rb = rigidBodySystem->getRigidBodyFromEntityId(e->id);
+        rb->static_RB = false;
+        rb->addImpulse(centerToChild * explosionAmount);
 
         if (EntityManager::instance->hasComponent(SystemIDs::MeshID, e->id) && EntityManager::instance->hasComponent(SystemIDs::ColliderID, e->id)) {
             unsigned int meshId = meshSystem->getComponentId(e->id);
@@ -105,7 +116,7 @@ void DestructibleSystem::destroy(unsigned short i) {
     entity->removeComponent(SystemIDs::DestructibleID);
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
         entity->childrens[c]->isActive = true;
-        setFragmentParameters(getDestructible(i), entity->childrens[c]);
+        setFragmentParameters(entity, getDestructible(i), entity->childrens[c]);
     }
     entity->isActive = false;
 }
