@@ -189,13 +189,14 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
     // 2- Accumulate forces acting on the rigidbodies
     // 3- Apply impulses to resolve collisions (except if static)
 
+
     if (DEBUG_RIGIDBODY) {
         std::cout << "============== UPDATE ON COLID : " << i << std::endl;
         std::cout << "UPDATE ON COLID entityID : " << entityID << std::endl;
         std::cout << "COL RES SIZE : " << collisionResults.size() << std::endl;
     }
 
-    /*=========================================================================================================================*/
+    //=========================================================================================================================
     with_dynamic_friction &= with_friction;
 
     RigidBody* rb = getRigidBody(i);
@@ -373,6 +374,7 @@ void RigidBodySystem::updatePhysics(unsigned short i, unsigned short entityID) {
 
             //linear update part
             glm::vec3 newPos = update_EulerIntegration(rb, currentPos, deltaTime);
+            //glm::vec3 newPos = currentPos;
             //glm::vec3 newPos = update_EulerIntegrationSemiImplicit(rb, currentPos, deltaTime);
             //glm::vec3 newPos = linear_update_AccurateEulerIntegration(rb, currentPos, deltaTime);
             //glm::vec3 newPos = linear_update_VerletIntegration(rb, currentPos, deltaTime);
