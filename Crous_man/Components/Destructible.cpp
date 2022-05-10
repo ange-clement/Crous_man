@@ -43,7 +43,7 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
     Entity* entity = EntityManager::instance->entities[entityID];
 
     for (size_t s = 0, size = destructible->fragmentMeshFiles.size(); s < size; s++) {
-        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID }))
+        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID }))
             ->setChildOf(entity)
             ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s], destructible->fragmentMeshInvertTriangle[s])
             ->fitAABBColliderToMesh()
@@ -103,8 +103,8 @@ void DestructibleSystem::destroy(unsigned short i) {
     SoundManager::instance->playAt("../ressources/Sounds/explosion.wav", entity->worldTransform->translation);
     
     entity->removeComponent(SystemIDs::DestructibleID);
-    entity->setActiveRecursive(true);
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
+        entity->childrens[c]->isActive = true;
         setFragmentParameters(getDestructible(i), entity->childrens[c]);
     }
     entity->isActive = false;

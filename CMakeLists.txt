@@ -185,6 +185,8 @@ add_executable(
 	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Destructible.cpp
 	Crous_man/Components/Destructible.hpp
+	Crous_man/Components/DeleteAfterTime.cpp
+	Crous_man/Components/DeleteAfterTime.hpp
 	Crous_man/Components/Collider.cpp
 	Crous_man/Components/Collider.hpp
 	Crous_man/Components/RigidBody.cpp

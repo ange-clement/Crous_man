@@ -19,7 +19,7 @@ public:
     float width = 100.0f;
 
     Entity* targetEntity;
-    glm::vec3 shadowDirection = glm::normalize(glm::vec3(-.1f, -0.9f, 0.1f));
+    glm::vec3 shadowDirection = glm::normalize(glm::vec3(-.2f, -0.9f, 0.1f));
     float shadowSourceDistance = 500.0f;
 
     GLuint uShadowMapLocation;

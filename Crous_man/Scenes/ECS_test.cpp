@@ -386,6 +386,8 @@ void createSceneGame() {
     
     //void addForest(int nbX = 5, int nbY = 5, float centerX = 50.0f, float centerY = -50.0f, float spacingX = 8.0f, float spacingY = 8.0f, float randomAmount = 5.0f, float scaleRandom = 0.2f)
     addForest(2, 3, 50.0f, -50.0f, 10.0f, 15.0f, 8.0f);
+    addForest(2, 1, -50.0f, -50.0f, 10.0f, 10.0f, 5.0f);
+    addForest(1, 4, 25.0f, 100.0f, 10.0f, 10.0f, 15.0f);
 
     addTree(glm::vec3(7.0f, 0.4f, -60.0f));
     addTree(glm::vec3(7.0f, 0.4f, -70.0f));
@@ -550,6 +552,9 @@ void createSceneGame() {
         ->setLightQuadratic(0.004)
         ->setLightColor(lightColor)
         ->build();
+
+    //void addForest(int nbX = 5, int nbY = 5, float centerX = 50.0f, float centerY = -50.0f, float spacingX = 8.0f, float spacingY = 8.0f, float randomAmount = 5.0f, float scaleRandom = 0.2f)
+    addForest(2, 3, 150.0f, -80.0f, 20.0f, 10.0f, 8.0f);
     
     
 

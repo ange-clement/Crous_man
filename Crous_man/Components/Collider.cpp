@@ -197,7 +197,7 @@ void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
     //std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
     //Resize older components (for perform add in game)
     for (auto const& x : collisionResultMap) {
-        if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
+        if (x.first != (unsigned short)-1 && collisionResultMap.at(x.first).size() < entityIDs.size()) {
 
             //std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
@@ -230,16 +230,20 @@ void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) 
     
     for (size_t j = i + 1, size = entityIDs.size(); j < size; j++) {
         entityIDJ = entityIDs[j];
-        if (EntityManager::instance->shouldUpdate(entityIDJ)) {
+        if (EntityManager::instance->shouldUpdate(entityID) && EntityManager::instance->shouldUpdate(entityIDJ)) {
             computeIntersection(i, entityID, j, entityIDJ);
         }else{
-            //Need to clear collision jic
-            //simpleCollisionResultMap.at(entityID)[j] = false;
-            collisionResultMap.at(entityID)[j] =  0;
+            if (entityID != (unsigned short) -1) {
+                //Need to clear collision jic
+                //simpleCollisionResultMap.at(entityID)[j] = false;
+                collisionResultMap.at(entityID)[j] =  0;
+            }
 
-            //Could be optional
-            //simpleCollisionResultMap.at(entityIDJ)[i] = false;
-            collisionResultMap.at(entityIDJ)[i] =  0;
+            if (entityIDJ != (unsigned short) -1) {
+                //Could be optional
+                //simpleCollisionResultMap.at(entityIDJ)[i] = false;
+                collisionResultMap.at(entityIDJ)[i] =  0;
+            }
         }
     }
 }
