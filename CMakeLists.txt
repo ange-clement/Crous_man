@@ -44,7 +44,6 @@ set(ALL_LIBS
 	${OPENGL_LIBRARY}
 	glfw
 	GLEW_1130
-	${CMAKE_SOURCE_DIR}/external/irrKlang-64bit-1.6.0/bin/linux-gcc-64/libIrrKlang.so -pthread
 )
 
 
@@ -185,7 +184,9 @@ add_executable(
 	Crous_man/Components/Collider.hpp
 	Crous_man/Components/RigidBody.cpp
 	Crous_man/Components/RigidBody.hpp
-
+	Crous_man/Components/ColliderManagerComponentSystem.cpp	
+	Crous_man/Components/ColliderManagerComponentSystem.hpp
+	
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.cpp
@@ -199,7 +200,7 @@ add_executable(
 	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
-	Crous_man/Scenes/ECS_test.hpp)
+	Crous_man/Scenes/ECS_test.hpp "")
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

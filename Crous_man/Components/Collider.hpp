@@ -154,7 +154,7 @@ void computeMinMaxAABB(const Collider& c, glm::vec3& min, glm::vec3& max);
 void AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, ColliderResult* res);
 void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res);
 void SphereAABBCollision(const Collider& aabb, const Collider& sphere, ColliderResult* res);
-void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderResult* res);
+void OBBSphereCollision(const Collider& sphere, const Collider& obb, ColliderResult* res);
 void SpherePlaneCollision(const Collider& sphere, const glm::vec3 normal_plan, float distance_to_origin, ColliderResult* res);
 void AABBOBBCollision(const Collider& aabb, const Collider& obb, ColliderResult* res);
 void AABBPlaneCollision(const Collider& aabb, const glm::vec3 normal_plan, float distance_to_origin, ColliderResult* res);

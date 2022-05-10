@@ -2,12 +2,9 @@
 #define COMPONENT_SYSTEM_HPP
 
 class Bitmap;
-class ColliderSystem;
 class ColliderResult;
 
 class ComponentSystem {
-private:
-    ColliderSystem* colliderSystemInstance;
 public:
     std::vector<unsigned short> entityIDs;
 

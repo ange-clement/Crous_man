@@ -156,7 +156,7 @@ void createSceneCollider() {
         //->setMeshAsFilePLY("../ressources/Models/fragment/cubeFragment.ply")
         ->updateRenderer()
         ->setRendererDiffuseSpecular("../ressources/Textures/earth.ppm", "../ressources/Textures/heightmap.pgm")
-        ->fitAABBColliderToMesh()
+        ->fitOBBColliderToMesh()
         ->setRenderingCollider()
         ->build();
    

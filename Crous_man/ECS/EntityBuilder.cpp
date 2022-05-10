@@ -370,7 +370,7 @@ EntityBuilder* EntityBuilder::setRigidBodyMass(float mass) {
 }
 EntityBuilder* EntityBuilder::setRigidBodyStatic(bool staticStatus) {
 	getRigidBody()->static_RB = staticStatus;
-	getRigidBody()->setMass(FLT_MAX);
+	//getRigidBody()->setMass(FLT_MAX);
 	return this;
 }
 
