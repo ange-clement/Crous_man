@@ -10,6 +10,7 @@ struct PointLight;
 struct Collider;
 struct RigidBody;
 struct Destructible;
+struct DeleteAfterTime;
 struct Spin;
 struct FollowObject;
 struct FlyingController;
@@ -34,6 +35,7 @@ public:
     std::vector<RigidBody> rigidBodyComponents;
     std::vector<Spin> spinComponents;
     std::vector<Destructible> destructibleComponents;
+    std::vector<DeleteAfterTime> deleteAfterTimeComponents;
     std::vector<FollowObject> followObjectComponents;
     std::vector<FlyingController> flyingControllerComponents;
     std::vector<SimpleMovementPlayer> simplePlayerControllerComponents;

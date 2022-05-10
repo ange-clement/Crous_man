@@ -74,7 +74,7 @@ void ShadowQuadEShader::use() {
     if (rendererInstance == NULL) {
         rendererInstance = dynamic_cast<RendererSystem*>(EntityManager::instance->systems[SystemIDs::RendererID]);
     }
-    glm::vec3 targetPos = targetEntity->worldTransform->translation + targetEntity->worldTransform->getForward() * width * 1.0f;
+    glm::vec3 targetPos = targetEntity->worldTransform->translation + targetEntity->worldTransform->getForward() * width * .9f;
     glm::vec3 shadowLightSourcePos = targetPos - shadowSourceDistance * shadowDirection;
     glm::vec3 shadowLightSourceTarget = targetPos;
 
@@ -86,9 +86,9 @@ void ShadowQuadEShader::use() {
     depthInstance->use();
     depthInstance->setFromPos(shadowLightSourcePos);
     depthInstance->setMaxDistance(far_plane);
-    //glCullFace(GL_FRONT);
+    glCullFace(GL_FRONT);
     rendererInstance->renderUsingShader(depthInstance, lightView, lightProjection);
-    //glCullFace(GL_BACK);
+    glCullFace(GL_BACK);
     
     QuadEShader::use();
 

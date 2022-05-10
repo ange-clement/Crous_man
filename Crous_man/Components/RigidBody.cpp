@@ -1082,8 +1082,8 @@ void RigidBodySystem::positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2,
 
 //  Torque : The further a point where force is applied is from the center of mass of an object, the less force it takes to rotate the object
 //  To find the total amount of torque applied in an object, we need to sum up torque
-//  sum(torque) = sum(r²m) * a
-//  where sum(r²m) is the <<moment of inertia>>, "I". This vakue is a 3x3 mat, different for every shapes
+//  sum(torque) = sum(rÂ²m) * a
+//  where sum(rÂ²m) is the <<moment of inertia>>, "I". This vakue is a 3x3 mat, different for every shapes
 TensorMatrix::TensorMatrix() {
     computed = false;
     mat = glm::mat4(1.0f);

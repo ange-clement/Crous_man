@@ -29,6 +29,10 @@ void QuadEShader::useBuffers(const GLuint* buffers) {
 
 }
 
+void QuadEShader::useVP(const glm::mat4& view, const glm::mat4& projection) {
+
+}
+
 void QuadEShader::setOutputShaders(GLuint* buffers) {
 
 }

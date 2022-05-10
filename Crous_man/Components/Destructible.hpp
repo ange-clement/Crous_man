@@ -3,15 +3,25 @@
 
 #include "../ECS/ComponentSystem.hpp"
 
+class RendererSystem;
+class RigidBodySystem;
+class MeshSystem;
+class ColliderSystem;
+class Entity;
+
 struct Destructible {
     float destructionAmount = 1.0;
     std::vector<std::string> fragmentMeshFiles;
     std::vector<bool> fragmentMeshInvertTriangle;
+    glm::vec3 fragmentScaling = glm::vec3(1.0f);
+    glm::vec3 fragmentColor = glm::vec3(1.0f, 1.0f, 1.0f);
 };
 
 class DestructibleSystem : public virtual ComponentSystem {
 public:
-    RendererSystem* rendererSystem;
+    RigidBodySystem* rigidBodySystem;
+    MeshSystem* meshSystem;
+    ColliderSystem* colliderSystem;
 public:
     DestructibleSystem();
 
@@ -24,6 +34,10 @@ public:
     Destructible* getDestructible(unsigned short i);
 
     void destroy(unsigned short i);
+    void destroyAmount(unsigned short i, float amount);
+
+
+    void setFragmentParameters(Destructible* d, Entity* e);
 };
 
 #endif

@@ -141,6 +141,8 @@ add_executable(
 	Crous_man/Shaders/EShaders/DepthMeshEShader.hpp
 	Crous_man/Shaders/EShaders/ShadowQuadEShader.cpp
 	Crous_man/Shaders/EShaders/ShadowQuadEShader.hpp
+	Crous_man/Shaders/EShaders/SSAOQuadEShader.cpp
+	Crous_man/Shaders/EShaders/SSAOQuadEShader.hpp
 	Crous_man/Shaders/EShaders/BlurQuadEShader.cpp
 	Crous_man/Shaders/EShaders/BlurQuadEShader.hpp
 
@@ -148,6 +150,8 @@ add_executable(
 	Crous_man/Shaders/LShaders/BlinnPhongLShader.hpp
 	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.cpp
 	Crous_man/Shaders/LShaders/BlinnPhongShadowLShader.hpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowSSAOLShader.cpp
+	Crous_man/Shaders/LShaders/BlinnPhongShadowSSAOLShader.hpp
 
 	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.cpp
 	Crous_man/Shaders/PEShaders/SingleTextureQuadShader.hpp
@@ -180,6 +184,8 @@ add_executable(
 	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Destructible.cpp
 	Crous_man/Components/Destructible.hpp
+	Crous_man/Components/DeleteAfterTime.cpp
+	Crous_man/Components/DeleteAfterTime.hpp
 	Crous_man/Components/Collider.cpp
 	Crous_man/Components/Collider.hpp
 	Crous_man/Components/RigidBody.cpp

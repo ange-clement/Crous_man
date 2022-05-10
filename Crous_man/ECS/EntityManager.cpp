@@ -18,6 +18,7 @@
 #include "../Shaders/EShaders/ShadowQuadEShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongLShader.hpp"
 #include "../Shaders/LShaders/BlinnPhongShadowLShader.hpp"
+#include "../Shaders/LShaders/BlinnPhongShadowSSAOLShader.hpp"
 #include "../Shaders/PEShaders/SingleTextureQuadShader.hpp"
 
 #include "../InputManager.hpp"
@@ -33,6 +34,7 @@
 #include "../Components/PointLight.hpp"
 #include "../Components/Spin.hpp"
 #include "../Components/Destructible.hpp"
+#include "../Components/DeleteAfterTime.hpp"
 #include "../Components/FollowObject.hpp"
 #include "../Components/Controllers/FlyingController.hpp"
 #include "../Components/Controllers/SimpleMovementPlayer.hpp"
@@ -79,10 +81,10 @@ void EntityManager::initShaders() {
     new TextureGShader();
     new DepthMeshEShader();
     new ShadowQuadEShader();
+    new BlinnPhongShadowSSAOLShader();
     new BlinnPhongShadowLShader();
     new BlinnPhongLShader();
     new SingleTextureQuadShader();
-    new TextureGShader();
     new SphereColliderShader();
     new BoxColliderShader();
 }
@@ -103,6 +105,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::SpinID] =                    new SpinSystem();
     systems[SystemIDs::FollowObjectID] =            new FollowObjectSystem();
     systems[SystemIDs::DestructibleID] =            new DestructibleSystem();
+    systems[SystemIDs::DeleteAfterTimeID] =         new DeleteAfterTimeSystem();
     systems[SystemIDs::FlyingControllerID] =        new FlyingControllerSystem();
     systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
     systems[SystemIDs::CrousManControllerID] =      new CrousManControllerSystem();

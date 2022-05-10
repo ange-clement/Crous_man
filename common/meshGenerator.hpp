@@ -8,6 +8,17 @@ void quad(      std::vector<glm::vec3> & vertices,
                 std::vector<std::vector<unsigned short>> & triangles
                 );
 
+
+
+void cube(      std::vector<glm::vec3> & vertices,
+                std::vector<glm::vec3> & normals,
+                std::vector<glm::vec2> & texCoords,
+                std::vector<unsigned short> & indices,
+                std::vector<std::vector<unsigned short>> & triangles
+                );
+
+
+
 void uvSphere(  std::vector<glm::vec3> & vertices,
                 std::vector<glm::vec3> & normals,
                 std::vector<glm::vec2> & texCoords,

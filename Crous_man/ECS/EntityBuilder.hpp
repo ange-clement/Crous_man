@@ -4,6 +4,8 @@
 #include "SystemIDs.hpp"
 #include "../Components/Collider.hpp"
 
+#define DEBUG_ENTITY_BUILDER false
+
 struct Mesh;
 
 class RendererSystem;
@@ -46,9 +48,11 @@ public:
 
 	Mesh* getMesh();
 	EntityBuilder* setMeshAsQuad();
+	EntityBuilder* setMeshAsCube();
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile, bool invertTriangles);
+	EntityBuilder* setMeshAsFilePLYCenter(std::string meshFile);
 
 	RendererSystem* getRendererSystem();
 	Renderer* getRenderer();
@@ -58,15 +62,19 @@ public:
 	EntityBuilder* setRendererSpecular(std::string specularFile);
 	EntityBuilder* setRendererDiffuseSpecular(std::string diffuseFile, std::string specularFile);
 	EntityBuilder* setRendererDiffuseColor(glm::vec3 diffuseColor);
+	EntityBuilder* setRendererSpecularValue(float spec);
 	EntityBuilder* setRendererDraw(bool draw);
 	EntityBuilder* setRendererCastShadows(bool castShadows);
 
 	Destructible* getDestructible();
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles);
+	EntityBuilder* setDestructibleFragmentScaling(glm::vec3 fragmentScaling);
+	EntityBuilder* setDestructibleFragmentColor(glm::vec3 fragmentColor);
+	EntityBuilder* setDestructibleHealth(float health);
 
 	EntityBuilder* setColliderType(colliderType type);
-	EntityBuilder* setColliderPosition(glm::vec3 pos);
+	EntityBuilder* setColliderCenter(glm::vec3 pos);
 	EntityBuilder* setColliderRadius(float radius);
 	EntityBuilder* setColliderSize(glm::vec3 size);
 	EntityBuilder* setColliderOrientation(glm::mat3 orientation);
@@ -95,7 +103,9 @@ public:
 	CrousManController* getCrousManController();
 	EntityBuilder* setCrousManControllerRotatingCenterForCamera(Entity* target);
 	EntityBuilder* setCrousManControllerCameraTarget(Entity* target);
+	EntityBuilder* setCrousManControllerCameraEntity(Entity* target);
 	EntityBuilder* setCrousManControllerSaucisseEntity(Entity* saucisse);
+	EntityBuilder* setCrousManControllerLaserEntity(Entity* laser);
 
 	EntityBuilder* setTranslation(glm::vec3 translation);
 	EntityBuilder* setScale(glm::vec3 scale);
@@ -108,5 +118,7 @@ public:
 
 	Entity* build();
 };
+
+void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, glm::vec3& size);
 
 #endif

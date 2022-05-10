@@ -20,12 +20,6 @@
 #include "ECS/Entity.hpp"
 
 
-PlayingAudio::PlayingAudio(irrklang::ISound* sound3D, Entity* attachedEntity) : sound3D(sound3D), attachedEntity(attachedEntity) {
-
-}
-
-
-
 SoundManager* SoundManager::instance = NULL;
 
 SoundManager::SoundManager() {
@@ -52,18 +46,38 @@ void SoundManager::update() {
     else {
         std::cout << "Warning : no audio listener has been set!" << std::endl;
     }
+    if (DEBUG_AUDIO && audios.size() > 0.0f) {
+        std::cout << audios.size() << ": ";
+    }
     auto it = audios.begin();
-    while (it != audios.end()) {
-        if (!it->sound3D->isLooped() && it->sound3D->isFinished()) {
+    while (it < audios.end()) {
+        if (it->sound3D == NULL) {
+            if (DEBUG_AUDIO)
+                std::cout << "| ";
+        }
+        else if (!it->sound3D->isLooped() && it->sound3D->isFinished()) {
+            if (DEBUG_AUDIO)
+                std::cout << "X ";
             it->sound3D->drop();
-            it = audios.erase(it);
+            it->sound3D = NULL;
         }
         else {
+            if (DEBUG_AUDIO)
+                std::cout << (it->attachedEntity != NULL) << " ";
             if (it->attachedEntity != NULL) {
                 it->sound3D->setPosition(entityPosToIrrklangVec3(it->attachedEntity));
             }
+        }
+        if ((it+1) >= audios.end() && it->sound3D == NULL) {
+            it = audios.erase(it);
+        }
+        else {
             it++;
         }
+    }
+
+    if (DEBUG_AUDIO && audios.size() > 0.0f) {
+        std::cout << std::endl;
     }
 }
 
@@ -71,32 +85,40 @@ void SoundManager::play(std::string soundFile) {
     soundEngine->play2D(soundFile.c_str(), false);
 }
 
-void SoundManager::playAt(std::string soundFile, glm::vec3 pos) {
-    playAt(soundFile, pos, defaultMinDistance);
+unsigned int SoundManager::playAt(std::string soundFile, glm::vec3 pos) {
+    return playAt(soundFile, pos, defaultMinDistance);
 }
 
-void SoundManager::playAt(std::string soundFile, glm::vec3 pos, float minDistance) {
+unsigned int SoundManager::playAt(std::string soundFile, glm::vec3 pos, float minDistance) {
     irrklang::ISound* sound3D = soundEngine->play3D(soundFile.c_str(), glmVec3ToIrrklangVec3(pos), false, false, true);
 
     if (sound3D) {
-        sound3D->setMinDistance(5.0f);
+        sound3D->setMinDistance(minDistance);
     }
+    
+    unsigned int i = getLowerNonOccupied() ;
+    audios[i].sound3D = sound3D;
+    audios[i].attachedEntity = NULL;
 
-    audios.push_back(PlayingAudio(sound3D, NULL));
+    return i;
 }
 
-void SoundManager::playOver(std::string soundFile, Entity* entity) {
-    playOver(soundFile, entity, defaultMinDistance);
+unsigned int SoundManager::playOver(std::string soundFile, Entity* entity) {
+   return playOver(soundFile, entity, defaultMinDistance);
 }
 
-void SoundManager::playOver(std::string soundFile, Entity* entity, float minDistance) {
+unsigned int SoundManager::playOver(std::string soundFile, Entity* entity, float minDistance) {
     irrklang::ISound* sound3D = soundEngine->play3D(soundFile.c_str(), glmVec3ToIrrklangVec3(entity->worldTransform->translation), false, false, true);
 
     if (sound3D) {
-        sound3D->setMinDistance(5.0f);
+        sound3D->setMinDistance(minDistance);
     }
 
-    audios.push_back(PlayingAudio(sound3D, entity));
+    unsigned int i = getLowerNonOccupied() ;
+    audios[i].sound3D = sound3D;
+    audios[i].attachedEntity = entity;
+
+    return i;
 }
 
 void SoundManager::setAudioListener(Entity* audioListener) {
@@ -107,6 +129,16 @@ void SoundManager::setAudioListener(Entity* audioListener) {
 irrklang::vec3df SoundManager::getAudioListenerVelocity() {
     //(1.0 / InputManager::instance->deltaTime) * 
     return (entityPosToIrrklangVec3(audioListener) - previousAudioListenerPos);
+}
+
+unsigned int SoundManager::getLowerNonOccupied() {
+    for (unsigned int i = 0, size = audios.size(); i < size; i++) {
+        if (audios[i].sound3D == NULL) {
+            return i;
+        }
+    }
+    audios.push_back(PlayingAudio());
+    return audios.size()-1;
 }
 
 

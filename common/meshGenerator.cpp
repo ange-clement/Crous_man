@@ -78,43 +78,74 @@ void quad(      std::vector<glm::vec3> & vertices,
     triangles.push_back(t2);
 }
 
+
+
+void face(  std::vector<glm::vec3> & vertices,
+            std::vector<glm::vec3> & normals,
+            std::vector<glm::vec2> & texCoords,
+            std::vector<unsigned short> & indices,
+            std::vector<std::vector<unsigned short>> & triangles,
+            std::initializer_list<glm::vec3> xyz, glm::vec3 nrm) {
+    unsigned int start = vertices.size();
+    for (glm::vec3 val : xyz) {
+        vertices.push_back(val);
+    }
+    for (unsigned int i = 0; i < 4; i++) {
+        normals.push_back(nrm);
+    }
+    texCoords.push_back(glm::vec2(0.0, 0.0));
+    texCoords.push_back(glm::vec2(1.0, 0.0));
+    texCoords.push_back(glm::vec2(1.0, 1.0));
+    texCoords.push_back(glm::vec2(0.0, 1.0));
+    indices.push_back(start  );
+    indices.push_back(start+1);
+    indices.push_back(start+2);
+    indices.push_back(start  );
+    indices.push_back(start+2);
+    indices.push_back(start+3);
+    std::vector<unsigned short> t1;
+    t1.push_back(start  );
+    t1.push_back(start+1);
+    t1.push_back(start+2);
+    std::vector<unsigned short> t2;
+    t2.push_back(start  );
+    t2.push_back(start+2);
+    t2.push_back(start+3);
+    triangles.push_back(t1);
+    triangles.push_back(t2);
+}
+
+
 /**
  * Create a model of a cube, centered at the origin.  (This is not
  * a particularly good format for a cube, since an IFS representation
  * has a lot of redundancy.)
- * @side the length of a side of the cube.  If not given, the value will be 1.
-//  */
-// function cube(side) {
-//     var s = (side || 1)/2;
-//     var coords = [];
-//     var normals = [];
-//     var texCoords = [];
-//     var indices = [];
-//     function face(xyz, nrm) {
-//         var start = coords.length/3;
-//         var i;
-//         for (i = 0; i < 12; i++) {
-//             coords.push(xyz[i]);
-//         }
-//         for (i = 0; i < 4; i++) {
-//             normals.push(nrm[0],nrm[1],nrm[2]);
-//         }
-//         texCoords.push(0,0,1,0,1,1,0,1);
-//         indices.push(start,start+1,start+2,start,start+2,start+3);
-//     }
-//     face( [-s,-s,s, s,-s,s, s,s,s, -s,s,s], [0,0,1] );
-//     face( [-s,-s,-s, -s,s,-s, s,s,-s, s,-s,-s], [0,0,-1] );
-//     face( [-s,s,-s, -s,s,s, s,s,s, s,s,-s], [0,1,0] );
-//     face( [-s,-s,-s, s,-s,-s, s,-s,s, -s,-s,s], [0,-1,0] );
-//     face( [s,-s,-s, s,s,-s, s,s,s, s,-s,s], [1,0,0] );
-//     face( [-s,-s,-s, -s,-s,s, -s,s,s, -s,s,-s], [-1,0,0] );
-//     return {
-//         vertexPositions: new Float32Array(coords),
-//         vertexNormals: new Float32Array(normals),
-//         vertexTextureCoords: new Float32Array(texCoords),
-//         indices: new Uint16Array(indices)
-//     };
-// }
+ */
+void cube(      std::vector<glm::vec3> & vertices,
+                std::vector<glm::vec3> & normals,
+                std::vector<glm::vec2> & texCoords,
+                std::vector<unsigned short> & indices,
+                std::vector<std::vector<unsigned short>> & triangles
+                )
+{
+    vertices.clear();
+    normals.clear();
+    texCoords.clear();
+    indices.clear();
+    triangles.clear();
+    
+    float s = 0.5f;
+    
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s, s, s), glm::vec3(-s,-s, s), glm::vec3( s,-s, s), glm::vec3( s, s, s)}, glm::vec3( 0, 0, 1));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s,-s,-s), glm::vec3(-s, s,-s), glm::vec3( s, s,-s), glm::vec3( s,-s,-s)}, glm::vec3( 0, 0,-1));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s, s,-s), glm::vec3(-s, s, s), glm::vec3( s, s, s), glm::vec3( s, s,-s)}, glm::vec3( 0, 1, 0));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3( s,-s,-s), glm::vec3( s,-s, s), glm::vec3(-s,-s, s), glm::vec3(-s,-s,-s)}, glm::vec3( 0,-1, 0));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3( s,-s, s), glm::vec3( s,-s,-s), glm::vec3( s, s,-s), glm::vec3( s, s, s)}, glm::vec3( 1, 0, 0));
+    face(vertices, normals, texCoords, indices, triangles, {glm::vec3(-s,-s,-s), glm::vec3(-s,-s, s), glm::vec3(-s, s, s), glm::vec3(-s, s,-s)}, glm::vec3(-1, 0, 0));
+}
+
+
+
 
 // /**
 //  * Creates a model of an annulus or disk lying in the xy plane,

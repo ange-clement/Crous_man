@@ -9,6 +9,7 @@ enum SystemIDs {
     SpinID,
     FollowObjectID,
     DestructibleID,
+    DeleteAfterTimeID,
     ColliderID,
     RigidBodyID,
     FlyingControllerID,

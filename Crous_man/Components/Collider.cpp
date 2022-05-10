@@ -106,7 +106,7 @@ void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
     }
     if (getCollider(i)->type == colliderType::OBB) {
         getCollider(i)->dimensions = getCollider(i)->size;
-     }
+    }
     if (getCollider(i)->type == colliderType::AABB) {
         getCollider(i)->orientation = glm::mat3(1);
     }
@@ -124,14 +124,18 @@ void ColliderSystem::update(unsigned short i, unsigned short entityID) {
     getCollider(i)->position = entity->worldTransform->translation + getCollider(i)->center;
 
     //We also need to perform others implementations like dimensions for AABB
+    if (getCollider(i)->type == colliderType::Sphere) {
+        getCollider(i)->dimensions = glm::vec3(getCollider(i)->radius);
+    }
+    
     if (getCollider(i)->type == colliderType::AABB) {
         computeAABBDimensions(getCollider(i));
     }
 
     if (getCollider(i)->type == colliderType::OBB) {
+        getCollider(i)->dimensions = getCollider(i)->size;
         getCollider(i)->orientation = EntityManager::instance->entities[entityID]->worldTransform->rotation.rotationMatrix;
     }
-
 
     
     if (!isPressedColliderDraw && glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_PRESS) {
@@ -167,7 +171,10 @@ void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
             //print(c->orientation);
             //print(c->dimensions);
 
-            glm::mat4 model = e->worldTransform->toMat4NoScalingNoRotation();
+            glm::mat4 model = glm::mat4(1.0f);
+            model[3][0] = c->position.x;
+            model[3][1] = c->position.y;
+            model[3][2] = c->position.z;
             c->shader->setMVPC(model * glm::mat4(c->orientation), view, projection, isInContactWithSomething(entityID), c->dimensions);
             c->shader->draw();
         }
@@ -194,7 +201,7 @@ void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
     //std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
     //Resize older components (for perform add in game)
     for (auto const& x : collisionResultMap) {
-        if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
+        if (x.first != (unsigned short)-1 && collisionResultMap.at(x.first).size() < entityIDs.size()) {
 
             //std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
@@ -227,16 +234,20 @@ void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) 
     
     for (size_t j = i + 1, size = entityIDs.size(); j < size; j++) {
         entityIDJ = entityIDs[j];
-        if (EntityManager::instance->shouldUpdate(entityIDJ)) {
+        if (EntityManager::instance->shouldUpdate(entityID) && EntityManager::instance->shouldUpdate(entityIDJ)) {
             computeIntersection(i, entityID, j, entityIDJ);
         }else{
-            //Need to clear collision jic
-            //simpleCollisionResultMap.at(entityID)[j] = false;
-            collisionResultMap.at(entityID)[j] =  0;
+            if (entityID != (unsigned short) -1) {
+                //Need to clear collision jic
+                //simpleCollisionResultMap.at(entityID)[j] = false;
+                collisionResultMap.at(entityID)[j] =  0;
+            }
 
-            //Could be optional
-            //simpleCollisionResultMap.at(entityIDJ)[i] = false;
-            collisionResultMap.at(entityIDJ)[i] =  0;
+            if (entityIDJ != (unsigned short) -1) {
+                //Could be optional
+                //simpleCollisionResultMap.at(entityIDJ)[i] = false;
+                collisionResultMap.at(entityIDJ)[i] =  0;
+            }
         }
     }
 }
