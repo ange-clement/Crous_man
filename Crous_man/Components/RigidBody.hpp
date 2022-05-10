@@ -156,7 +156,7 @@ public:
     void applyImpulse_linearAngularFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
     void applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
 
-    
+    void applyImpulse_linearAngular_bis(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
 
     //Apply a possible position correction, depending on linearProjectionPercent and penetrationSlack
     void positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2, RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res);

@@ -14,7 +14,6 @@
 
 #include "../ECS/EntityManager.hpp"
 #include "../ECS/Entity.hpp"
-#include "../ECS/EntityBuilder.hpp"
 #include "../ECS/Bitmap.hpp"
 
 #include "../Transform.hpp"
@@ -27,6 +26,7 @@
 #include "../Components/Collider.hpp"
 
 #include "ECS_test.hpp"
+#include "../ECS/EntityBuilder.hpp"
 
 
 #define ADD_DEFAULT_DESTRUCTIVE_MESHES ->addDestructibleMeshes({       \

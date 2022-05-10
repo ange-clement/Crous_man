@@ -206,7 +206,8 @@ add_executable(
 	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
-	Crous_man/Scenes/ECS_test.hpp "")
+	Crous_man/Scenes/ECS_test.hpp 
+)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

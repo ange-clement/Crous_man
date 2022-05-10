@@ -290,7 +290,8 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
                             }
                         }
                         else {
-                            applyImpulse_linearAngular(rb, otherRb, cp, sizeContact, pos, otherpos, inversedTensor_I, inversedTensor_J);
+                            applyImpulse_linearAngular_bis(rb, otherRb, cp, sizeContact, pos, otherpos, inversedTensor_I, inversedTensor_J);
+                            //applyImpulse_linearAngular(rb, otherRb, cp, sizeContact, pos, otherpos, inversedTensor_I, inversedTensor_J);
                         }
                     }
                     else {
@@ -1690,6 +1691,12 @@ void RigidBodySystem::applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1,
 }
 
 
+void RigidBodySystem::applyImpulse_linearAngular_bis(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2) {
+    std::cout << "APLLY LINEAR ANGULAR BIS" << std::endl;
+    applyImpulse_linear(rb_1, rb_2, p_res, nbC);
+    if(!rb_1->static_RB) rb_1->rotational_addImpulseAtPosition(p_res->point, p_res->normal * p_res->penetrationDistance, posrb1, getFromMat4(inverseTensorrb1));
+    if(!rb_2->static_RB) rb_2->rotational_addImpulseAtPosition(p_res->point, -p_res->normal * p_res->penetrationDistance, posrb2, getFromMat4(inverseTensorrb2));
+}
 
 
 
