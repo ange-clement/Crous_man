@@ -644,7 +644,7 @@ void AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, ColliderRes
 
 //Collision between two Sphere
 void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
-    std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
+    //std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
     assert(sp1.type == colliderType::Sphere);
     assert(sp2.type == colliderType::Sphere);
     assert(res != 0);
@@ -656,11 +656,11 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
 
     float distance = glm::length(mvt);
 
-    std::cout << "DISTANCE : " << distance << std::endl;
-    std::cout << "RAYON : " << r << std::endl;
+    //std::cout << "DISTANCE : " << distance << std::endl;
+    //std::cout << "RAYON : " << r << std::endl;
 
     if (distance < r) {
-        std::cout << "CONTACT !!" << std::endl;
+        //std::cout << "CONTACT !!" << std::endl;
         cp_res = new ContactPoint();
         
         //res->penetrationDistance = (sp1.radius - distance) + sp2.radius;
@@ -673,13 +673,13 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
 
     //If there is a contact point
     if (cp_res != 0) {
-        std::cout << "CP TROUVE !"<< std::endl;
+        //std::cout << "CP TROUVE !"<< std::endl;
         res->isInCollision = true;
-        cp_res->print();
+        //cp_res->print();
 
         res->contactsPts.push_back(cp_res);
     }
-    std::cout << "=========== END ==========" << std::endl;
+    //std::cout << "=========== END ==========" << std::endl;
 }
 
 
