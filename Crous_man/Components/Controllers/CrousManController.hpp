@@ -16,8 +16,6 @@ struct CrousManController {
 
     float azimuth;
     float zenith;
-    float lastMoovedAzimuth;
-    float lastMoovedZenith;
 
     float maxCameraDistance = 50.0f;
     glm::vec3 initialRotatingPos;
