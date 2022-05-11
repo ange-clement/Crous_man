@@ -655,4 +655,8 @@ void createSceneGame() {
         ->setLightQuadratic(0.004)
         ->setLightColor(glm::vec3(.628, .948, .628))
         ->build();
+
+
+
+    SoundManager::instance->playLoop("../ressources/Sounds/apokalipss.wav");
 }

@@ -50,7 +50,7 @@ void SoundManager::update() {
         std::cout << audios.size() << ": ";
     }
     auto it = audios.begin();
-    while (it < audios.end()) {
+    while (it != audios.end()) {
         if (it->sound3D == NULL) {
             if (DEBUG_AUDIO)
                 std::cout << "| ";
@@ -77,12 +77,15 @@ void SoundManager::update() {
     }
 
     if (DEBUG_AUDIO && audios.size() > 0.0f) {
-        std::cout << std::endl;
+        std::cout << "fin" << std::endl;
     }
 }
 
 void SoundManager::play(std::string soundFile) {
     soundEngine->play2D(soundFile.c_str(), false);
+}
+void SoundManager::playLoop(std::string soundFile) {
+    soundEngine->play2D(soundFile.c_str(), true);
 }
 
 unsigned int SoundManager::playAt(std::string soundFile, glm::vec3 pos) {

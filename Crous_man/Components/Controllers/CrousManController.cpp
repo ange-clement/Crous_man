@@ -58,7 +58,7 @@ void CrousManControllerSystem::initialize(unsigned short i, unsigned short entit
 
     crous->initialRotatingPos = EntityManager::instance->entities[crous->rotatingCenterForCamera->id]->transform->translation;
 
-    crous->laserSoundCooldown = new Cooldown(0.5f);
+    crous->laserSoundCooldown = new Cooldown(0.3f);
 
     crous->rb = &EntityManager::instance->rigidBodyComponents[EntityManager::instance->getComponentId(SystemIDs::RigidBodyID, entityID)];
 
@@ -193,6 +193,12 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
                 if (DEBUG_CONTROLLER) std::cout << "ID : " << destructibleID << std::endl;
 
                 destructibleSystem->destroyAmount(destructibleID, 1.0f * InputManager::instance->deltaTime);
+
+
+                if (closest != NULL && !crous->laserSoundCooldown->inCooldown()) {
+                    crous->laserSoundCooldown->start();
+                    SoundManager::instance->playAt("../ressources/Sounds/laserHit.wav", laserHit);
+                }
             }
         }
         else {
@@ -222,10 +228,6 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         else if (crous->laserAudioInd == (unsigned int)-1) {
             crous->laserAudioInd = SoundManager::instance->playOver("../ressources/Sounds/laser.wav", crousEntity);
             SoundManager::instance->audios[crous->laserAudioInd].sound3D->setIsLooped(true);
-        }
-        if (closest != NULL && !crous->laserSoundCooldown->inCooldown()) {
-            crous->laserSoundCooldown->start();
-            SoundManager::instance->playAt("../ressources/Sounds/laserHit.wav", laserHit);
         }
     }
     if (DEBUG_CONTROLLER) std::cout << "LASER RAYCAST END" << std::endl;
