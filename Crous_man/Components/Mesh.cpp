@@ -72,6 +72,33 @@ void Mesh::computeNormals() {
     computeSmoothVertexNormal();
 }
 
+void Mesh::invertNormals() {
+    size_t size = triangle_normals.size();
+    for (size_t i = 0; i < size; i++) {
+        triangle_normals[i] = -triangle_normals[i];
+    }
+
+    size = normals.size();
+    for (size_t i = 0; i < size; i++) {
+        normals[i] = -normals[i];
+    }
+
+    size = triangles.size();
+    unsigned short tmp;
+    for (size_t i = 0; i < size; i++) {
+        tmp = triangles[i][1];
+        triangles[i][1] = triangles[i][2];
+        triangles[i][2] = tmp;
+    }
+
+    size = indices.size();
+    for (size_t i = 0; i < size; i+=3) {
+        tmp = indices[i+1];
+        indices[i+1] = indices[i+2];
+        indices[i+2] = tmp;
+    }
+}
+
 
 
 MeshSystem::MeshSystem() : ComponentSystem(){

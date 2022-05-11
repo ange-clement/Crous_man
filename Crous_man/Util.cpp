@@ -104,3 +104,6 @@ glm::vec3 projectV3OnM3(const glm::vec3& vec, const glm::mat3& mat) {
 float degToRad(float deg) {
     return M_PI / 180.0f * deg;
 }
+float radToDeg(float rad) {
+    return 180.0f / M_PI * rad;
+}

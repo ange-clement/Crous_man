@@ -125,7 +125,7 @@ void RigidBody::addVelocityAtPosition(glm::vec3 vel, glm::vec3 pos) {
         velAxis = velAxis / velAxisLength;
         this->addAngularVelocity(velAxis * velAngle);
     }
-    this->addVelocity(vel / (posDistance + 1.0f));
+    //this->addVelocity(vel / (posDistance + 1.0f));
 }
 
 void RigidBody::addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos) {
@@ -136,11 +136,13 @@ void RigidBody::addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos) {
     float Iinv = 1.0f / (this->mass * glm::dot(centerToPosVector, centerToPosVector));
     glm::vec3 angularVelocityDiff = Iinv * glm::cross(centerToPosVector, impulse);
 
-    glm::vec3 velocityDiff = impulse * this->inverseOfMass;
-
+    angularVelocityDiff.x = radToDeg(angularVelocityDiff.x);
+    angularVelocityDiff.y = radToDeg(angularVelocityDiff.y);
+    angularVelocityDiff.z = radToDeg(angularVelocityDiff.z);
 
     this->addAngularVelocity(angularVelocityDiff);
-    this->addVelocity(velocityDiff);
+    //glm::vec3 velocityDiff = impulse * this->inverseOfMass;
+    //this->addVelocity(velocityDiff);
 }
 
 
@@ -1266,6 +1268,10 @@ glm::mat4 RigidBodySystem::inverseTensorComputation(Collider c, RigidBody* rb) {
         iz = (x2 + y2) * rb->mass * fraction;
         //iw = 1.0f;
     }
+
+    ix = ix == 0.0 ? FLT_EPSILON : ix;
+    iy = iy == 0.0 ? FLT_EPSILON : iy;
+    iz = iz == 0.0 ? FLT_EPSILON : iz;
 
     return glm::mat4(
         1.0f / ix, 0, 0, 0,

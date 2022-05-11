@@ -26,7 +26,7 @@
 
 #include "Destructible.hpp"
 
-#define DESTRUCTIBLE_SYSTEM true
+#define DESTRUCTIBLE_SYSTEM false
 
 DestructibleSystem::DestructibleSystem() : ComponentSystem() {
     requiredComponentsBitmap = new Bitmap({ SystemIDs::DestructibleID });
@@ -45,7 +45,7 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
     Entity* entity = EntityManager::instance->entities[entityID];
 
     for (size_t s = 0, size = destructible->fragmentMeshFiles.size(); s < size; s++) {
-        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID}))
+        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID }))
             ->setChildOf(entity)
             ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s], destructible->fragmentMeshInvertTriangle[s])
             ->fitAABBColliderToMesh()
@@ -53,6 +53,8 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
             ->setActive(false)
             ->updateRenderer()
             ->setRendererDiffuseColor(destructible->fragmentColor)
+            ->setRigidBodyMass(.1f)
+            ->setRigidBodyDrag(0.98f)
             ->initializeComponents()
             ->build();
     }
@@ -77,22 +79,24 @@ float getRandomValue() {
     return ((rand() /(float) RAND_MAX) - .5) * 2.0;
 }
 
-void DestructibleSystem::setFragmentParameters(Entity* myself, Destructible* d, Entity* e) {
+void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
     if (DESTRUCTIBLE_SYSTEM){
-        std::cout << "MYSELF : " << myself->id << std::endl;
         std::cout << "SET FRAG PARAM" << std::endl;
         std::cout << "ID : " << e->id << std::endl;
     }
 
     e->transform->scaling = d->fragmentScaling;
+    if (EntityManager::instance->hasComponent(SystemIDs::DeleteAfterTimeID, e->id)) {
+        e->transform->scaling *= (1.0f + getRandomValue());
+    }
     e->updateTransforms();
 
-    glm::vec3 centerToChild = glm::vec3(getRandomValue(), getRandomValue(), getRandomValue());
+    glm::vec3 randomDirection = glm::vec3(getRandomValue(), getRandomValue(), getRandomValue());
     
-    if (glm::dot(centerToChild, centerToChild) > FLT_EPSILON) {
-        centerToChild = glm::normalize(centerToChild);
+    if (glm::dot(randomDirection, randomDirection) > FLT_EPSILON) {
+        randomDirection = glm::normalize(randomDirection) * d->fragmentScaling;
     }
-    float explosionAmount = 100.0f;
+    float explosionAmount = 50.0f + getRandomValue() * 10.0f;
 
     if (DESTRUCTIBLE_SYSTEM) std::cout << "IF STATEMENT" << std::endl;
 
@@ -102,11 +106,11 @@ void DestructibleSystem::setFragmentParameters(Entity* myself, Destructible* d, 
          if (DESTRUCTIBLE_SYSTEM) std::cout << "RB FROM ENTITY ID : " << rb << std::endl;
 
         rb->static_RB = false;
-        rb->addImpulse(centerToChild * explosionAmount);
+        rb->addVelocity(randomDirection * explosionAmount);
         
-        if (DESTRUCTIBLE_SYSTEM) std::cout << "rb : " << rb << std::endl;
-        unsigned int id = rigidBodySystem->getComponentId(e->id);
-        if (DESTRUCTIBLE_SYSTEM) std::cout << "ID : " << id << std::endl;
+        //if (DESTRUCTIBLE_SYSTEM) std::cout << "rb : " << rb << std::endl;
+        //unsigned int id = rigidBodySystem->getComponentId(e->id);
+        //if (DESTRUCTIBLE_SYSTEM) std::cout << "ID : " << id << std::endl;
 
         if (EntityManager::instance->hasComponent(SystemIDs::MeshID, e->id) && EntityManager::instance->hasComponent(SystemIDs::ColliderID, e->id)) {
             unsigned int meshId = meshSystem->getComponentId(e->id);
@@ -143,7 +147,7 @@ void DestructibleSystem::destroy(unsigned short i) {
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
         
         entity->childrens[c]->isActive = true;
-        setFragmentParameters(entity, getDestructible(i), entity->childrens[c]);
+        setFragmentParameters(getDestructible(i), entity->childrens[c]);
     }
     entity->isActive = false;
 }

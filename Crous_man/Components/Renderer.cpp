@@ -180,8 +180,6 @@ void RendererSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
-
-    std::cout << std::endl;
 }
 
 void RendererSystem::renderUsingShader(MeshEShader* shader, glm::mat4 view, glm::mat4 projection) {

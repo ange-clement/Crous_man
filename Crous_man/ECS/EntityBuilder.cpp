@@ -107,6 +107,10 @@ EntityBuilder* EntityBuilder::setMeshAsFilePLY(std::string meshFile, bool invert
 	this->getMesh()->loadFromFilePLY(meshFile, invertTriangles);
 	return this;
 }
+EntityBuilder* EntityBuilder::meshInvertNormals() {
+	this->getMesh()->invertNormals();
+	return this;
+}
 
 
 
@@ -417,6 +421,11 @@ RigidBody* EntityBuilder::getRigidBody() {
 }
 EntityBuilder* EntityBuilder::setRigidBodyMass(float mass) {
 	getRigidBody()->setMass(mass);
+	return this;
+}
+EntityBuilder* EntityBuilder::setRigidBodyDrag(float drag) {
+	getRigidBody()->drag = drag;
+	getRigidBody()->angularDrag = drag;
 	return this;
 }
 EntityBuilder* EntityBuilder::setRigidBodyStatic(bool staticStatus) {

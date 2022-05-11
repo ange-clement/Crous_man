@@ -113,7 +113,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     glm::vec3 udirection = glm::vec3(0.0, 1.0, 0.0);
     glm::vec3 f = rotatingTr->getForward();
     glm::vec3 fdirection = glm::normalize(glm::vec3(f.x, 0.0, f.z));
-    glm::vec3 velocityFdirection = glm::normalize(glm::vec3(rb->velocity.x, 0.0, rb->velocity.z));
+    glm::vec3 velocityNoY = glm::normalize(glm::vec3(rb->velocity.x, 0.0, rb->velocity.z));
 
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         currentMaxSpeed *= 10.0f;
@@ -145,13 +145,13 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     rb->addAcceleration(appliedAcceleration);
 
     if (!mooved) {
-        if (glm::dot(velocityFdirection, velocityFdirection) > FLT_EPSILON)
-            rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(velocityFdirection));
+        if (glm::dot(velocityNoY, velocityNoY) > FLT_EPSILON)
+            rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(velocityNoY));
         else
             rb->velocity = glm::vec3(0.0f, rb->velocity.y, 0.0f);
     }
 
-    if (DEBUG_CONTROLLER) std::cout << "LASER RAYCAST" << std::endl;
+    if (DEBUG_CONTROLLER) std::cout << "LASER RAYCAST " << std::endl;
 
     // Laser : raycast
     if (glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
@@ -162,7 +162,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         float distance;
         glm::vec3 cameraToResult;
 
-        if (DEBUG_CONTROLLER) std::cout << "1" << std::endl;
+        if (DEBUG_CONTROLLER) std::cout << "1 " << std::flush;
 
         for (unsigned int i = 0, size = rayResult.size(); i < size; i++) {
             if (rayResult[i] != NULL && !EntityManager::instance->hasComponent(SystemIDs::CrousManControllerID, rayResult[i]->entityIDCollid)) {
@@ -174,23 +174,23 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
                 }
             }
         }
-        if (DEBUG_CONTROLLER) std::cout << "2" << std::endl;
+        if (DEBUG_CONTROLLER) std::cout << "2 " << std::flush;
 
         glm::vec3 laserHit;
         if (closest != NULL) {
-            if (DEBUG_CONTROLLER) std::cout << "IF" << std::endl;
+            if (DEBUG_CONTROLLER) std::cout << "IF " << std::flush;
 
             distance = sqrt(distance);
             laserHit = closest->point;
 
-            std::cout << closest->entityIDCollid << std::endl;
+            std::cout << closest->entityIDCollid << std::flush;
 
             if (EntityManager::instance->hasComponent(SystemIDs::DestructibleID, closest->entityIDCollid)) {
-                if (DEBUG_CONTROLLER) std::cout << "IM DESTRUCTIBLE" << std::endl;
+                if (DEBUG_CONTROLLER) std::cout << "IM DESTRUCTIBLE " << std::flush;
 
 
                 unsigned int destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, closest->entityIDCollid);
-                if (DEBUG_CONTROLLER) std::cout << "ID : " << destructibleID << std::endl;
+                if (DEBUG_CONTROLLER) std::cout << "ID : " << destructibleID << " " << std::flush;
 
                 destructibleSystem->destroyAmount(destructibleID, 1.0f * InputManager::instance->deltaTime);
 
@@ -202,15 +202,15 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
             }
         }
         else {
-            if (DEBUG_CONTROLLER) std::cout << "ELSE" << std::endl;
+            if (DEBUG_CONTROLLER) std::cout << "ELSE " << std::flush;
 
             distance = 200.0f;
             laserHit = cameraWTr->translation + distance * cameraWTr->getForward();
         }
 
-        if (DEBUG_CONTROLLER) std::cout << "3" << std::endl;
+        if (DEBUG_CONTROLLER) std::cout << "3 " << std::flush;
 
-        float laserSize = sin(InputManager::instance->lastFrame * 15.0f)*1.0f+2.0f;
+        float laserSize = sin(InputManager::instance->lastFrame * 15.0f) * 1.0f + 2.0f;
         glm::vec3 crousToHit = laserHit - tr->translation;
         crous->laserEntity->transform->translation = tr->translation + crousToHit * 0.5f;
         crous->laserEntity->transform->rotation.lookAt(crous->laserEntity->transform->translation, laserHit, glm::vec3(0.0, 1.0, 0.0));
@@ -219,7 +219,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
 
 
         // Laser Sounds
-        if (DEBUG_CONTROLLER) std::cout << "4" << std::endl;
+        if (DEBUG_CONTROLLER) std::cout << "4 " << std::flush;
 
         if (crous->firstLaserSound) {
             SoundManager::instance->playOver("../ressources/Sounds/laserStart.wav", crousEntity);
@@ -230,7 +230,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
             SoundManager::instance->audios[crous->laserAudioInd].sound3D->setIsLooped(true);
         }
     }
-    if (DEBUG_CONTROLLER) std::cout << "LASER RAYCAST END" << std::endl;
+    if (DEBUG_CONTROLLER) std::cout << "LASER RAYCAST END " << std::endl;
 
     if (glfwGetMouseButton(InputManager::instance->window, GLFW_MOUSE_BUTTON_1) == GLFW_RELEASE){
         crous->laserEntity->setActiveRecursive(false);
@@ -269,8 +269,8 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         saucisseEntityTr->translation += diferenceVector * 0.2f;
 
         
-        if (glm::dot(velocityFdirection, velocityFdirection) > 1.0f) {
-            glm::vec3 target = tr->translation + velocityFdirection;
+        if (glm::dot(velocityNoY, velocityNoY) > 1.0f) {
+            glm::vec3 target = tr->translation + velocityNoY;
             tr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
             saucisseEntityTr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
         }

@@ -324,6 +324,17 @@ void createSceneGame() {
         ->setAsAudioListener()
         ->build();
     
+    Entity* skyBox = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
+        ->setChildOf(cameraEntity)
+        ->setScale(glm::vec3(990.0f))
+        ->setMeshAsCube()
+        ->meshInvertNormals()
+        ->updateRenderer()
+        ->setRendererDiffuseColor(glm::vec3(0.123, 0.834, 0.943))
+        //->setRendererDiffuse("../ressources/Textures/skybox.ppm")
+        ->setRendererSpecularValue(0.0f)
+        ->build();
+
     Entity* laser = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setMeshAsCube()
         ->updateRenderer()
@@ -545,7 +556,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(0.01f, 0.01f, 0.01f))
         ->setRenderingCollider()
         ADD_DEFAULT_DESTRUCTIVE_MESHES
-        ->setDestructibleFragmentScaling(glm::vec3(30.0f, 10.0f, 30.0f))
+        ->setDestructibleFragmentScaling(glm::vec3(5.0f, 5.0f, 5.0f))
 
         ->build();
     Entity* restoSecond = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
@@ -563,7 +574,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(0.01f, 0.01f, 0.01f))
         ->setRenderingCollider()
         ADD_DEFAULT_DESTRUCTIVE_MESHES
-        ->setDestructibleFragmentScaling(glm::vec3(30.0f, 10.0f, 30.0f))
+        ->setDestructibleFragmentScaling(glm::vec3(5.0f, 5.0f, 5.0f))
         
         ->build();
     Entity* restoToit = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
@@ -581,7 +592,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(0.01f, 0.01f, 0.01f))
         ->setRenderingCollider()
         ADD_DEFAULT_DESTRUCTIVE_MESHES
-        ->setDestructibleFragmentScaling(glm::vec3(30.0f, 2.0f, 30.0f))
+        ->setDestructibleFragmentScaling(glm::vec3(5.0f, 1.0f, 5.0f))
         
         ->build();
 
@@ -612,7 +623,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(0.01f, 0.01f, 0.01f))
         ->setRenderingCollider()
         ADD_DEFAULT_DESTRUCTIVE_MESHES
-        ->setDestructibleFragmentScaling(glm::vec3(15.0f, 3.0f, 15.0f))
+        ->setDestructibleFragmentScaling(glm::vec3(5.0f, 3.0f, 5.0f))
         
         ->build();
     Entity* restoPizzaToit = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
@@ -630,7 +641,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(0.01f, 0.01f, 0.01f))
         ->setRenderingCollider()
         ADD_DEFAULT_DESTRUCTIVE_MESHES
-        ->setDestructibleFragmentScaling(glm::vec3(10.0f, 2.0f, 10.0f))
+        ->setDestructibleFragmentScaling(glm::vec3(3.0f, 1.0f, 3.0f))
         
         ->build();
 

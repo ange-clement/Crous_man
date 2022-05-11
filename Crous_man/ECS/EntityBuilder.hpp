@@ -53,6 +53,7 @@ public:
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile, bool invertTriangles);
 	EntityBuilder* setMeshAsFilePLYCenter(std::string meshFile);
+	EntityBuilder* meshInvertNormals();
 
 	RendererSystem* getRendererSystem();
 	Renderer* getRenderer();
@@ -88,6 +89,7 @@ public:
 	RigidBody* getRigidBody();
 	EntityBuilder* setRigidBodyMass(float mass);
 	EntityBuilder* setRigidBodyStatic(bool staticStatus);
+	EntityBuilder* setRigidBodyDrag(float drag);
 
 
 	PointLight* getPointLight();

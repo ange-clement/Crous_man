@@ -19,6 +19,8 @@ struct Mesh {
     void computeSmoothVertexNormal();
 
     void computeNormals();
+
+    void invertNormals();
 };
 
 class MeshSystem : public virtual ComponentSystem {
