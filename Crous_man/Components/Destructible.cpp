@@ -43,7 +43,7 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
     Entity* entity = EntityManager::instance->entities[entityID];
 
     for (size_t s = 0, size = destructible->fragmentMeshFiles.size(); s < size; s++) {
-        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID }))
+        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID/*, SystemIDs::RigidBodyID*/, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID}))
             ->setChildOf(entity)
             ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s], destructible->fragmentMeshInvertTriangle[s])
             ->fitAABBColliderToMesh()
@@ -72,13 +72,23 @@ Destructible* DestructibleSystem::getDestructible(unsigned short i) {
 }
 
 void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
+    std::cout << "SET FRAG PARAM" << std::endl;
+    std::cout << "ID : " << e->id << std::endl;
+
     e->transform->scaling = d->fragmentScaling;
     e->updateTransforms();
 
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, e->id)) {
+        
         unsigned int id = rigidBodySystem->getComponentId(e->id);
+        std::cout << "ID : " << id;
+
         RigidBody* rb = rigidBodySystem->getRigidBody(id);
-        rb->static_RB = true;
+        std::cout << "rb : " << rb;
+
+        rb->static_RB = false;
+
+        std::cout << "ID : " << id;
 
         if (EntityManager::instance->hasComponent(SystemIDs::MeshID, e->id) && EntityManager::instance->hasComponent(SystemIDs::ColliderID, e->id)) {
             unsigned int meshId = meshSystem->getComponentId(e->id);
@@ -93,6 +103,9 @@ void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
         }
     }
 
+    std::cout << "END" << e->id << std::endl;
+
+
     // for (size_t c = 0, size = e->childrens.size(); c < size; c++) {
     //     setFragmentParameters(d, e->childrens[c]);
     // }
@@ -102,9 +115,15 @@ void DestructibleSystem::destroy(unsigned short i) {
     Entity* entity = EntityManager::instance->entities[this->entityIDs[i]];
     SoundManager::instance->playAt("../ressources/Sounds/explosion.wav", entity->worldTransform->translation);
     
+
     entity->removeComponent(SystemIDs::DestructibleID);
+    std::cout << "FOR" << std::endl;
+    std::cout << "ENTITY CHILDRENS : " << entity->childrens.size() << std::endl;
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
+        
         entity->childrens[c]->isActive = true;
+        std::cout << "ENTITY CHILDRENS : " << i<< std::endl;
+
         setFragmentParameters(getDestructible(i), entity->childrens[c]);
     }
     entity->isActive = false;

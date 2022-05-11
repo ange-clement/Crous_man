@@ -53,7 +53,7 @@ void ColliderManagerComponentSystem::updateOnCollideAll() {
         std::vector<ColliderResult*> collisionMapResult = colliderSystemInstance->getResultOf(entityIDs[i]);
 
         for (unsigned int c = 0, size = collisionMapResult.size(); c < size; c++) {
-            if (collisionMapResult[c] != NULL && collisionMapResult[c]->isInCollision && collisionMapResult[c]->entityCollidID > entityIDs[i]) {
+            if (collisionMapResult[c] != NULL && collisionMapResult[c]->isInCollision /* && collisionMapResult[c]->entityCollidID > entityIDs[i]*/) {
                 collisionResults.push_back(collisionMapResult[c]);
             }
         }
@@ -64,7 +64,7 @@ void ColliderManagerComponentSystem::updateOnCollideAll() {
             continue;
         }
 
-        //std::cout << " <=> COLLISION ON COLIDE : " << entityIDs[i] << std::endl;
+        std::cout << " <=> COLLISION ON COLIDE : " << entityIDs[i] << std::endl;
         this->updateOnCollide(i, entityIDs[i], collisionResults);
     }
 }

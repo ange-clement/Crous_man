@@ -233,15 +233,20 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 
             //First get the entity and RB of the other member of the collision
             otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
+            std::cout << "entity : " <<  otherE << std::endl;
             otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
+            std::cout << "other RB : " << otherRb << std::endl;
 
             if (otherRb == 0) {
-                //std::cout << "COL WITH TRIGER : " << otherE << std::endl;
+                std::cout << "COL WITH TRIGER : " << otherE << std::endl;
                 continue;
             }
 
+
             if (correctPos) {
                 //We can correct position of RB to avoid penetration
+                std::cout << "CORRECT POSE" << std::endl;
+
                 glm::vec3 newpos;
                 glm::vec3 otherNewpos;
 
@@ -588,24 +593,36 @@ RigidBody* RigidBodySystem::getRigidBody(unsigned short i) {
 }
 
 RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
+    //std::cout << "GET ENTITY" << std::endl;
+
     if (!EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
+
+        //std::cout << "NO RB SORRY ! " << std::endl;
         // If entity doesn't have a RigidBody, return NULL
         return NULL;
     }
     
-    if (entityIDsToIndex.size() < entityID) {
+    //std::cout << "GET ENTITY RESIZE ? : " << entityIDsToIndex.size() << std::endl;
+    //std::cout << "GET ENTITY RESIZE ? : " << entityID << std::endl;
+
+    if (entityIDsToIndex.size() <= entityID) {
+        //std::cout << "RESIZING" << std::endl;
         // If entityIDsToIndex is too small, extend it
         entityIDsToIndex.resize(entityID+1, (unsigned short)-1);
     }
 
     unsigned short id = entityIDsToIndex[entityID];
+
     if (id == (unsigned short)-1) {
         // If first time we called getRigidBodyFromEntityId with this entity, get it's ID and update the list
+        //std::cout << "GET COMPO ID" << std::endl;
+
         id = getComponentId(entityID);
         entityIDsToIndex[entityID] = id;
     }
 
     if (id == (unsigned short)-1) {
+        //std::cout << "STILL DONT HAVE ELEM" << std::endl;
         // If we could get it's ID, return NULL
         return NULL;
     }
