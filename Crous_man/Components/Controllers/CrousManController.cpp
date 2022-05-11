@@ -267,7 +267,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         saucisseEntityTr->translation += diferenceVector * 0.2f;
 
         
-        if (glm::dot(velocityFdirection, velocityFdirection) > 0.01f) {
+        if (glm::dot(velocityFdirection, velocityFdirection) > 1.0f) {
             glm::vec3 target = tr->translation + velocityFdirection;
             tr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
             saucisseEntityTr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));

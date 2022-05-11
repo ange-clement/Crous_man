@@ -88,10 +88,10 @@ public:
     bool with_rotation              = false;
     bool with_friction              = false;
     bool with_dynamic_friction      = false;
-    bool correctPos                 = false;
+    bool correctPos                 = true;
 
 
-    glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+    glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f) * 10.0f;
     glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
 
     std::vector<unsigned short> entityIDsToIndex;

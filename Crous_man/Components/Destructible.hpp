@@ -37,7 +37,7 @@ public:
     void destroyAmount(unsigned short i, float amount);
 
 
-    void setFragmentParameters(Destructible* d, Entity* e);
+    void setFragmentParameters(Entity* myself, Destructible* d, Entity* e);
 };
 
 #endif

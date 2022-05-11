@@ -392,6 +392,7 @@ void createSceneGame() {
 
     glm::vec3 lightColor = glm::vec3(.984, .948, .628);
 
+    //10
     Entity* ground = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0, -5.0, 0.0))
         ->setScale(glm::vec3(500.0, 10.0, 500.0))
@@ -456,6 +457,7 @@ void createSceneGame() {
         ->setRendererDiffuseColor(trotColor)
         ->setRendererSpecularValue(trotSpec)
         ->build();
+    //17
     Entity* trotGira5 = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0f, 0.4f, 0.0f))
         ->setMeshAsFilePLY("../ressources/Models/Scene/trotGira5.ply")
@@ -466,9 +468,12 @@ void createSceneGame() {
     
     //void addForest(int nbX = 5, int nbY = 5, float centerX = 50.0f, float centerY = -50.0f, float spacingX = 8.0f, float spacingY = 8.0f, float randomAmount = 5.0f, float scaleRandom = 0.2f)
     addForest(2, 3, 50.0f, -50.0f, 10.0f, 15.0f, 8.0f);
+    //23
     addForest(2, 1, -50.0f, -50.0f, 10.0f, 10.0f, 5.0f);
+    //25
     addForest(1, 4, 25.0f, 100.0f, 10.0f, 10.0f, 15.0f);
-
+    //29
+    //30
     addTree(glm::vec3(7.0f, 0.4f, -60.0f));
     addTree(glm::vec3(7.0f, 0.4f, -70.0f));
     
@@ -497,6 +502,7 @@ void createSceneGame() {
         ->setRendererSpecularValue(trotSpec)
         ->build();
 
+    
     Entity* restoHedge = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setTranslation(glm::vec3(0.0f, 3.2f, 0.0f))
         ->setMeshAsFilePLY("../ressources/Models/Scene/restoHedge.ply")
@@ -588,6 +594,7 @@ void createSceneGame() {
         ->setColliderSize(glm::vec3(16.0f, 6.0f, 16.0f))
         ->setRenderingCollider()
         ->build();
+    //40
     Entity* restoPizzaPremier = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DestructibleID }))
         ->setRigidBodyStatic(true)
         ->setRigidBodyMass(20.0f)
@@ -625,6 +632,7 @@ void createSceneGame() {
         
         ->build();
 
+    //42
     Entity* restoTopLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setChildOf(restoElevation)
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
@@ -638,7 +646,7 @@ void createSceneGame() {
     
     
 
-
+    //48
     Entity* topLight = (new EntityBuilder({ SystemIDs::PointLightID }))
         ->setTranslation(glm::vec3(0.0, 100.0, 0.0))
         ->setLightLinear(0.01)
