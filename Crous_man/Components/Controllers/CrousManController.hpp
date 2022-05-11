@@ -16,8 +16,6 @@ struct CrousManController {
 
     float azimuth;
     float zenith;
-    float lastMoovedAzimuth;
-    float lastMoovedZenith;
 
     float maxCameraDistance = 50.0f;
     glm::vec3 initialRotatingPos;
@@ -35,7 +33,7 @@ struct CrousManController {
     RigidBody* rb;
 };
 
-class CrousManControllerSystem : public virtual ComponentSystem {
+class CrousManControllerSystem : public virtual ColliderManagerComponentSystem {
 public:
     ColliderSystem* colliderSystem = NULL;
     DestructibleSystem* destructibleSystem = NULL;
@@ -44,6 +42,7 @@ public:
 
     ~CrousManControllerSystem();
 
+    virtual void updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*> & collisionResults);
     virtual void update(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();

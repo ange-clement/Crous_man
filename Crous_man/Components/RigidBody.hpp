@@ -1,7 +1,7 @@
 #ifndef ROGIDBODY_COMPONENT_HPP
 #define ROGIDBODY_COMPONENT_HPP
 
-#include "../ECS/ComponentSystem.hpp"
+#include "ColliderManagerComponentSystem.hpp"
 
 #define STATIC_OBJECT_MASS 0.0f
 
@@ -34,18 +34,20 @@ struct RigidBody {
     glm::vec3 combinedStaticFriction    = glm::vec3(0.0, 0.0, 0.0);
     glm::vec3 combinedCineticFriction   = glm::vec3(0.0, 0.0, 0.0);
 
-    //résistance
-    float drag = 0.5f;
-    float angularDrag = 0.2f;
+    //rï¿½sistance
+    float drag = 0.98f;
+    float angularDrag = 0.98f;
 
     //Coefficient of Restitution
     float bounce            = .7f;       //represents how much energy is kept when a smt bounces off a surface
     
     //For more precise integration over time, like Verlet
     glm::vec3 oldPosition;
+    glm::vec3 oldvelocity;
 
 
     void rotational_addImpulseAtPosition(const glm::vec3& point, const glm::vec3& impulse, const glm::vec3& currentPosition, const glm::mat3& inverseTensor);
+    void linear_addImpulse(const glm::vec3& impulse);
 
 
     void setMass(float mass);
@@ -65,6 +67,8 @@ struct RigidBody {
     void addAccelerationAtPosition(glm::vec3 acc, glm::vec3 pos);
     void addVelocityAtPosition(glm::vec3 cel, glm::vec3 pos);
     void addImpulseAtPosition(glm::vec3 impulse, glm::vec3 pos);
+
+    void print();
 };
 
 struct TensorMatrix{
@@ -75,9 +79,19 @@ struct TensorMatrix{
 };
 
 
-class RigidBodySystem : public virtual ComponentSystem {
+class RigidBodySystem : public virtual ColliderManagerComponentSystem {
 public:
-    glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+
+
+    int frame_update_update_physics = 10;
+
+    bool with_rotation              = false;
+    bool with_friction              = false;
+    bool with_dynamic_friction      = false;
+    bool correctPos                 = true;
+
+
+    glm::vec3 gravity = glm::vec3(0.0f, -9.81f, 0.0f) * 10.0f;
     glm::vec3 gravityDirection = glm::vec3(0.0f, -1.0f, 0.0f);
 
     std::vector<unsigned short> entityIDsToIndex;
@@ -104,6 +118,7 @@ public:
 
     virtual void updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults);
     virtual void updatePhysics(unsigned short i, unsigned short entityID);
+    virtual void updateAfterPhysics(unsigned short i, unsigned short entityID);
     virtual void initialize(unsigned short i, unsigned short entityID);
     virtual void addEntityComponent();
 
@@ -118,7 +133,7 @@ public:
     void clearMatrixTensorStructure(unsigned short id);
     glm::mat4 getMatrixInverseTensor(unsigned short entityID, Collider c, RigidBody* rb);
     //init foces on RB
-    void initForcesRB(RigidBody* rb);
+    void ApplyForces(RigidBody* rb);
 
     //Particles treatment
     glm::vec3 resolveConstraintParticles_Verlet(Collider& collider, RigidBody* rb_particles, const glm::vec3& currentPos);
@@ -127,12 +142,21 @@ public:
     /*========================================== LINEAR EQUATIONS ===========================================================*/
 
     //Update rb positions
-    glm::vec3 linear_update_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 linear_update_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
-    glm::vec3 linear_update_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_EulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_EulerIntegrationSemiImplicit(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_AccurateEulerIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    glm::vec3 update_VerletIntegration(RigidBody* rb, const glm::vec3& currentPos, float deltaTime);
+    
+    //Linear ONLY
+    void applyImpulse_linear(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
+    void applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
+    void applyImpulse_linearDynamicFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
+    
+    void applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
+    void applyImpulse_linearAngularFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
+    void applyImpulse_linearAngularDynamicFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
 
-    void linear_resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
-    void linear_resolveConstraintVolumeRB_Euler_dynamicfriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC);
+    void applyImpulse_linearAngular_bis(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
 
     //Apply a possible position correction, depending on linearProjectionPercent and penetrationSlack
     void positionCorrection(glm::vec3& newPos1, glm::vec3& newPos2, RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res);
@@ -141,9 +165,6 @@ public:
     glm::mat4 inverseTensorComputation(Collider c, RigidBody* rb);
     void rotational_update(RigidBody* rb, float deltaTime, const glm::mat3& inverseTensor);
 
-    void linearAndAngular_resolveConstraintVolumeRB_Euler(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
-    void linearAndAngular_resolveConstraintVolumeRB_Euler_dynamicfriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC, const glm::vec3& posrb1, const glm::vec3& posrb2, const glm::mat4& inverseTensorrb1, const glm::mat4& inverseTensorrb2);
-    
     
     //NEXT USE QUATERNIONS FROM GLM : quat and common/quaternion_utils.hpp
     // Gimbal lock
@@ -159,14 +180,9 @@ public:
     void resolveConstraintParticles_JointDistance(RigidBody* rb_particles_1, RigidBody* rb_particles_2, glm::vec3& currentPos_1, glm::vec3& currentPos_2, float distancejoint);
 };
 
-
+void printRB(RigidBody* r);
 
 float computeVelocityFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal);
 float computeAngularFactor(RigidBody* rbA, RigidBody* rbB, glm::vec3 normal, glm::vec3 rA, glm::vec3 rB);
-
-
-
-
-
 
 #endif

@@ -90,7 +90,7 @@ void CameraSystem::initialize(unsigned short i, unsigned short entityID) {
     c->quadEShadersinstances.push_back(new BlurQuadEShader(RenderBufferID::SSAO, RenderBufferID::SSAO));
     c->lShaderInstance = BlinnPhongShadowSSAOLShader::instance;
     BlinnPhongShadowSSAOLShader::instance->use();
-    BlinnPhongShadowSSAOLShader::instance->setAmbiant(0.3f);
+    BlinnPhongShadowSSAOLShader::instance->setAmbiant(0.1f);
     c->peShaderInstance = SingleTextureQuadShader::instance;
     c->gBuffer = GBuffer(c->SCR_WIDTH, c->SCR_HEIGHT);
     c->textureFramebuffer = TextureFramebuffer(c->SCR_WIDTH, c->SCR_HEIGHT);

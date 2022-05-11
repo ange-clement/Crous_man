@@ -10,9 +10,11 @@ struct SimpleMovementPlayer {
     bool movedRbMovementType = false;
     unsigned int rbMovementType = 0;
     void applyRbMovement(glm::vec3 amount);
+
+
 };
 
-class SimpleMovementPlayerSystem : public virtual ComponentSystem {
+class SimpleMovementPlayerSystem : public virtual ColliderManagerComponentSystem {
 public:
     RigidBodySystem* rbSystem = NULL;
 public:

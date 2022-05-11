@@ -48,7 +48,6 @@ void FrameBuffer::init(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT, GLint in
     unsigned int* attachments = new unsigned int[this->numberOfBuffer];
 
     for (unsigned int i = 0; i < this->numberOfBuffer; i++) {
-        std::cout << GL_COLOR_ATTACHMENT0 + i << std::endl;
         glGenTextures(1, &buffers[i]);
         glBindTexture(GL_TEXTURE_2D, buffers[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);

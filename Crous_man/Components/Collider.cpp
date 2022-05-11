@@ -21,6 +21,8 @@
 
 #include "Collider.hpp"
 
+#define DEBUG_COLLIDER false
+
 
 ContactPoint::ContactPoint() {
     this->penetrationDistance = FLT_MAX;
@@ -36,7 +38,7 @@ ContactPoint::ContactPoint(ContactPoint* c, bool inversed){
 
 
 void ContactPoint::print() {
-    std::cout << this->penetrationDistance << "p : {" << this->point.x << "," << this->point.y << "," << this->point.z << "}" << "n : {" << this->normal.x << "," << this->normal.y << "," << this->normal.z << "}" << std::endl;
+    std::cout << this->penetrationDistance << " ON p : {" << this->point.x << "," << this->point.y << "," << this->point.z << "}" << "n : {" << this->normal.x << "," << this->normal.y << "," << this->normal.z << "}" << std::endl;
 }
 
 ContactPoint::~ContactPoint() {}
@@ -78,7 +80,7 @@ void ColliderResult::inverseNormals() {
 
     for (size_t i = 0, size = this->contactsPts.size(); i < size; i++) {
         //std::cout << "I : " << i << std::endl;
-        this->contactsPts[i]->normal = -this->contactsPts[i]->normal;
+        this->contactsPts[i]->normal = glm::vec3(this->contactsPts[i]->normal) * -1.0f;
     }
 }
 
@@ -106,7 +108,7 @@ void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
     }
     if (getCollider(i)->type == colliderType::OBB) {
         getCollider(i)->dimensions = getCollider(i)->size;
-     }
+    }
     if (getCollider(i)->type == colliderType::AABB) {
         getCollider(i)->orientation = glm::mat3(1);
     }
@@ -117,17 +119,25 @@ void ColliderSystem::initialize(unsigned short i, unsigned short entityID) {
 void ColliderSystem::update(unsigned short i, unsigned short entityID) {
     //We move all the positions from all colliders
     Entity* entity = EntityManager::instance->entities[entityID];
+    
+    //std::cout << "UPDATE COLLIDER : " << entityID << std::endl;
+    //print(entity->worldTransform->translation);
+
     getCollider(i)->position = entity->worldTransform->translation + getCollider(i)->center;
 
     //We also need to perform others implementations like dimensions for AABB
+    if (getCollider(i)->type == colliderType::Sphere) {
+        getCollider(i)->dimensions = glm::vec3(getCollider(i)->radius);
+    }
+    
     if (getCollider(i)->type == colliderType::AABB) {
         computeAABBDimensions(getCollider(i));
     }
 
     if (getCollider(i)->type == colliderType::OBB) {
+        getCollider(i)->dimensions = getCollider(i)->size;
         getCollider(i)->orientation = EntityManager::instance->entities[entityID]->worldTransform->rotation.rotationMatrix;
     }
-
 
     
     if (!isPressedColliderDraw && glfwGetKey(InputManager::instance->window, GLFW_KEY_C) == GLFW_PRESS) {
@@ -163,7 +173,10 @@ void ColliderSystem::renderAll(glm::mat4 view, glm::mat4 projection) {
             //print(c->orientation);
             //print(c->dimensions);
 
-            glm::mat4 model = e->worldTransform->toMat4NoScalingNoRotation();
+            glm::mat4 model = glm::mat4(1.0f);
+            model[3][0] = c->position.x;
+            model[3][1] = c->position.y;
+            model[3][2] = c->position.z;
             c->shader->setMVPC(model * glm::mat4(c->orientation), view, projection, isInContactWithSomething(entityID), c->dimensions);
             c->shader->draw();
         }
@@ -190,7 +203,7 @@ void ColliderSystem::addNewColliderEntry(unsigned short entityID) {
     //std::cout << "ADD NEW COMPOSANT ENTRY : " << entityID << std::endl;
     //Resize older components (for perform add in game)
     for (auto const& x : collisionResultMap) {
-        if (collisionResultMap.at(x.first).size() < entityIDs.size()) {
+        if (x.first != (unsigned short)-1 && collisionResultMap.at(x.first).size() < entityIDs.size()) {
 
             //std::cout << "NEED TO RESIZE : " << x.first << std::endl;
             collisionResultMap.at(x.first).resize(entityIDs.size(), 0);
@@ -223,16 +236,20 @@ void ColliderSystem::updateCollision(unsigned short i, unsigned short entityID) 
     
     for (size_t j = i + 1, size = entityIDs.size(); j < size; j++) {
         entityIDJ = entityIDs[j];
-        if (EntityManager::instance->shouldUpdate(entityIDJ)) {
+        if (EntityManager::instance->shouldUpdate(entityID) && EntityManager::instance->shouldUpdate(entityIDJ)) {
             computeIntersection(i, entityID, j, entityIDJ);
         }else{
-            //Need to clear collision jic
-            //simpleCollisionResultMap.at(entityID)[j] = false;
-            collisionResultMap.at(entityID)[j] =  0;
+            if (entityID != (unsigned short) -1) {
+                //Need to clear collision jic
+                //simpleCollisionResultMap.at(entityID)[j] = false;
+                collisionResultMap.at(entityID)[j] =  0;
+            }
 
-            //Could be optional
-            //simpleCollisionResultMap.at(entityIDJ)[i] = false;
-            collisionResultMap.at(entityIDJ)[i] =  0;
+            if (entityIDJ != (unsigned short) -1) {
+                //Could be optional
+                //simpleCollisionResultMap.at(entityIDJ)[i] = false;
+                collisionResultMap.at(entityIDJ)[i] =  0;
+            }
         }
     }
 }
@@ -328,8 +345,8 @@ void ColliderSystem::computeAABBDimensions(Collider* aabb) {
 }
 void computeMinMaxAABB(const Collider& aabb, glm::vec3& min, glm::vec3& max) {
     assert(aabb.type == colliderType::AABB);
-    min = -aabb.dimensions;
-    max = aabb.dimensions;
+    min = -aabb.dimensions - glm::vec3(FLT_EPSILON);
+    max = aabb.dimensions + glm::vec3(FLT_EPSILON);
 }
 
 //Point in collider detection
@@ -346,6 +363,14 @@ bool pointInAABB(const glm::vec3& point, const Collider& aabb) {
     computeMinMaxAABB(aabb, min, max);
     min += aabb.position;
     max += aabb.position;
+
+    //std::cout << "POINT IN AABB" << std::endl;
+    //std::cout << "MIN: ";
+    //print(min);
+    //std::cout << "MAX: ";
+    //print(max);
+    //std::cout << "POINT: ";
+    //print(point);
 
     if (point.x < min.x || point.y < min.y || point.z < min.z) {
         return false;
@@ -621,7 +646,10 @@ void AABBAABBCollision(const Collider& aabb1, const Collider& aabb2, ColliderRes
 
 //Collision between two Sphere
 void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
-    //std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
+    if (DEBUG_COLLIDER) {
+        std::cout << "INTERSECTION SPHERE SPHERE" << std::endl;
+    }
+        
     assert(sp1.type == colliderType::Sphere);
     assert(sp2.type == colliderType::Sphere);
     assert(res != 0);
@@ -632,8 +660,18 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
     glm::vec3 mvt = sp1.position - sp2.position;
 
     float distance = glm::length(mvt);
+
+    if (DEBUG_COLLIDER) {
+        std::cout << "DISTANCE : " << distance << std::endl;
+        std::cout << "RAYON : " << r << std::endl;
+    }
+
     if (distance < r) {
+        if (DEBUG_COLLIDER) {
+            std::cout << "CONTACT !!" << std::endl;
+        }
         cp_res = new ContactPoint();
+        
         //res->penetrationDistance = (sp1.radius - distance) + sp2.radius;
         cp_res->penetrationDistance = (distance - r) *0.5f;
         cp_res->normal = ((distance == 0) ? glm::vec3(0, 1, 0) : glm::normalize(mvt));
@@ -644,8 +682,16 @@ void SphereSphereCollision(Collider sp1, Collider sp2, ColliderResult* res) {
 
     //If there is a contact point
     if (cp_res != 0) {
+        if (DEBUG_COLLIDER) {
+            std::cout << "CP TROUVE !"<< std::endl;
+        }
         res->isInCollision = true;
+        cp_res->print();
+
         res->contactsPts.push_back(cp_res);
+    }
+    if (DEBUG_COLLIDER) {
+        std::cout << "=========== END ==========" << std::endl;
     }
 }
 
@@ -823,7 +869,7 @@ void SphereAABBCollision(const Collider& aabb, const Collider& sphere, ColliderR
 
 
 //Collision between an OBB and a sphere
-void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderResult* res) {
+void OBBSphereCollision(const Collider& sphere, const Collider& obb, ColliderResult* res) {
     //std::cout << "INTERSECTION SPHERE OBB" << std::endl;
     assert(sphere.type == colliderType::Sphere);
     assert(obb.type == colliderType::OBB);
@@ -833,21 +879,37 @@ void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderRes
     
     glm::vec3 closestPoint = closestPointOBB(obb, sphere.position);
     
+
+    //std::cout << "  => SPHERE POSITION : ";
+    //print(sphere.position);
+    //std::cout << "  => SPHERE closestPoint : ";
+    //print(closestPoint);
+
+    //glm::vec3 dif = closestPoint - sphere.position;
     glm::vec3 dif = sphere.position - closestPoint;
 
+    //std::cout << "  => DIF : ";
+    //print(dif); 
+
     float dist_squared = glm::dot(dif,dif);
+    //std::cout << "DIST SQUARED : " << dist_squared << std::endl;
     float radius_squared = sphere.radius * sphere.radius;
 
     if (dist_squared < radius_squared) {
         //We got a collision then
+
+        //std::cout << "WE GOT A COLLISION" << std::endl;
         cp_res = new ContactPoint();
         glm::vec3 normal;
 
         if (compareWithEpsilon(dist_squared, 0.0f)) {
+            //std::cout << " + DIST SQUARED NULL" << std::endl;
+
             glm::vec3 dif_obb = closestPoint - obb.position;
+
             if (compareWithEpsilon(glm::dot(dif_obb, dif_obb), 0.0f)) {
                 //Both are in the same area, we can move the Sphere on the smalest dimension of the OBB
-                cp_res->point = sphere.center;
+                cp_res->point = sphere.position;
                 
                 Interval i_x =  GetIntervalOBB(obb, glm::vec3(1,0,0));
                 Interval i_y =  GetIntervalOBB(obb, glm::vec3(0,1,0));
@@ -856,15 +918,15 @@ void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderRes
                 glm::vec3 dist = glm::vec3(i_x.max - i_x.min, i_y.max - i_y.min, i_z.max - i_z.min);
                 if (dist.y <= dist.x && dist.y <= dist.z) {
                     cp_res->penetrationDistance = (dist.y + sphere.radius) * .5;
-                    cp_res->normal = obb.orientation[1];
+                    cp_res->normal = glm::vec3(0,1,0) * obb.orientation;
                 }
                 else if (dist.x <= dist.y && dist.x <= dist.z) {
                     cp_res->penetrationDistance = (dist.x + sphere.radius) * .5;
-                    cp_res->normal = obb.orientation[0];
+                    cp_res->normal = glm::vec3(1, 0, 0) * obb.orientation;
                 }
                 else if (dist.z <= dist.y && dist.z <= dist.x) {
                     cp_res->penetrationDistance = (dist.z + sphere.radius) * .5;
-                    cp_res->normal = obb.orientation[2];
+                    cp_res->normal = glm::vec3(0, 0, 1) * obb.orientation;
                 }
 
                 res->isInCollision = true;
@@ -875,8 +937,12 @@ void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderRes
             // Closest point is at the center of the sphere
             normal = glm::normalize(dif_obb);
         }else {
+            //std::cout << " + DIST SQUARED NOT NULL" << std::endl;
             normal = glm::normalize(dif);
         }
+
+        //std::cout << "NORMAL : ";
+        //print(normal);
 
         glm::vec3 outsidePoint = sphere.position - normal * sphere.radius;
 
@@ -887,11 +953,14 @@ void SphereOBBCollision(const Collider& sphere, const Collider& obb, ColliderRes
         cp_res->penetrationDistance = distance * 0.5f;
     }
 
+
     //If there is a contact point
     if (cp_res != 0) {
         res->isInCollision = true;
         res->contactsPts.push_back(cp_res);
     }
+
+    //std::cout << "========== END ==========" << std::endl;
 }
 
 //Collision between a plane and a sphere
@@ -1005,11 +1074,33 @@ std::vector<glm::vec3> clipEdgesToAABB(const std::vector<glm::vec3>& start_edges
     std::vector<float> distances_to_origin;
     getPlanesAABB(aabb, normals_plane, distances_to_origin);
 
+    //std::cout << " CLIP EDGES TO AABB" << std::endl;
+    //for (size_t i = 0; i < normals_plane.size(); i++){
+    //    
+    //    print(normals_plane[i]);
+    //    print(distances_to_origin[i]);
+    //}
+
 
     for (int i = 0; i < normals_plane.size(); ++i) {
+
         for (int j = 0; j < start_edges.size(); ++j) {
             if (clipToPlane(normals_plane[i], distances_to_origin[i], start_edges[j], end_edges[j], &intersection)) {
+                
+                //std::cout << " => normal : ";
+                //print(normals_plane[i]);
+                //std::cout << "DISTANCE TO ORIGIN : " << distances_to_origin[i] << std::endl;
+                //std::cout << " start edge : ";
+                //print(start_edges[j]);
+                //std::cout << " end edge : ";
+                //print(end_edges[j]);
+                //std::cout << " RES : ";
+                //print(intersection);
+
+                
                 if (pointInAABB(intersection, aabb)) {
+                    //std::cout <<"    = >PUSHED : ";
+                    //print(intersection);
                     result.push_back(intersection);
                 }
             }
@@ -1148,6 +1239,8 @@ void AABBOBBCollision(const Collider& aabb, const Collider& obb, ColliderResult*
 
 
     if (pContacts.size() == 0) {
+        //std::cout << "========== NO CONTACT POINT ==========" << std::endl;
+
         //If we dont have any point, its because one obb is in the other one
         ContactPoint* cp_res = new ContactPoint();
         cp_res->normal = axis;
@@ -1165,17 +1258,37 @@ void AABBOBBCollision(const Collider& aabb, const Collider& obb, ColliderResult*
         res->contactsPts.push_back(cp_res);
     }
     else {
+        //std::cout << "========== CONTACT POINT ==========" << std::endl;
 
         //Find the OBB interval on the current chosed axis 
-        Interval i = GetIntervalOBB(obb, axis);
+        //Interval i = GetIntervalOBB(obb, axis);
+
+        Interval i = GetIntervalAABB(aabb, axis);
+
+        //std::cout << "+++ GET INTERVAL : " << std::endl;
+        //print(axis);
+        //print(obb.position);
+        //print(obb.dimensions);
+        //std::cout << "min : " << i.min << std::endl;
+        //std::cout << "max : " << i.max << std::endl;
+        //std::cout << "MIN PEN DIST : " << min_pen_dist << std::endl;
+
         float distance = (i.max - i.min) * 0.5f - min_pen_dist * 0.5f;
-        glm::vec3 pointOnPlane = obb.position + axis * distance;
+        //float distance = i.min + min_pen_dist;
+        glm::vec3 pointOnPlane = aabb.position + axis * distance;
+
+        //std::cout << "DISTANCE : " << distance << std::endl;
+        //print(pointOnPlane);
 
         //Projecting the result of the clipped points onto a shared plane. 
         //The shared plane is constructed out of the collision normal
+        //std::cout << "TAILLE PCONT : " << pContacts.size() << std::endl;
         for (int i = pContacts.size() - 1; i >= 0; --i) {
             glm::vec3 contact = pContacts[i];
             pContacts[i] = contact + (axis * glm::dot(axis, pointOnPlane - contact));
+
+            //std::cout << i << std::endl;
+            //print(pContacts[i]);
 
             //Erase similar contact points
             for (int j = pContacts.size() - 1; j > i; --j) {
@@ -1322,7 +1435,7 @@ bool clipToPlane(const glm::vec3& normal_plane, const float distance_to_origin_p
     float nAB = glm::dot(normal_plane, ab);
 
     //No line and plane intersection
-    if (compareWithEpsilon(nAB, 0)) {
+    if (compareWithEpsilon(nAB, 0.0f)) {
         return false;
     }
 
@@ -1590,35 +1703,52 @@ void intersect(Collider c1, Collider c2, ColliderResult* res) {
     //Compute collisions depend on the collider type
     if (isSupportedCollider(c1) && isSupportedCollider(c2)) {
         if (c1.type == colliderType::AABB && c2.type == colliderType::AABB) {
+            //std::cout << "INTERSECT AABB AABB" << std::endl;
             AABBAABBCollision(c1, c2, res);
+            //if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::AABB && c2.type == colliderType::Sphere) {
+            //std::cout << "INTERSECT AABB SPHERE" << std::endl;
             SphereAABBCollision(c1, c2, res);
+            if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::Sphere && c2.type == colliderType::AABB) {
-            SphereAABBCollision(c2, c1,res);
-            if (res != 0) res->inverseNormals();
+            //std::cout << "INTERSECT SPHERE AABB" << std::endl;
+            SphereAABBCollision(c2, c1, res);
+            //if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::OBB && c2.type == colliderType::AABB) {
+            //std::cout << "INTERSECT OBB AABB" << std::endl;
             AABBOBBCollision(c2, c1, res);
-            if (res != 0) res->inverseNormals();
+            //if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::AABB && c2.type == colliderType::OBB) {
+            //std::cout << "INTERSECT AABB OBB" << std::endl;
             AABBOBBCollision(c1, c2,res);
+            if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::Sphere && c2.type == colliderType::Sphere) {
+            //std::cout << "INTERSECT SPHERE SPHERE" << std::endl;
             SphereSphereCollision(c1, c2,res);
         }
         if (c1.type == colliderType::Sphere && c2.type == colliderType::OBB) {
-            SphereOBBCollision(c1, c2,res);
+            //std::cout << "INTERSECT SPHERE OBB" << std::endl;
+            OBBSphereCollision(c1, c2,res);
+            //if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::OBB && c2.type == colliderType::Sphere) {
-            SphereOBBCollision(c2, c1, res);
-            if(res != 0 ) res->inverseNormals();
+            //std::cout << "INTERSECT OBB SPHERE" << std::endl;
+            OBBSphereCollision(c2, c1, res);
+            if (res != 0) res->inverseNormals();
         }
         if (c1.type == colliderType::OBB && c2.type == colliderType::OBB) {
-            OBBOBBCollision(c2, c1, res);
+            //std::cout << "INTERSECT OBB OBB" << std::endl;
+            OBBOBBCollision(c1, c2, res);
+            if (res != 0) res->inverseNormals();
         }
+
+        //if(res != 0 && res->isInCollision) std::cout << "INTERSECTION !" << std::endl;
+        //else std::cout << "NO INTERSECTION !" << std::endl;
     }
 }
 
@@ -1853,6 +1983,10 @@ void ColliderSystem::computeIntersection(unsigned short i, unsigned short entity
         res->contactsPts.clear();
         res->isInCollision = false;
     }
+
+    //std::cout << " ============= COMPUTE INTERSECTION ============= "<< std::endl;
+    //std::cout << " -> COMPUTE INTERSECTION IN : " << entityIID << std::endl;
+    //std::cout << " -> COMPUTE INTERSECTION OUT : " << entityJID << std::endl;
     
     //If the entity have a rb, we compute a more precise collision
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityIID) && EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityJID)) {
@@ -1863,7 +1997,17 @@ void ColliderSystem::computeIntersection(unsigned short i, unsigned short entity
 
         if(res) res->entityCollidID = entityJID;
         collisionResultMap.at(entityIID)[j] = res;
-        collisionResultMap.at(entityJID)[i] = new ColliderResult(entityIID, res, true);
+
+        
+        if (collisionResultMap.at(entityJID)[i] == 0) {
+            ColliderResult* cr = new ColliderResult(entityIID, res, false);
+            cr->contactsPts.clear();
+            collisionResultMap.at(entityJID)[i] = cr;
+        }
+        else {
+            collisionResultMap.at(entityJID)[i]->isInCollision = res->isInCollision;
+            collisionResultMap.at(entityJID)[i]->contactsPts.clear();
+        }
     }
     else { //we just compute intersection answer
 
@@ -1871,8 +2015,16 @@ void ColliderSystem::computeIntersection(unsigned short i, unsigned short entity
         res->entityCollidID = entityJID;
 
         collisionResultMap.at(entityIID)[j] = res;
-        collisionResultMap.at(entityJID)[i] = new ColliderResult(entityIID, res, false);
-
+        
+        if (collisionResultMap.at(entityJID)[i] == 0) {
+            ColliderResult* cr = new ColliderResult(entityIID, res, false);
+            collisionResultMap.at(entityJID)[i] = cr;
+        }
+        else {
+            collisionResultMap.at(entityJID)[i]->contactsPts.clear();
+            collisionResultMap.at(entityJID)[i]->isInCollision = res->isInCollision;
+        }
+        
         //std::cout << "END OF IS IN INTERSECTION" << std::endl;
 
         //simpleCollisionResultMap.at(entityIID)[j] = answer;

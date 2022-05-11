@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <random>
+#include <string>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -20,6 +21,8 @@
 #include "../../Components/Camera.hpp"
 
 #include "SSAOQuadEShader.hpp"
+
+#define NB_SAMPLING 32
 
 float lerp(float a, float b, float f)
 {
@@ -46,7 +49,7 @@ SSAOQuadEShader::SSAOQuadEShader() : QuadEShader(
     // ----------------------
     std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
     std::default_random_engine generator;
-    unsigned int nbSampling = 32;
+    unsigned int nbSampling = NB_SAMPLING;
     for (unsigned int i = 0; i < nbSampling; ++i)
     {
         glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
@@ -96,7 +99,7 @@ void SSAOQuadEShader::useBuffers(const GLuint* buffers) {
     glBindTexture(GL_TEXTURE_2D, this->noiseTexture);
 
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < 32; ++i)
+    for (unsigned int i = 0; i < NB_SAMPLING; ++i)
         glUniform3fv(glGetUniformLocation(this->programID, ("samples[" + std::to_string(i) + "]").c_str()), 1, &this->ssaoKernel[i][0]);
 }
 

@@ -209,7 +209,6 @@ bool SphereRaycast(const Collider& sphere, const Ray& ray, RaycastResult* outRes
 	if (rSq - (eSq - a * a) < 0.0f) {
 		return false;
 	}
-	
 	// Ray starts inside the sphere
 	else if (eSq < rSq) {
 		// Just reverse direction

@@ -107,8 +107,8 @@ int main( void )
     
     //createSceneCollider();
     createSceneGame();
-
     //createSceneECS();
+
     EntityManager::instance->updateTransforms();
     EntityManager::instance->initializeAllSystems();
     EntityManager::instance->updateTransforms();

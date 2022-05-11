@@ -184,11 +184,15 @@ add_executable(
 	Crous_man/Components/PointLight.hpp
 	Crous_man/Components/Destructible.cpp
 	Crous_man/Components/Destructible.hpp
+	Crous_man/Components/DeleteAfterTime.cpp
+	Crous_man/Components/DeleteAfterTime.hpp
 	Crous_man/Components/Collider.cpp
 	Crous_man/Components/Collider.hpp
 	Crous_man/Components/RigidBody.cpp
 	Crous_man/Components/RigidBody.hpp
-
+	Crous_man/Components/ColliderManagerComponentSystem.cpp	
+	Crous_man/Components/ColliderManagerComponentSystem.hpp
+	
 	Crous_man/Components/Controllers/FlyingController.cpp
 	Crous_man/Components/Controllers/FlyingController.hpp
 	Crous_man/Components/Controllers/SimpleMovementPlayer.cpp
@@ -202,7 +206,8 @@ add_executable(
 	Crous_man/SoundManager.hpp
 
 	Crous_man/Scenes/ECS_test.cpp
-	Crous_man/Scenes/ECS_test.hpp)
+	Crous_man/Scenes/ECS_test.hpp 
+)
 target_link_libraries(Crous_man
 	${ALL_LIBS}
 )

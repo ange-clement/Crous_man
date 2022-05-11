@@ -39,9 +39,18 @@ CrousManControllerSystem::~CrousManControllerSystem() {
 
 }
 
+void CrousManControllerSystem::updateOnCollide(unsigned short i, unsigned short entityID, const std::vector<ColliderResult*>& collisionResults) {
+    for (unsigned int c = 0, size = collisionResults.size(); c < size; c++) {
+        if (EntityManager::instance->hasComponent(SystemIDs::DestructibleID, collisionResults[c]->entityCollidID)) {
+            unsigned int destructibleID = EntityManager::instance->getComponentId(SystemIDs::DestructibleID, collisionResults[c]->entityCollidID);
+            destructibleSystem->destroyAmount(destructibleID, .5f * InputManager::instance->deltaTime);
+        }
+    }
+}
+
 void CrousManControllerSystem::initialize(unsigned short i, unsigned short entityID) {
     CrousManController* crous = getCrousManController(i);
-    crous->maxSpeed = 1.0f;
+    crous->maxSpeed = 50.0f;
     crous->acceleration = crous->maxSpeed * 4.0f;
     crous->sensitivity = 0.16f;
     crous->azimuth = 0.0;
@@ -63,8 +72,8 @@ void CrousManControllerSystem::initialize(unsigned short i, unsigned short entit
 
 
     //TODO supprimer
-    RigidBodySystem* rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
-    rbSystem->setGravity(glm::vec3(0.0f));
+    // RigidBodySystem* rbSystem = dynamic_cast<RigidBodySystem*>(EntityManager::instance->systems[SystemIDs::RigidBodyID]);
+    // rbSystem->setGravity(glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 void CrousManControllerSystem::update(unsigned short i, unsigned short entityID) {
@@ -102,6 +111,7 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     glm::vec3 udirection = glm::vec3(0.0, 1.0, 0.0);
     glm::vec3 f = rotatingTr->getForward();
     glm::vec3 fdirection = glm::normalize(glm::vec3(f.x, 0.0, f.z));
+    glm::vec3 velocityFdirection = glm::normalize(glm::vec3(rb->velocity.x, 0.0, rb->velocity.z));
 
     if (glfwGetKey(InputManager::instance->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         currentMaxSpeed *= 1.8f;
@@ -126,6 +136,17 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     if (glm::dot(rb->velocity, rdirection) > -currentMaxSpeed && glfwGetKey(InputManager::instance->window, GLFW_KEY_D) == GLFW_PRESS) {
         appliedAcceleration += -accelerationAmount * rdirection;
         mooved = true;
+    }
+    
+    // apply input
+
+    rb->addAcceleration(appliedAcceleration);
+
+    if (!mooved) {
+        if (glm::dot(velocityFdirection, velocityFdirection) > FLT_EPSILON)
+            rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(velocityFdirection));
+        else
+            rb->velocity = glm::vec3(0.0f, rb->velocity.y, 0.0f);
     }
 
     // Laser : raycast
@@ -197,16 +218,6 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
     }
 
 
-    // apply input
-
-    rb->addAcceleration(appliedAcceleration);
-
-    if (!mooved) {
-        if (glm::dot(rb->velocity, rb->velocity) > 0.01f)
-            rb->addAcceleration(-accelerationAmount * 2.0f * glm::normalize(rb->velocity));
-        else
-            rb->velocity = glm::vec3(0.0f);
-    }
 
 
     // process mouse movement
@@ -223,11 +234,6 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         if (crous->zenith < -1.5f)
             crous->zenith = -1.5f;
 
-        if (mooved) {
-            crous->lastMoovedAzimuth = crous->azimuth;
-            crous->lastMoovedZenith = crous->zenith;
-        }
-
 
         glm::vec3 diferenceVector = (tr->translation + crous->initialRotatingPos) - rotatingTr->translation;
         rotatingTr->translation += diferenceVector * 0.1f;
@@ -237,8 +243,8 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         diferenceVector = tr->translation + glm::vec3(0.0, 7.0, 0.0) - saucisseEntityTr->translation;
         saucisseEntityTr->translation += diferenceVector * 0.2f;
 
-        if (glm::dot(rb->velocity, rb->velocity) > 0.0f) {
-            glm::vec3 velocityFdirection = glm::normalize(glm::vec3(rb->velocity.x, 0.0, rb->velocity.z));
+        
+        if (glm::dot(velocityFdirection, velocityFdirection) > 1.0f) {
             glm::vec3 target = tr->translation + velocityFdirection;
             tr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
             saucisseEntityTr->rotation.lookAt(tr->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -246,8 +252,8 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
 
         // Raycast between rotating and the camera to move it in front of the nearest wall
 
-        glm::vec3 rotatingToCameraTarget = glm::normalize(cameraTargetWTr->translation - rotatingWTr->translation);
-        Ray* ray = new Ray(rotatingWTr->translation, rotatingToCameraTarget);
+        glm::vec3 rotatingToCameraTarget = glm::normalize(cameraTargetWTr->translation - wtr->translation);
+        Ray* ray = new Ray(wtr->translation, rotatingToCameraTarget);
         std::vector<RaycastResult*> rayResult = colliderSystem->rayCastAll(*ray);
         RaycastResult* closest = NULL;
         float minDistance = FLT_MAX;
@@ -270,8 +276,9 @@ void CrousManControllerSystem::update(unsigned short i, unsigned short entityID)
         else {
             distance = crous->maxCameraDistance;
         }
-        cameraTr->translation = rotatingWTr->translation + rotatingToCameraTarget * distance;
-        cameraTr->lookAtDirection(rotatingToCameraTarget);
+        cameraTr->translation = wtr->translation + rotatingToCameraTarget * distance;
+        glm::vec3 rotatingToCameraTarget2 = glm::normalize(cameraTargetWTr->translation - rotatingWTr->translation);
+        cameraTr->lookAtDirection(rotatingToCameraTarget2);
     }
 }
 

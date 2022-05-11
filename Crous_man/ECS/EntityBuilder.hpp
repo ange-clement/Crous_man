@@ -4,6 +4,8 @@
 #include "SystemIDs.hpp"
 #include "../Components/Collider.hpp"
 
+#define DEBUG_ENTITY_BUILDER false
+
 struct Mesh;
 
 class RendererSystem;
@@ -50,6 +52,7 @@ public:
 	EntityBuilder* setMeshAsFile(std::string meshFile, bool fileHasNormals);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile);
 	EntityBuilder* setMeshAsFilePLY(std::string meshFile, bool invertTriangles);
+	EntityBuilder* setMeshAsFilePLYCenter(std::string meshFile);
 
 	RendererSystem* getRendererSystem();
 	Renderer* getRenderer();
@@ -66,9 +69,12 @@ public:
 	Destructible* getDestructible();
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles);
 	EntityBuilder* addDestructibleMeshes(std::initializer_list<std::string> meshesFiles, bool invertTriangles);
+	EntityBuilder* setDestructibleFragmentScaling(glm::vec3 fragmentScaling);
+	EntityBuilder* setDestructibleFragmentColor(glm::vec3 fragmentColor);
+	EntityBuilder* setDestructibleHealth(float health);
 
 	EntityBuilder* setColliderType(colliderType type);
-	EntityBuilder* setColliderPosition(glm::vec3 pos);
+	EntityBuilder* setColliderCenter(glm::vec3 pos);
 	EntityBuilder* setColliderRadius(float radius);
 	EntityBuilder* setColliderSize(glm::vec3 size);
 	EntityBuilder* setColliderOrientation(glm::mat3 orientation);
@@ -112,5 +118,7 @@ public:
 
 	Entity* build();
 };
+
+void computeBox(Transform* t, const std::vector<glm::vec3> in_vertices, glm::vec3& position, glm::vec3& size);
 
 #endif
