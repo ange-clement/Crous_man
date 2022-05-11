@@ -85,7 +85,7 @@ public:
 
     int frame_update_update_physics = 10;
 
-    bool with_rotation              = false;
+    bool with_rotation              = true;
     bool with_friction              = false;
     bool with_dynamic_friction      = false;
     bool correctPos                 = true;

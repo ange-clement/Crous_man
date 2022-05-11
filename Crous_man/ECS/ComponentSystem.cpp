@@ -155,10 +155,10 @@ bool ComponentSystem::containsEntity(unsigned short entityID) {
 }
 
 unsigned short ComponentSystem::getComponentId(unsigned short entityID) {
-    std::cout << "GET COMPONENT ID : " << entityID << std::endl;
+    //std::cout << "GET COMPONENT ID : " << entityID << std::endl;
 
     for (size_t i = 0, size = entityIDs.size(); i < size; i++) {
-        std::cout << "-" << entityIDs[i] << std::endl;
+        //std::cout << "-" << entityIDs[i] << std::endl;
 
         if (entityIDs[i] == entityID) {
             return i;

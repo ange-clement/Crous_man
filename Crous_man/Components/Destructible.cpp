@@ -26,6 +26,7 @@
 
 #include "Destructible.hpp"
 
+#define DESTRUCTIBLE_SYSTEM true
 
 DestructibleSystem::DestructibleSystem() : ComponentSystem() {
     requiredComponentsBitmap = new Bitmap({ SystemIDs::DestructibleID });
@@ -44,7 +45,7 @@ void DestructibleSystem::initialize(unsigned short i, unsigned short entityID) {
     Entity* entity = EntityManager::instance->entities[entityID];
 
     for (size_t s = 0, size = destructible->fragmentMeshFiles.size(); s < size; s++) {
-        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID/*, SystemIDs::RigidBodyID*/, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID}))
+        Entity* childFragment = (new EntityBuilder({ SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::DeleteAfterTimeID}))
             ->setChildOf(entity)
             ->setMeshAsFilePLY(destructible->fragmentMeshFiles[s], destructible->fragmentMeshInvertTriangle[s])
             ->fitAABBColliderToMesh()
@@ -77,33 +78,35 @@ float getRandomValue() {
 }
 
 void DestructibleSystem::setFragmentParameters(Entity* myself, Destructible* d, Entity* e) {
-void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
-    std::cout << "SET FRAG PARAM" << std::endl;
-    std::cout << "ID : " << e->id << std::endl;
+    if (DESTRUCTIBLE_SYSTEM){
+        std::cout << "MYSELF : " << myself->id << std::endl;
+        std::cout << "SET FRAG PARAM" << std::endl;
+        std::cout << "ID : " << e->id << std::endl;
+    }
 
     e->transform->scaling = d->fragmentScaling;
     e->updateTransforms();
 
     glm::vec3 centerToChild = glm::vec3(getRandomValue(), getRandomValue(), getRandomValue());
+    
     if (glm::dot(centerToChild, centerToChild) > FLT_EPSILON) {
         centerToChild = glm::normalize(centerToChild);
     }
     float explosionAmount = 100.0f;
 
+    if (DESTRUCTIBLE_SYSTEM) std::cout << "IF STATEMENT" << std::endl;
+
     if (EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, e->id)) {
-        RigidBody* rb = rigidBodySystem->getRigidBodyFromEntityId(e->id);
+         if (DESTRUCTIBLE_SYSTEM) std::cout << "IF STATEMENT IN" << std::endl;
+         RigidBody* rb = rigidBodySystem->getRigidBodyFromEntityId(e->id);
+         if (DESTRUCTIBLE_SYSTEM) std::cout << "RB FROM ENTITY ID : " << rb << std::endl;
+
         rb->static_RB = false;
         rb->addImpulse(centerToChild * explosionAmount);
         
+        if (DESTRUCTIBLE_SYSTEM) std::cout << "rb : " << rb << std::endl;
         unsigned int id = rigidBodySystem->getComponentId(e->id);
-        std::cout << "ID : " << id;
-
-        RigidBody* rb = rigidBodySystem->getRigidBody(id);
-        std::cout << "rb : " << rb;
-
-        rb->static_RB = false;
-
-        std::cout << "ID : " << id;
+        if (DESTRUCTIBLE_SYSTEM) std::cout << "ID : " << id << std::endl;
 
         if (EntityManager::instance->hasComponent(SystemIDs::MeshID, e->id) && EntityManager::instance->hasComponent(SystemIDs::ColliderID, e->id)) {
             unsigned int meshId = meshSystem->getComponentId(e->id);
@@ -118,8 +121,9 @@ void DestructibleSystem::setFragmentParameters(Destructible* d, Entity* e) {
         }
     }
 
-    std::cout << "END" << e->id << std::endl;
-
+    if (DESTRUCTIBLE_SYSTEM) {
+        std::cout << "END" << e->id << std::endl;
+    }
 
     // for (size_t c = 0, size = e->childrens.size(); c < size; c++) {
     //     setFragmentParameters(d, e->childrens[c]);
@@ -132,8 +136,10 @@ void DestructibleSystem::destroy(unsigned short i) {
     
 
     entity->removeComponent(SystemIDs::DestructibleID);
-    std::cout << "FOR" << std::endl;
-    std::cout << "ENTITY CHILDRENS : " << entity->childrens.size() << std::endl;
+    if (DESTRUCTIBLE_SYSTEM) {
+        std::cout << "FOR" << std::endl;
+        std::cout << "ENTITY CHILDRENS : " << entity->childrens.size() << std::endl;
+    }
     for (size_t c = 0, size = entity->childrens.size(); c < size; c++) {
         
         entity->childrens[c]->isActive = true;

@@ -862,8 +862,11 @@ void SphereAABBCollision(const Collider& aabb, const Collider& sphere, ColliderR
 
     //If there is a contact point
     if (cp_res != 0) {
+        //std::cout << "CONTACT POINT !" << std::endl;
         res->isInCollision = true;
         res->contactsPts.push_back(cp_res);
+
+        //res->print();
     }
 }
 
@@ -959,7 +962,6 @@ void OBBSphereCollision(const Collider& sphere, const Collider& obb, ColliderRes
         res->isInCollision = true;
         res->contactsPts.push_back(cp_res);
     }
-
     //std::cout << "========== END ==========" << std::endl;
 }
 
@@ -2000,13 +2002,22 @@ void ColliderSystem::computeIntersection(unsigned short i, unsigned short entity
 
         
         if (collisionResultMap.at(entityJID)[i] == 0) {
-            ColliderResult* cr = new ColliderResult(entityIID, res, false);
-            cr->contactsPts.clear();
+            ColliderResult* cr = new ColliderResult(entityIID, res, true);
+            //cr->contactsPts.clear();
             collisionResultMap.at(entityJID)[i] = cr;
         }
         else {
             collisionResultMap.at(entityJID)[i]->isInCollision = res->isInCollision;
+
             collisionResultMap.at(entityJID)[i]->contactsPts.clear();
+            
+            for (int l = 0, size = res->contactsPts.size(); l < size; l++){
+                ContactPoint* c = new ContactPoint();
+                c->normal = res->contactsPts[l]->normal * -1.0f;
+                c->point = res->contactsPts[l]->point;
+                c->penetrationDistance = res->contactsPts[l]->penetrationDistance;
+                collisionResultMap.at(entityJID)[i]->contactsPts.push_back(c);
+            }
         }
     }
     else { //we just compute intersection answer

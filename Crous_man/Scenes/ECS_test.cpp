@@ -346,6 +346,7 @@ void createSceneGame() {
         ->setRendererDiffuse("../ressources/Textures/saucisseColor.ppm")
         ->build();
 
+    //7
     Entity* doughnutSaucisse = (new EntityBuilder({ SystemIDs::MeshID, SystemIDs::RendererID, SystemIDs::ColliderID, SystemIDs::RigidBodyID, SystemIDs::CrousManControllerID }))
         ->setTranslation(glm::vec3(0.0f, 20.0f, 0.0f))
         ->setCrousManControllerRotatingCenterForCamera(rotatingCenterForCamera)
@@ -408,6 +409,7 @@ void createSceneGame() {
 
     // Giratoire
 
+    //11
     Entity* giratoire = (new EntityBuilder({ SystemIDs::RigidBodyID, SystemIDs::ColliderID, SystemIDs::MeshID, SystemIDs::RendererID }))
         ->setRigidBodyStatic(true)
         ->setMeshAsFilePLY("../ressources/Models/Scene/giratoire.ply")

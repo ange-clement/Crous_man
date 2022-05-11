@@ -30,7 +30,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <common/quaternion_utils.hpp>
 
-#define DEBUG_RIGIDBODY true
+#define DEBUG_RIGIDBODY false
 
 
 void RigidBody::setMass(float mass) {
@@ -233,10 +233,13 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 
             //First get the entity and RB of the other member of the collision
             otherE = EntityManager::instance->entities[collisionResults[c]->entityCollidID];
-            std::cout << "entity : " <<  otherE << std::endl;
             otherRb = getRigidBodyFromEntityId(collisionResults[c]->entityCollidID);
-            std::cout << "other RB : " << otherRb << std::endl;
-
+            
+            if (DEBUG_RIGIDBODY) {
+                std::cout << "entity : " << otherE << std::endl;
+                std::cout << "other RB : " << otherRb << std::endl;
+            }
+                
             if (otherRb == 0) {
                 std::cout << "COL WITH TRIGER : " << otherE << std::endl;
                 continue;
@@ -245,11 +248,18 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 
             if (correctPos) {
                 //We can correct position of RB to avoid penetration
-                std::cout << "CORRECT POSE" << std::endl;
+                
+                if (DEBUG_RIGIDBODY) {
+                    std::cout << "CORRECT POSE" << std::endl;
+                }
 
                 glm::vec3 newpos;
                 glm::vec3 otherNewpos;
 
+                if (DEBUG_RIGIDBODY) {
+                    collisionResults[c]->print();
+                    std::cout << "POSE CORRECTION : " << collisionResults[c]->contactsPts[0] << std::endl;
+                }
                 positionCorrection(newpos, otherNewpos, rb, otherRb, collisionResults[c]->contactsPts[0]);
 
                 e->transform->translate(newpos);
@@ -262,6 +272,9 @@ void RigidBodySystem::updateOnCollide(unsigned short i, unsigned short entityID,
 
             otherpos = otherE->worldTransform->translation;
 
+            if (DEBUG_RIGIDBODY) {
+                std::cout << "WITH ROTATION" << collisionResults[c]->contactsPts[0] << std::endl;
+            }
             if (with_rotation) {
                 //We compute INVERSE TENSOR MATRIX
                 //std::cout << "WITH ROTATION" << std::endl;
@@ -593,25 +606,39 @@ RigidBody* RigidBodySystem::getRigidBody(unsigned short i) {
 }
 
 RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
-    //std::cout << "GET ENTITY" << std::endl;
+    
+    bool b = EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID);
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "ANSWER : " << b << std::flush;
+        std::cout << "GET ENTITY" << std::flush;
+    }
 
-    if (!EntityManager::instance->hasComponent(SystemIDs::RigidBodyID, entityID)) {
-
-        //std::cout << "NO RB SORRY ! " << std::endl;
+    if (!b) {
+        if (DEBUG_RIGIDBODY) std::cout << "NO RB SORRY ! " << std::flush;
         // If entity doesn't have a RigidBody, return NULL
         return NULL;
     }
+    else {
+        if (DEBUG_RIGIDBODY) std::cout << "ELSE CAUSE GOT RB" << std::flush;
+    }
     
-    //std::cout << "GET ENTITY RESIZE ? : " << entityIDsToIndex.size() << std::endl;
-    //std::cout << "GET ENTITY RESIZE ? : " << entityID << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "      ELEM : " << entityID << std::flush;
+        std::cout << "GET ENTITY RESIZE ? : " << std::flush;
+        std::cout << entityIDsToIndex.size() << std::flush;
+    }
 
     if (entityIDsToIndex.size() <= entityID) {
-        //std::cout << "RESIZING" << std::endl;
+        if (DEBUG_RIGIDBODY) std::cout << "RESIZING" << std::flush;
         // If entityIDsToIndex is too small, extend it
         entityIDsToIndex.resize(entityID+1, (unsigned short)-1);
     }
 
+
     unsigned short id = entityIDsToIndex[entityID];
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "ID ELEM : " << id << std::flush;
+    }
 
     if (id == (unsigned short)-1) {
         // If first time we called getRigidBodyFromEntityId with this entity, get it's ID and update the list
@@ -625,6 +652,10 @@ RigidBody* RigidBodySystem::getRigidBodyFromEntityId(unsigned short entityID) {
         //std::cout << "STILL DONT HAVE ELEM" << std::endl;
         // If we could get it's ID, return NULL
         return NULL;
+    }
+
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "====END====" << std::flush;
     }
     return getRigidBody(id);
 }
@@ -720,19 +751,22 @@ glm::vec3 RigidBodySystem::resolveConstraintParticles_Euler(Collider& collider, 
 
 //Resolves constraints : VOLUMES (Colliders objects)
 void RigidBodySystem::applyImpulse_linear(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
-    std::cout << "APPLY IMPULSE LINEAR" << std::endl;
-    //std::cout << "rb_1 : " << rb_1 << std::endl;
-    //std::cout << "rb_2 : " << rb_2 << std::endl;
-    //std::cout << "pres " << p_res << std::endl;
-    //p_res->print();
     
-    //std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
-    //std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "APPLY IMPULSE LINEAR" << std::endl;
+        std::cout << "rb_1 : " << rb_1 << std::endl;
+        std::cout << "rb_2 : " << rb_2 << std::endl;
+        std::cout << "pres " << p_res << std::endl;
+        p_res->print();
+
+        std::cout << "rb_1 static : " << rb_1->static_RB << std::endl;
+        std::cout << "rb_2 static : " << rb_2->static_RB << std::endl;
+    }
 
 
     //We will apply an impulse reaction to perform ejections of both elem
     if (!rb_1->static_RB || !rb_2->static_RB) {
-        //std::cout << "PERFORM AN IMPULSE" << std::endl;
+        if (DEBUG_RIGIDBODY) std::cout << "PERFORM AN IMPULSE" << std::endl;
 
         float invMassSum;
         if (rb_1->static_RB) {
@@ -751,19 +785,21 @@ void RigidBodySystem::applyImpulse_linear(RigidBody* rb_1, RigidBody* rb_2, Cont
         glm::vec3 relative_vel = rb_1->velocity - rb_2->velocity;
 
 
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        //std::cout << "RELATIVE VEL : ";
-        //print(relative_vel);
-        //std::cout << "VEL 1 : ";
-        //print(rb_1->velocity);
-        
-        //std::cout << "VEL 2 : ";
-        //print(rb_2->velocity);
-
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        //std::cout << "RELATIVE NORMALE : ";
-        //print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -796,11 +832,13 @@ void RigidBodySystem::applyImpulse_linear(RigidBody* rb_1, RigidBody* rb_2, Cont
         if (!rb_1->static_RB) rb_1->velocity = rb_1->velocity + (j_1 * rb_1->inverseOfMass * relative_n);
         if (!rb_2->static_RB) rb_2->velocity = rb_2->velocity - (j_2 * rb_2->inverseOfMass * relative_n);
     }
-    //std::cout << "FINAL VELOCITY : ";
-    //print(rb_1->velocity);
-    //print(rb_2->velocity);
-    
-    //std::cout << "====================================================" << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "FINAL VELOCITY : ";
+        print(rb_1->velocity);
+        print(rb_2->velocity);
+
+        std::cout << "====================================================" << std::endl;
+    }
 }      
 void RigidBodySystem::applyImpulse_linearFriction(RigidBody* rb_1, RigidBody* rb_2, ContactPoint* p_res, int nbC) {
     if (DEBUG_RIGIDBODY) {
@@ -1177,11 +1215,13 @@ glm::mat4 RigidBodySystem::getMatrixInverseTensor(unsigned short entityID, Colli
 void RigidBody::rotational_addImpulseAtPosition(const glm::vec3& point, const glm::vec3& impulse, const glm::vec3& currentPosition, const glm::mat3& inverseTensor) {
     glm::vec3 centerOfMass = currentPosition;
     glm::vec3 torque = glm::cross(point - centerOfMass, impulse);
-    glm::vec3 angAccel = torque *inverseTensor;
-    
+    glm::vec3 angAccel = torque * inverseTensor;
+
     angularSpeed += angAccel;
-    std::cout << "ADD IMULSE POS : " << angularSpeed.x << "," << angularSpeed.y << "," << angularSpeed.z << std::endl;
-    std::cout << " ANG ACC : " << angAccel.x << "," << angAccel.y << "," << angAccel.z << std::endl;
+    if (DEBUG_RIGIDBODY) {
+        std::cout << "ADD IMULSE POS : " << angularSpeed.x << "," << angularSpeed.y << "," << angularSpeed.z << std::endl;
+        std::cout << " ANG ACC : " << angAccel.x << "," << angAccel.y << "," << angAccel.z << std::endl;
+    }
 }
 
 // Inertia tensor is the equivalent of mass for linear speed computation
@@ -1295,19 +1335,22 @@ void RigidBodySystem::applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_
         
         glm::vec3 relative_vel = rb_1->oldvelocity - rb_2->oldvelocity;
 
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE VEL : ";
+            print(relative_vel);
+            std::cout << "VEL 1 : ";
+            print(rb_1->velocity);
 
-        //std::cout << "RELATIVE VEL : ";
-        //print(relative_vel);
-        //std::cout << "VEL 1 : ";
-        //print(rb_1->velocity);
-        //
-        //std::cout << "VEL 2 : ";
-        //print(rb_2->velocity);
+            std::cout << "VEL 2 : ";
+            print(rb_2->velocity);
+        }
 
         glm::vec3 relative_n = glm::normalize(p_res->normal);
 
-        //std::cout << "RELATIVE NORMALE : ";
-        //print(relative_n);
+        if (DEBUG_RIGIDBODY) {
+            std::cout << "RELATIVE NORMALE : ";
+            print(relative_n);
+        }
 
 
         //Magnitude of the relative velocity in the direction of the collision normal
@@ -1349,13 +1392,15 @@ void RigidBodySystem::applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_
 
         if (!rb_1->static_RB) {
             glm::vec3 impulse_1 = j_1 * relative_n;
-            //std::cout << "RB1 VELOCITY : " << j_1 << std::endl;
-            //print(impulse_1);
-            //print(rb_1->velocity);
+            if (DEBUG_RIGIDBODY) {
+                std::cout << "RB1 VELOCITY : " << j_1 << std::endl;
+                print(impulse_1);
+                print(rb_1->velocity);
+            }
 
             rb_1->velocity = rb_1->velocity + (impulse_1 * rb_1->inverseOfMass );
 
-            //print(rb_1->velocity);
+            if (DEBUG_RIGIDBODY) print(rb_1->velocity);
 
             //Update ANGULAR VELOCITY
             glm::vec4 res = glm::vec4(glm::cross(r1, impulse_1), 0.0f) * i1;
@@ -1363,10 +1408,11 @@ void RigidBodySystem::applyImpulse_linearAngular(RigidBody* rb_1, RigidBody* rb_
         }
         if (!rb_2->static_RB) {
             glm::vec3 impulse_2 = j_2 * relative_n;
-            //std::cout << "RB2 VELOCITY : " << j_2 << std::endl;
-            //print(impulse_2);
+            if (DEBUG_RIGIDBODY) {
+                std::cout << "RB2 VELOCITY : " << j_2 << std::endl;
+                print(impulse_2);
+            }
             
-
             rb_2->velocity = rb_2->velocity - (impulse_2 * rb_2->inverseOfMass);
 
             //Update ANGULAR VELOCITY
@@ -1775,13 +1821,20 @@ void RigidBodySystem::applyImpulse_linearAngular_bis(RigidBody* rb_1, RigidBody*
     }
     applyImpulse_linear(rb_1, rb_2, p_res, nbC);
     
+    glm::vec3 r1 = p_res->point - posrb1;
+    glm::vec3 r2 = p_res->point - posrb2;
+    float j = computeAngularFactor(rb_1, rb_2, p_res->normal, r1, r2);
+    float invSize = 1.0f / (float)nbC;
+
     if (!rb_1->static_RB) {
         //std::cout << "COMPUTE FOR RB1" << std::endl;
-        rb_1->rotational_addImpulseAtPosition(p_res->point, p_res->normal * p_res->penetrationDistance, posrb1, getFromMat4(inverseTensorrb1));
+        rb_1->addImpulseAtPosition(p_res->normal * j / invSize, r1);
+        //rb_1->rotational_addImpulseAtPosition(p_res->point, p_res->normal * p_res->penetrationDistance, posrb1, getFromMat4(inverseTensorrb1));
     }
     if (!rb_2->static_RB) {
         //std::cout << "COMPUTE FOR RB" << std::endl;
-        rb_2->rotational_addImpulseAtPosition(p_res->point, -p_res->normal * p_res->penetrationDistance, posrb2, getFromMat4(inverseTensorrb2));
+        rb_2->addImpulseAtPosition(p_res->normal * j / invSize, r2);
+        //rb_2->rotational_addImpulseAtPosition(p_res->point, -p_res->normal * p_res->penetrationDistance, posrb2, getFromMat4(inverseTensorrb2));
     }
 
 }

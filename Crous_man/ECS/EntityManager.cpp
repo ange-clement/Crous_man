@@ -100,6 +100,7 @@ void EntityManager::initSystems() {
     systems[SystemIDs::RendererID] =                new RendererSystem();
     systems[SystemIDs::PointLightID] =              new PointLightSystem();
     systems[SystemIDs::ColliderID] =                new ColliderSystem();
+    systems[SystemIDs::RigidBodyID] =               new RigidBodySystem();
     systems[SystemIDs::CameraID] =                  new CameraSystem();
     systems[SystemIDs::SpinID] =                    new SpinSystem();
     systems[SystemIDs::FollowObjectID] =            new FollowObjectSystem();
@@ -109,7 +110,6 @@ void EntityManager::initSystems() {
     systems[SystemIDs::SimplePlayerControllerID] =  new SimpleMovementPlayerSystem();
     systems[SystemIDs::CrousManControllerID] =      new CrousManControllerSystem();
 
-    systems[SystemIDs::RigidBodyID] = new RigidBodySystem();
 }
 
 void EntityManager::initializeAllSystems() {
