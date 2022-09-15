@@ -5,7 +5,7 @@ Afterwards, we developed an interactive application to present the scope of our 
 For this, we were inspired by the famous roundabout in Montpellier.
 
 <p align="center">
-<img align="center" src="./presentations/famous_roundabout.jpg" width="500" height="500"/>
+<img align="center" src="./presentations/famous_roundabout.jpg" width="800" height="800"/>
 </p>
 
 #### Speech of the game
