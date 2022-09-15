@@ -32,3 +32,7 @@ When loading, it will create a out/build/x64-Debug folder (if not, got into the 
 Copy the files from `copyToBuild` to that folder  
 Build the project (ctrl+shift+b)  
 Go to the build directory and launch `launch-Crous_man.cmd`  
+
+## Documentations :
+
+[French Presentation](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
