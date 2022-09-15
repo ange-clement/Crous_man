@@ -36,4 +36,4 @@ Go to the build directory and launch `launch-Crous_man.cmd`
 ## Documentations :
 
 - Work repport : [![FR](./presentations/french.png =25x25)](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
-- Work repport : [<img src="./presentations/french.png" width="200" height="400"/>](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
+- Work repport : [<img src="./presentations/french.png" width="25" height="25"/>](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
