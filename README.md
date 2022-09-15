@@ -4,8 +4,9 @@ As part of our studies in Master Imagine in Montpellier, we had to set up a game
 Afterwards, we developed an interactive application to present the scope of our engine: .
 For this, we were inspired by the famous roundabout in Montpellier.
 
-
+<p align="center">
 <img align="center" src="./presentations/famous_roundabout.jpg" width="500" height="500"/>
+</p>
 
 #### Speech of the game
 You play as a giant monster in an urban environment that is more realistic than ever, and your only goal is to destroy it. It's a bit like if Godzilla was taking place in Montpellier...
