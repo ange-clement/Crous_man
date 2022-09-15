@@ -35,4 +35,4 @@ Go to the build directory and launch `launch-Crous_man.cmd`
 
 ## Documentations :
 
-- Work repport : [![FR](./presentations/french.png)](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
+- Work repport : [![FR](./presentations/french.png =25x25)](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
