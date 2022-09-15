@@ -1,5 +1,13 @@
 # Crous_man
-Crous_man game : the movie : the game
+#### Crous_man game : the movie : the game
+As part of our studies in Master Imagine in Montpellier, we had to set up a game engine in C++.
+Afterwards, we developed an interactive application to present the scope of our engine: .
+For this, we were inspired by the famous roundabout in Montpellier.
+
+![roundabout](https://myoctocat.com/assets/images/base-octocat.svg)
+
+#### Speech of the game
+You play as a giant monster in an urban environment that is more realistic than ever, and your only goal is to destroy it. It's a bit like if Godzilla was taking place in Montpellier...
 
 ## Build and Launch : 
 You need to copy the files from `copyToBuild` to the build folder.
