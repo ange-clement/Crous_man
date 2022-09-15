@@ -1,7 +1,7 @@
 # Crous_man
 #### Crous_man game : the movie : the game
 As part of our studies in Master Imagine in Montpellier, we had to set up a game engine in C++.
-Afterwards, we developed an interactive application to present the scope of our engine: .
+Afterwards, we developed an interactive application to present the scope of our engine.
 For this, we were inspired by the famous roundabout in Montpellier.
 
 <p align="center">
