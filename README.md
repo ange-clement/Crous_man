@@ -8,6 +8,13 @@ For this, we were inspired by the famous roundabout in Montpellier.
 <img align="center" src="./presentations/famous_roundabout.jpg" width="800" height="800"/>
 </p>
 
+<b>Supervisor :</b>     
+-  Noura Faraj (noura.faraj@umontpellier.fr) 
+
+<b>Developers :</b>
+- Ange Clément (ange.clement@etu.umontpellier.fr) 
+- Erwan Reinders (erwan.reinders@etu.umontpellier.fr)
+
 #### Speech of the game
 You play as a giant monster in an urban environment that is more realistic than ever, and your only goal is to destroy it. It's a bit like if Godzilla was taking place in Montpellier...
 
