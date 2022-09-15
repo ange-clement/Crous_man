@@ -2,7 +2,7 @@
 Crous_man game : the movie : the game
 
 ## Build and Launch : 
-Il faut copier les fichiers de 'copyToBuild' dans le dossier build.
+You need to copy the files from `copyToBuild` to the build folder.
 ### Linux :
 #### build
 ```
@@ -18,9 +18,9 @@ cd build
 ```
 ### Windows :
 
-Install visual studio 2022 (or 2019) with C++ extention (for cmake)  
+Install `visual studio 2022` (or 2019) with C++ extention (for cmake)  
 Clone the repos using the IDE  
 When loading, it will create a out/build/x64-Debug folder (if not, got into the CMakeLists.txt and save : ctrl+s)  
-Copy the files from 'copyToBuild' to that folder  
+Copy the files from `copyToBuild` to that folder  
 Build the project (ctrl+shift+b)  
-Go to the build directory and launch 'launch-Crous_man.cmd'  
+Go to the build directory and launch `launch-Crous_man.cmd`  
