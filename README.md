@@ -35,8 +35,8 @@ Go to the build directory and launch `launch-Crous_man.cmd`
 
 ## Documentations :
 
-- Work repport :
+- Work repport : &emsp
 [<img align="center" src="./presentations/french.png" width="50" height="50"/>](./presentations/GameEngine-ReindersErwanAngeClement.pdf)
 
-- Work presentation :
+- Work presentation : &emsp
 [<img align="center" src="./presentations/french.png" width="50" height="50"/>](./presentations/GameEngine-Presentation-ReindersErwanAngeClement.pdf)
